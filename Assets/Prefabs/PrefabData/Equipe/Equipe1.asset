@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c959ec2492d4754282c26e13c4a6d6c, type: 3}
+  m_Name: Equipe1
+  m_EditorClassIdentifier: Assembly-CSharp::EquipeData
+  nomEquipe: Equipe1
+  portraitChef: {fileID: 0}
+  niveauDeBase: 25
+  membres:
+  - {fileID: 11400000, guid: 2a361cecde01678408c548867ab9e8f1, type: 2}
