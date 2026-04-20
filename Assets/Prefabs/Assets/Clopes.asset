@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 389ada699fa1b854baaeea18cb736e35, type: 3}
+  m_Name: Clopes
+  m_EditorClassIdentifier: Assembly-CSharp::ObjetConsommableData
+  idUnique: clopes
+  nom: Paquet de clopes
+  description: C'est pas bien de fumer
+  icone: {fileID: 21300000, guid: 66d1096998f49dc4eb3b9fd27d66e037, type: 3}
+  categorie: 0
+  rareteEtoiles: 1
+  valeur: 10
+  effets: []
+  quantiteConsommeeParExpedition: 1
+  obligatoirePourExpedition: 1

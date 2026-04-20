@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf4077abf9bfcb340b9f177fe31e1851, type: 3}
+  m_Name: Colonisateur
+  m_EditorClassIdentifier: Assembly-CSharp::SCOBJ_DIRIGEANT_EFFET
+  titre: Colonisateur
+  description: "Lorsqu'une exp\xE9dition est termin\xE9e, la population frisienne
+    et autre baissent tandis que la population Shiki augmente"
+  icone: {fileID: 0}
+  type: 0
+  valeurAffichee: 
+  conditionType: 0
+  modificateurs:
+  - stat: 15
+    valeurType: 1
+    valeur: 10
+  - stat: 16
+    valeurType: 1
+    valeur: -20
+  cacherSiInactif: 1
+  genererValeurAfficheeAutomatiquement: 1
+  niveauRequis: 3
+  dirigeantConcerne: 2
+  portee: 4
+  effetSpecial: 2

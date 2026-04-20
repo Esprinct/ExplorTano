@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03357477370a0d409257faa3a2226ce, type: 3}
+  m_Name: Jan Akxa
+  m_EditorClassIdentifier: Assembly-CSharp::PersonnageData
+  idUnique: JanAkxa
+  nom: Akxa
+  prenom: Jan
+  sprite: {fileID: 21300000, guid: 4bb8ac8b434b4b247bd54a7f882aeb79, type: 3}
+  description: "Jan est une exploratrice avec un caract\xE8re bien tremp\xE9"
+  genre: 2
+  roleActuel: 1
+  rareteEtoiles: 3
+  estUnique: 1
+  estGenere: 0
+  aPreferenceCompagnie: 1
+  compagniePreferee: 3
+  progression:
+    niveau: 1
+    xpActuelle: 0
+  progressionConfig: {fileID: 11400000, guid: 19c75821d026b1a4aa6571d51772aa16, type: 2}
+  force: 140
+  intelligence: 70
+  dexterite: 90
+  endurance: 130
+  effets:
+  - {fileID: 11400000, guid: 05c3742ba4f2fb542b8cfcd8973cbd4e, type: 2}
+  coutRecrutementBase: 26000
+  coutParTour: 1650

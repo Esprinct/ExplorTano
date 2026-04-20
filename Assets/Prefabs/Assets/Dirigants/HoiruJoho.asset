@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7615e3fd72539b49911ed0e949756b4, type: 3}
+  m_Name: HoiruJoho
+  m_EditorClassIdentifier: Assembly-CSharp::SCOBJ_Dirigeant
+  compagnie: 3
+  portraitDirigeant: {fileID: 21300000, guid: e9b749cc7aa85ec46a9286158076ad22, type: 3}
+  logoCompagnie: {fileID: 21300000, guid: 464d85640174ec748b344ccf081843a8, type: 3}
+  nomDirigeant: Hoiru Joho
+  niveauDirigeant: 1
+  description: "Enfance :\r\nHoiru est n\xE9e en 839 \xE0 Tano. Elle est issue de
+    la prestigieuse lign\xE9e royale Shiki, le clan Joho. Elle a toujours v\xE9cue
+    dans l\u2019ombre de son p\xE8re, l\u2019h\xE9ritier au tr\xF4ne Nirmen VII Joho,
+    sans jamais avoir l\u2019occasion de s\u2019affirmer.\r\n\r\nHoiru est une enfant
+    brillante et a re\xE7u une \xE9ducation tr\xE8s stricte du fait de son rang.
+    Elle a toujours accompagn\xE9 son p\xE8re dans les soir\xE9es mondaines et s\u2019est
+    tr\xE8s vite acclimat\xE9e aux codes de la noblesse et de la haute bourgeoisie.
+    \r\n\r\nSon adolescence : pr\xE9misse du coup d\u2019\xC9tat.\r\nVers l\u2019adolescence,
+    Hoiru s\u2019int\xE9resse beaucoup \xE0 la magie, pour elle synonyme de puissance.
+    Cette derni\xE8re est depuis petite berc\xE9e des r\xE9cits de sa lign\xE9e royale.
+    \r\n\r\nC\u2019est \xE0 partir de ce moment qu\u2019elle commence \xE0 remettre
+    en cause la politique pragmatique de son p\xE8re, qu\u2019elle juge laxiste.
+    Elle gagna en ambition, et voulut tr\xE8s vite devenir, \xE0 l\u2019instar de
+    ses a\xEFeux, un monarque absolu. Elle trouva les conditions de la fin de la
+    guerre civile injuste \xE0 son go\xFBt et a toujours trouv\xE9 son p\xE8re l\xE2che
+    de ne pas se battre davantage pour le retour de l\u2019aristocratie.\r\n\r\nA
+    18 ans, elle devient scientifique sp\xE9cialis\xE9 dans les cristaux, voyant
+    en l\u2019\xE9trinium la cl\xE9 de son avenir.\r\n\r\nA la mort de son p\xE8re
+    en 865, elle prend imm\xE9diatement le contr\xF4le du parti conservateur en \xE9cartant
+    ses opposants en utilisant des m\xE9thodes douteuses.\r\n\nSon caract\xE8re :\r\n\r\nHoiru
+    est une personne froide, voire sadique, mais avant tout une perfectionniste et
+    une v\xE9ritable bourreau de travail et ne dort presque jamais. Ses subordonn\xE9es
+    n\u2019ont jamais vu une personne aussi impliqu\xE9e dans son travail. Elle s\u2019immisce
+    dans les moindres d\xE9tails techniques de son plan de coup d\u2019\xE9tat pour
+    qu\u2019il soit parfait. Son d\xE9sir de contr\xF4le passe aussi par une soif
+    insatiable de puissance et sera intraitable envers tous ceux qui lui barre son
+    chemin. \r\n"
+  progression:
+    niveau: 1
+    xpActuelle: 0
+    pointsDisponibles: 0
+  progressionConfig: {fileID: 11400000, guid: 19c75821d026b1a4aa6571d51772aa16, type: 2}
+  effets:
+  - {fileID: 11400000, guid: e35b80e3ba8817242a42074d625c6da1, type: 2}
+  - {fileID: 11400000, guid: d611c5e92355682429a224a2671a3edf, type: 2}

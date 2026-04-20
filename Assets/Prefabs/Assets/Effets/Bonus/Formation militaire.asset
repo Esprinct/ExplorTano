@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dde7954045b30648b3e5aadbcb2589e, type: 3}
+  m_Name: Formation militaire
+  m_EditorClassIdentifier: Assembly-CSharp::PersonnageEffetData
+  titre: 
+  description: "Refl\xE9chir avant d'agir aide dans certaines situations, mais dans
+    d'autres beaucoup moins."
+  icone: {fileID: 0}
+  type: 0
+  valeurAffichee: 'FOR +20
+
+    INT +5'
+  conditionType: 0
+  modificateurs:
+  - stat: 1
+    valeurType: 0
+    valeur: 20
+  - stat: 2
+    valeurType: 0
+    valeur: -5
+  cacherSiInactif: 1
+  genererValeurAfficheeAutomatiquement: 1
+  titreNeutre: 
+  titreMasculin: 
+  titreFeminin: 
+  descriptionNeutre: 
+  descriptionMasculine: 
+  descriptionFeminine: 

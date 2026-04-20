@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dde7954045b30648b3e5aadbcb2589e, type: 3}
+  m_Name: "Affinite_Non_Respect\xE9e"
+  m_EditorClassIdentifier: Assembly-CSharp::PersonnageEffetData
+  titre: "Affinit\xE9 de compagnie"
+  description: "Le fait de trvailler pour une compagnie ne refl\xE9tant pas ses valeurs
+    influe sur ses performances."
+  icone: {fileID: 0}
+  type: 1
+  valeurAffichee: 'FOR -10
+
+    INT -10
+
+    DEX -10
+
+    END -10'
+  conditionType: 2
+  modificateurs:
+  - cible: 1
+    valeur: 10
+  - cible: 2
+    valeur: 10
+  - cible: 3
+    valeur: 10
+  - cible: 4
+    valeur: 10
+  cacherSiInactif: 0
+  genererValeurAfficheeAutomatiquement: 1
