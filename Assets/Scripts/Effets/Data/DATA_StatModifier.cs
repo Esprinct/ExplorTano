@@ -9,4 +9,5 @@ public class DATA_StatModifier
     public EffetENUM_Stats stat;
     public EffetValeurType valeurType;
     public int valeur;
+    public bool estMalus;
 }

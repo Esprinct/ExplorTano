@@ -18,4 +18,7 @@ public class STATE_EQUIPE
 public bool lancementExplorationAutomatique;
 public List<SCOBJ_OBJET_EQUIPPABLE> objetsEquipes = new();
 public List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack> consommables = new();
+    // V2
+    public ENUM_EQUIPE_SPECIALISATION specialisation = ENUM_EQUIPE_SPECIALISATION.Reconnaissance;
+    public SCOBJ_EQUIPE_SPECIALISATION dataSpecialisation;
 }

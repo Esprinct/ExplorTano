@@ -26,13 +26,27 @@ MonoBehaviour:
     END -10'
   conditionType: 2
   modificateurs:
-  - cible: 1
-    valeur: 10
-  - cible: 2
-    valeur: 10
-  - cible: 3
-    valeur: 10
-  - cible: 4
-    valeur: 10
+  - stat: 1
+    valeurType: 0
+    valeur: -10
+    estMalus: 1
+  - stat: 2
+    valeurType: 0
+    valeur: -10
+    estMalus: 1
+  - stat: 3
+    valeurType: 0
+    valeur: -10
+    estMalus: 1
+  - stat: 4
+    valeurType: 0
+    valeur: -10
+    estMalus: 1
   cacherSiInactif: 0
   genererValeurAfficheeAutomatiquement: 1
+  titreNeutre: 
+  titreMasculin: 
+  titreFeminin: 
+  descriptionNeutre: 
+  descriptionMasculine: 
+  descriptionFeminine: 

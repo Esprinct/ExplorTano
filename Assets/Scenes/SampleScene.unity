@@ -340,7 +340,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceView
   nomProvince: Kona
   data: {fileID: 11400000, guid: 1c5bbfeccca2d934680c99a677a96b19, type: 2}
-  equipeMarker: {fileID: 0}
+  markerRoot: {fileID: 0}
+  markerPrefab: {fileID: 0}
+  markerSpacing: 0.9
+  markerYOffset: 0.8
+  maxMarkersVisibles: 8
   spriteRenderer: {fileID: 60190681}
   claimRenderer: {fileID: 0}
   overlayRenderer: {fileID: 0}
@@ -11919,7 +11923,7 @@ MonoBehaviour:
   surcoutEquipeEnExplorationParTour: 100
   Joueur1:
     nomJoueur: Esprint
-    estHumain: 0
+    estHumain: 1
     compagnie: 2
     dirigeant: {fileID: 11400000, guid: bade0822614084a498d53e54558610ff, type: 2}
     personnaliteIA: 0
@@ -12031,8 +12035,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SYS_AutoPlayController
   gameManager: {fileID: 325955579}
-  autoPlayEnabled: 1
-  autoStartIfNoHumanPlayer: 1
+  autoPlayEnabled: 0
+  autoStartIfNoHumanPlayer: 0
   delayBetweenTurns: 0.25
   maxTurnsPerSession: 1000
 --- !u!1 &326077032
@@ -12216,7 +12220,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceView
   nomProvince: 
   data: {fileID: 11400000, guid: 7b340212f1e093c4d8d497201e6d01f9, type: 2}
-  equipeMarker: {fileID: 0}
+  markerRoot: {fileID: 0}
+  markerPrefab: {fileID: 0}
+  markerSpacing: 0.9
+  markerYOffset: 0.8
+  maxMarkersVisibles: 8
   spriteRenderer: {fileID: 326077035}
   claimRenderer: {fileID: 0}
   overlayRenderer: {fileID: 0}
@@ -12936,7 +12944,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceView
   nomProvince: 
   data: {fileID: 11400000, guid: b767953a43395ec4381b31fde2c6249c, type: 2}
-  equipeMarker: {fileID: 0}
+  markerRoot: {fileID: 0}
+  markerPrefab: {fileID: 0}
+  markerSpacing: 0.9
+  markerYOffset: 0.8
+  maxMarkersVisibles: 8
   spriteRenderer: {fileID: 394970293}
   claimRenderer: {fileID: 0}
   overlayRenderer: {fileID: 0}
@@ -13398,7 +13410,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceView
   nomProvince: Melkin
   data: {fileID: 11400000, guid: e8d358318c2eb8a43ab1ddd2bcf25963, type: 2}
-  equipeMarker: {fileID: 0}
+  markerRoot: {fileID: 0}
+  markerPrefab: {fileID: 0}
+  markerSpacing: 0.9
+  markerYOffset: 0.8
+  maxMarkersVisibles: 8
   spriteRenderer: {fileID: 410085917}
   claimRenderer: {fileID: 0}
   overlayRenderer: {fileID: 0}
@@ -27776,7 +27792,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2173327620530395327, guid: f69a8f3aae9ef0e4898f64260046f6de, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -30.209839
+      value: -30.20996
       objectReference: {fileID: 0}
     - target: {fileID: 2173327620530395327, guid: f69a8f3aae9ef0e4898f64260046f6de, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -29513,7 +29529,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceView
   nomProvince: 
   data: {fileID: 11400000, guid: a78bf6c8c5db39b4dba5c11c06dd2820, type: 2}
-  equipeMarker: {fileID: 0}
+  markerRoot: {fileID: 0}
+  markerPrefab: {fileID: 0}
+  markerSpacing: 0.9
+  markerYOffset: 0.8
+  maxMarkersVisibles: 8
   spriteRenderer: {fileID: 925424875}
   claimRenderer: {fileID: 0}
   overlayRenderer: {fileID: 0}
@@ -34706,7 +34726,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceView
   nomProvince: 
   data: {fileID: 11400000, guid: 472d727a3b1d94047b03fcd3372cc64d, type: 2}
-  equipeMarker: {fileID: 0}
+  markerRoot: {fileID: 0}
+  markerPrefab: {fileID: 0}
+  markerSpacing: 0.9
+  markerYOffset: 0.8
+  maxMarkersVisibles: 8
   spriteRenderer: {fileID: 1474882953}
   claimRenderer: {fileID: 0}
   overlayRenderer: {fileID: 0}
@@ -40603,7 +40627,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceView
   nomProvince: 
   data: {fileID: 11400000, guid: b6cdfcf46357af54f806a8362dcb6e22, type: 2}
-  equipeMarker: {fileID: 0}
+  markerRoot: {fileID: 0}
+  markerPrefab: {fileID: 0}
+  markerSpacing: 0.9
+  markerYOffset: 0.8
+  maxMarkersVisibles: 8
   spriteRenderer: {fileID: 1766794314}
   claimRenderer: {fileID: 0}
   overlayRenderer: {fileID: 0}

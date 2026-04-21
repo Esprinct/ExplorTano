@@ -23,5 +23,19 @@ public enum EffetENUM_Stats
     PopulationFrisien = 16,
     PopulationAutre = 17,
 
-    StatEquipeGlobale = 18
+    StatEquipeGlobale = 18,
+       Curiosite = 20,
+    Ingeniosite = 21,
+    Combativite = 22,
+
+    ToursExploration = 30,
+    ToursConstruction = 31,
+    ToursVadrouille = 32,
+
+    BeneficesParTour = 40,
+    GainEsterlinFinConstruction = 41,
+    GainPrestigeFinConstruction = 42,
+
+    OccupationGainVadrouille = 50,
+    OccupationReductionAdverseVadrouille = 51
 }

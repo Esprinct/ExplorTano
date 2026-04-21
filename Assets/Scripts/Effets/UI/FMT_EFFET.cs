@@ -26,7 +26,7 @@ public static class FMT_EFFET
             if (!EstModificateurValide(modificateur))
                 continue;
 
-            yield return FormatterLigne(modificateur, effet.type, richText);
+            yield return FormatterLigne(modificateur, richText);
         }
     }
 
@@ -37,17 +37,11 @@ public static class FMT_EFFET
             && modificateur.valeur != 0;
     }
 
-    private static string FormatterLigne(
-        DATA_StatModifier modificateur,
-        EffetType typeEffet,
-        bool richText)
+    private static string FormatterLigne(DATA_StatModifier modificateur, bool richText)
     {
         string nomStat = GetNomCourtStat(modificateur.stat);
 
-        int valeurSignee = typeEffet == EffetType.Malus
-            ? -Mathf.Abs(modificateur.valeur)
-            : Mathf.Abs(modificateur.valeur);
-
+        int valeurSignee = modificateur.valeur;
         string signe = valeurSignee >= 0 ? "+" : "";
         string suffixe = modificateur.valeurType == EffetValeurType.Pourcentage ? "%" : "";
         string contenu = $"{nomStat} {signe}{valeurSignee}{suffixe}";
@@ -55,25 +49,36 @@ public static class FMT_EFFET
         if (!richText)
             return contenu;
 
-        string color = valeurSignee >= 0 ? BonusColor : MalusColor;
+        string color = modificateur.estMalus ? MalusColor : BonusColor;
         return $"<b><color={color}>{contenu}</color></b>";
     }
 
-   public static string GetNomCourtStat(EffetENUM_Stats stat)
-{
-    switch (stat)
+    public static string GetNomCourtStat(EffetENUM_Stats stat)
     {
-        case EffetENUM_Stats.Force: return "FOR";
-        case EffetENUM_Stats.Intelligence: return "INT";
-        case EffetENUM_Stats.Dexterite: return "DEX";
-        case EffetENUM_Stats.Endurance: return "END";
-        case EffetENUM_Stats.Prestige: return "Prestige";
-        case EffetENUM_Stats.Influence: return "Influence";
-        case EffetENUM_Stats.Revenus: return "Revenus";
-        case EffetENUM_Stats.CoutExploration: return "Coût d'exploration";
-        case EffetENUM_Stats.ChanceRelique: return "Artefact";
-        case EffetENUM_Stats.ChanceReliqueRare: return "Artefact Rare";
-        default: return "?";
+        switch (stat)
+        {
+            case EffetENUM_Stats.Force: return "FOR";
+            case EffetENUM_Stats.Intelligence: return "INT";
+            case EffetENUM_Stats.Dexterite: return "DEX";
+            case EffetENUM_Stats.Endurance: return "END";
+            case EffetENUM_Stats.Curiosite: return "CUR";
+            case EffetENUM_Stats.Ingeniosite: return "ING";
+            case EffetENUM_Stats.Combativite: return "COM";
+            case EffetENUM_Stats.ToursExploration: return "T.EXP";
+            case EffetENUM_Stats.ToursConstruction: return "T.CST";
+            case EffetENUM_Stats.ToursVadrouille: return "T.VAD";
+            case EffetENUM_Stats.ChanceRelique: return "ART";
+            case EffetENUM_Stats.ChanceReliqueRare: return "ART.R";
+            case EffetENUM_Stats.BeneficesParTour: return "BEN";
+            case EffetENUM_Stats.GainEsterlinFinConstruction: return "EST";
+            case EffetENUM_Stats.GainPrestigeFinConstruction: return "PRE";
+            case EffetENUM_Stats.OccupationGainVadrouille: return "OCC+";
+            case EffetENUM_Stats.OccupationReductionAdverseVadrouille: return "OCC-";
+            case EffetENUM_Stats.Prestige: return "PRE";
+            case EffetENUM_Stats.Influence: return "INF";
+            case EffetENUM_Stats.Revenus: return "REV";
+            case EffetENUM_Stats.CoutExploration: return "C.EXP";
+            default: return "?";
+        }
     }
-}
 }

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94d616b144efb5d47826e2e1bd9b42b3, type: 3}
+  m_Name: EFF_EQ_Construction_Base
+  m_EditorClassIdentifier: Assembly-CSharp::SCOBJ_EQUIPE_EFFET
+  titre: Bonus Equipe de constructeurs
+  description: 
+  icone: {fileID: 0}
+  type: 0
+  valeurAffichee: 
+  conditionType: 0
+  modificateurs:
+  - stat: 31
+    valeurType: 1
+    valeur: -1
+    estMalus: 0
+  - stat: 42
+    valeurType: 0
+    valeur: 10
+    estMalus: 0
+  - stat: 41
+    valeurType: 0
+    valeur: 10
+    estMalus: 0
+  - stat: 21
+    valeurType: 0
+    valeur: 30
+    estMalus: 0
+  cacherSiInactif: 1
+  genererValeurAfficheeAutomatiquement: 1

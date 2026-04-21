@@ -30,13 +30,9 @@ public static class EFFET_ApplicationService
                 if (modificateur.stat != stat)
                     continue;
 
-                int valeur = CalculerValeur(baseValue, modificateur);
+                int valeur = CalculerValeurSignee(baseValue, modificateur);
                 if (valeur == 0)
                     continue;
-
-                valeur = effet.type == EffetType.Malus
-                    ? -Mathf.Abs(valeur)
-                    : Mathf.Abs(valeur);
 
                 total += valeur;
             }
@@ -74,13 +70,9 @@ public static class EFFET_ApplicationService
                 if (modificateur.stat != stat)
                     continue;
 
-                int valeur = CalculerValeur(baseValue, modificateur);
+                int valeur = CalculerValeurSignee(baseValue, modificateur);
                 if (valeur == 0)
                     continue;
-
-                valeur = effet.type == EffetType.Malus
-                    ? -Mathf.Abs(valeur)
-                    : Mathf.Abs(valeur);
 
                 deltaEffet += valeur;
             }
@@ -123,21 +115,19 @@ public static class EFFET_ApplicationService
             : effet.titre;
     }
 
-    private static int CalculerValeur(int baseValue, DATA_StatModifier modificateur)
+    private static int CalculerValeurSignee(int baseValue, DATA_StatModifier modificateur)
     {
         if (modificateur == null)
             return 0;
 
-        int valeurAbsolue = Mathf.Abs(modificateur.valeur);
-
         switch (modificateur.valeurType)
         {
             case EffetValeurType.Pourcentage:
-                return Mathf.RoundToInt(baseValue * (valeurAbsolue / 100f));
+                return Mathf.RoundToInt(baseValue * (modificateur.valeur / 100f));
 
             case EffetValeurType.Fixe:
             default:
-                return valeurAbsolue;
+                return modificateur.valeur;
         }
     }
 }
