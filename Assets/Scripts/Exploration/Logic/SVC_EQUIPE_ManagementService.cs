@@ -10,6 +10,7 @@ public class SYS_EquipeManagementService
         int coutCreationEquipe,
         int maxEquipesParJoueur,
         SYS_GameRulesService rulesService,
+        CFG_LevelProgression progressionConfigEquipe,
         out STATE_EQUIPE nouvelleEquipe)
     {
         nouvelleEquipe = null;
@@ -45,7 +46,8 @@ public class SYS_EquipeManagementService
         nouvelleEquipe = ConstruireNouvelleEquipeRuntime(
             joueur,
             modeleEquipeVide,
-            rulesService.GetNombreEquipesJoueur(joueur) + 1
+            rulesService.GetNombreEquipesJoueur(joueur) + 1,
+            progressionConfigEquipe
         );
 
         if (nouvelleEquipe == null)
@@ -73,7 +75,8 @@ public class SYS_EquipeManagementService
     public STATE_EQUIPE ConstruireNouvelleEquipeRuntime(
         DATA_JOUEUR joueur,
         SCOBJ_EQUIPE modeleEquipeVide,
-        int indexEquipe)
+        int indexEquipe,
+        CFG_LevelProgression progressionConfigEquipe)
     {
         if (joueur == null)
             return null;
@@ -108,8 +111,32 @@ public class SYS_EquipeManagementService
             affectationAutomatique = false,
             lancementExplorationAutomatique = false,
             objetsEquipes = new List<SCOBJ_OBJET_EQUIPPABLE>(),
-            consommables = new List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack>()
+            consommables = new List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack>(),
+
+            // progression
+            progression = new STATE_LevelProgression(),
+            progressionConfig = progressionConfigEquipe,
+
+            // spécialisation initiale
+            specialisation = source.specialisationInitiale,
+            dataSpecialisation = source.dataSpecialisationInitiale
         };
+
+        if (equipeRuntime.progression != null)
+        {
+            equipeRuntime.progression.niveau = source.niveauDeBase;
+            equipeRuntime.progression.xpActuelle = 0;
+            equipeRuntime.progression.pointsDisponibles = 0;
+        }
+
+        equipeRuntime.niveauActuel = source.niveauDeBase;
+
+        Debug.Log(
+            $"[CREATE_EQUIPE_SERVICE] runtime={equipeRuntime.data?.nomEquipe} | " +
+            $"progressionNull={equipeRuntime.progression == null} | " +
+            $"progressionConfigNull={equipeRuntime.progressionConfig == null} | " +
+            $"specialisation={equipeRuntime.specialisation}"
+        );
 
         return equipeRuntime;
     }

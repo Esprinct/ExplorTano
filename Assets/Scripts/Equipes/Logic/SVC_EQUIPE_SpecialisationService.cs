@@ -2,27 +2,30 @@ using System.Collections.Generic;
 
 public static class SVC_EQUIPE_SpecialisationService
 {
-    public static bool PeutChoisirSpecialisation(STATE_EQUIPE equipe, SCOBJ_EQUIPE_SPECIALISATION cible)
+    public static bool PeutChoisirSpecialisation(
+        STATE_EQUIPE equipe,
+        SCOBJ_EQUIPE_SPECIALISATION cible)
     {
         if (equipe == null || cible == null)
             return false;
 
-        if (equipe.niveauActuel < cible.niveauMinimum)
+        if (equipe.NiveauActuel < cible.niveauMinimum)
             return false;
 
-        ENUM_EQUIPE_SPECIALISATION specialisationActuelle = equipe.specialisation;
-
-        if (cible.type == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
+        // Déjà cette spécialisation
+        if (equipe.specialisation == cible.type)
             return false;
 
-        if (specialisationActuelle == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
+        // Depuis reconnaissance : on ne peut choisir qu'une spécialisation
+        // dont le parent est reconnaissance
+        if (equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
         {
-            return cible.specialisationParent == ENUM_EQUIPE_SPECIALISATION.Reconnaissance
-                && cible.niveauMinimum <= 3;
+            return cible.specialisationParent == ENUM_EQUIPE_SPECIALISATION.Reconnaissance;
         }
 
-        return cible.specialisationParent == specialisationActuelle
-            && cible.niveauMinimum <= equipe.niveauActuel;
+        // Sinon il faut que la spécialisation ciblée ait comme parent
+        // la spécialisation actuelle de l'équipe
+        return cible.specialisationParent == equipe.specialisation;
     }
 
     public static bool AppliquerSpecialisation(
@@ -34,7 +37,6 @@ public static class SVC_EQUIPE_SpecialisationService
 
         equipe.specialisation = cible.type;
         equipe.dataSpecialisation = cible;
-
         return true;
     }
 
@@ -58,4 +60,82 @@ public static class SVC_EQUIPE_SpecialisationService
 
         return result;
     }
+
+    public static bool AAuMoinsUnChoixDisponible(
+        STATE_EQUIPE equipe,
+        List<SCOBJ_EQUIPE_SPECIALISATION> toutesLesSpecialisations)
+    {
+        if (equipe == null || toutesLesSpecialisations == null)
+            return false;
+
+        foreach (SCOBJ_EQUIPE_SPECIALISATION specialisation in toutesLesSpecialisations)
+        {
+            if (specialisation == null)
+                continue;
+
+            if (PeutChoisirSpecialisation(equipe, specialisation))
+                return true;
+        }
+
+        return false;
+    }
+   public static bool EstSpecialisationDejaDebloquee(
+    STATE_EQUIPE equipe,
+    SCOBJ_EQUIPE_SPECIALISATION cible,
+    List<SCOBJ_EQUIPE_SPECIALISATION> toutesLesSpecialisations)
+{
+    if (equipe == null || cible == null || toutesLesSpecialisations == null)
+        return false;
+
+    // La spécialisation actuelle est évidemment débloquée
+    if (equipe.specialisation == cible.type)
+        return true;
+
+    // On remonte uniquement la chaîne des parents de la spécialisation actuelle.
+    // Donc seuls les ancêtres sont "déjà débloqués".
+    ENUM_EQUIPE_SPECIALISATION courant = equipe.specialisation;
+
+    while (true)
+    {
+        SCOBJ_EQUIPE_SPECIALISATION assetCourant =
+            GetSpecialisationByType(courant, toutesLesSpecialisations);
+
+        if (assetCourant == null)
+            return false;
+
+        // Si le parent du courant est la cible, alors la cible est un ancêtre
+        if (assetCourant.specialisationParent == cible.type)
+            return true;
+
+        // Si on est arrivé à Reconnaissance, on s'arrête
+        if (assetCourant.type == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
+            break;
+
+        // Sécurité : éviter une boucle infinie si un asset est mal configuré
+        if (assetCourant.specialisationParent == assetCourant.type)
+            break;
+
+        courant = assetCourant.specialisationParent;
+    }
+
+    return false;
+}
+public static SCOBJ_EQUIPE_SPECIALISATION GetSpecialisationByType(
+    ENUM_EQUIPE_SPECIALISATION type,
+    List<SCOBJ_EQUIPE_SPECIALISATION> toutesLesSpecialisations)
+{
+    if (toutesLesSpecialisations == null)
+        return null;
+
+    foreach (SCOBJ_EQUIPE_SPECIALISATION specialisation in toutesLesSpecialisations)
+    {
+        if (specialisation == null)
+            continue;
+
+        if (specialisation.type == type)
+            return specialisation;
+    }
+
+    return null;
+}
 }

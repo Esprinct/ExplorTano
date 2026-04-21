@@ -15,4 +15,8 @@ MonoBehaviour:
   nomEquipe: Equipe d'exploration
   portraitChef: {fileID: 21300000, guid: 6f9a61e56f4348e4a974714acbc6d7cd, type: 3}
   niveauDeBase: 1
+  specialisationInitiale: 0
+  dataSpecialisationInitiale: {fileID: 11400000, guid: c9a7026b00f90374fbc0e1e08422276e, type: 2}
   membres: []
+  affectationAutomatiqueParDefaut: 0
+  lancementExplorationAutomatiqueParDefaut: 0

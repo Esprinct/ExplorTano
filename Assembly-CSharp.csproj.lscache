@@ -123,7 +123,10 @@ Assets/Scripts/Equipes/Data/
  STATE_EQUIPE.cs
 Assets/Scripts/Equipes/Logic/
  CALC_EQUIPE_StatsCalculator.cs
+ EFFET_ContexteFactory.cs
  EFFET_EQUIPE_Aggregator.cs
+ SVC_EQUIPE_EffetService.cs
+ SVC_EQUIPE_ExplorationEffects.cs
  SVC_EQUIPE_SpecialisationRules.cs
  SVC_EQUIPE_SpecialisationService.cs
 Assets/Scripts/Equipes/UI/
@@ -132,6 +135,8 @@ Assets/Scripts/Equipes/UI/
  UI_EQUIPE_ExplorationView.cs
  UI_EQUIPE_HeaderView.cs
  UI_EQUIPE_PersonnagesView.cs
+ UI_EQUIPE_SpecialisationNode.cs
+ UI_EQUIPE_SpecialisationTreeController.cs
  UI_EQUIPE_StatsView.cs
 Assets/Scripts/Exploration/Data/
  DATA_EXPLORATION_RecompensePopup.cs

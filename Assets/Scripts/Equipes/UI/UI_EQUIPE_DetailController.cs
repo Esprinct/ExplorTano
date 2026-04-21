@@ -23,6 +23,11 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
     [SerializeField] private Toggle toggleAffectationAutomatique;
     [SerializeField] private Toggle toggleLancementExplorationAutomatique;
 
+    [Header("Spécialisation équipe")]
+    [SerializeField] private Button boutonSpecialisation;
+    [SerializeField] private TMP_Text boutonSpecialisationText;
+    [SerializeField] private UI_EQUIPE_SpecialisationTreeController specialisationTreeController;
+
     [Header("Couleurs textes boutons")]
     [SerializeField] private Color couleurTexteBoutonActif = Color.white;
     [SerializeField] private Color couleurTexteBoutonInactif = Color.red;
@@ -41,6 +46,8 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
     [SerializeField] private UI_EQUIPE_StatsView statsView;
     [SerializeField] private UI_EQUIPE_PersonnagesView personnagesView;
     [SerializeField] private UI_EQUIPE_ExplorationView explorationView;
+    
+public bool EstEnAttenteSelectionProvince => enAttenteSelectionProvince;
 
     private void Awake()
     {
@@ -54,6 +61,9 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         UTIL_UiEventBinder.Bind(boutonAjouterPersonnage, OuvrirInventairePourAjout, this, nameof(boutonAjouterPersonnage));
         UTIL_UiEventBinder.Bind(boutonConfirmerExploration, ConfirmerDemarrageExploration, this, nameof(boutonConfirmerExploration));
         UTIL_UiEventBinder.Bind(boutonAnnulerExploration, AnnulerDemarrageExploration, this, nameof(boutonAnnulerExploration));
+
+        if (boutonSpecialisation != null)
+            boutonSpecialisation.onClick.AddListener(OnBoutonSpecialisationClicked);
 
         if (panelConfirmationExploration != null)
         {
@@ -72,39 +82,9 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         UTIL_UiEventBinder.Unbind(boutonAjouterPersonnage, OuvrirInventairePourAjout);
         UTIL_UiEventBinder.Unbind(boutonConfirmerExploration, ConfirmerDemarrageExploration);
         UTIL_UiEventBinder.Unbind(boutonAnnulerExploration, AnnulerDemarrageExploration);
-    }
 
-    private void ResolveDependencies()
-    {
-        if (gameManager == null)
-        {
-            gameManager = FindAnyObjectByType<SYS_GameManager>();
-        }
-
-        if (mapController == null)
-        {
-            mapController = FindAnyObjectByType<MapController>();
-        }
-
-        if (UI_PERSONNAGE_Detail_Controller == null)
-        {
-            UI_PERSONNAGE_Detail_Controller = FindAnyObjectByType<UI_PERSONNAGE_Detail_Controller>(FindObjectsInactive.Include);
-        }
-
-        if (UI_INVENTAIRE_Controller == null)
-        {
-            UI_INVENTAIRE_Controller = FindAnyObjectByType<UI_INVENTAIRE_Controller>(FindObjectsInactive.Include);
-        }
-    }
-
-    public bool EstEnAttenteSelectionProvince()
-    {
-        return enAttenteSelectionProvince;
-    }
-
-    public STATE_EQUIPE GetEquipeActuelle()
-    {
-        return equipeActuelle;
+        if (boutonSpecialisation != null)
+            boutonSpecialisation.onClick.RemoveListener(OnBoutonSpecialisationClicked);
     }
 
     private void AutoBind()
@@ -120,6 +100,25 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
             {
                 Debug.LogWarning($"PanelRootTag introuvable dans {name}");
             }
+        }
+    }
+
+    private void ResolveDependencies()
+    {
+        if (UI_PERSONNAGE_Detail_Controller == null)
+        {
+            UI_PERSONNAGE_Detail_Controller =
+                FindAnyObjectByType<UI_PERSONNAGE_Detail_Controller>(FindObjectsInactive.Include);
+        }
+
+        if (mapController == null)
+        {
+            mapController = FindAnyObjectByType<MapController>();
+        }
+
+        if (gameManager == null)
+        {
+            gameManager = FindAnyObjectByType<SYS_GameManager>();
         }
     }
 
@@ -193,7 +192,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         enAttenteSelectionProvince = false;
     }
 
-    private void RefreshVueComplete()
+    public void RefreshVueComplete()
     {
         if (equipeActuelle == null || equipeActuelle.data == null)
             return;
@@ -202,7 +201,8 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         statsView?.Refresh(equipeActuelle);
         personnagesView?.Refresh(equipeActuelle, UI_PERSONNAGE_Detail_Controller);
         explorationView?.Refresh(equipeActuelle, gameManager);
-   RefreshToggles();
+
+        RefreshToggles();
         RefreshEtatBoutons();
     }
 
@@ -242,18 +242,17 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
             aLesFonds;
 
         if (boutonAffecterProvince != null)
-        {
             boutonAffecterProvince.interactable = boutonAffecterInteractable;
-        }
 
         if (boutonDemarrerExploration != null)
-        {
             boutonDemarrerExploration.interactable = boutonDemarrerInteractable;
-        }
 
         if (boutonAffecterProvinceText != null)
         {
-            boutonAffecterProvinceText.text = "Affecter à une province";
+            boutonAffecterProvinceText.text = enAttenteSelectionProvince
+                ? "Sélection en cours..."
+                : "Affecter à une province";
+
             boutonAffecterProvinceText.color = boutonAffecterInteractable
                 ? couleurTexteBoutonActif
                 : couleurTexteBoutonInactif;
@@ -299,6 +298,64 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
                 modificationsVerrouilleesText.text = $"Fonds insuffisants : {coutLancement} Etrinium requis";
             }
         }
+
+        RefreshBoutonSpecialisation();
+    }
+
+   private void RefreshBoutonSpecialisation()
+{
+    if (boutonSpecialisation == null)
+        return;
+
+    if (equipeActuelle == null)
+    {
+        boutonSpecialisation.interactable = false;
+
+        if (boutonSpecialisationText != null)
+            boutonSpecialisationText.text = "Spécialisation";
+
+        return;
+    }
+
+    // Toujours cliquable dès qu'une équipe est ouverte
+    boutonSpecialisation.interactable = true;
+
+    if (boutonSpecialisationText == null)
+        return;
+
+    bool aChoixDisponible =
+        specialisationTreeController != null &&
+        specialisationTreeController.HasAnyAvailableChoice(equipeActuelle);
+
+    bool aDejaSpec =
+        equipeActuelle.specialisation != ENUM_EQUIPE_SPECIALISATION.Reconnaissance;
+
+    if (aChoixDisponible)
+    {
+        boutonSpecialisationText.text = "Choisir spécialisation";
+    }
+    else if (aDejaSpec && equipeActuelle.dataSpecialisation != null)
+    {
+        boutonSpecialisationText.text = $"Voir : {equipeActuelle.dataSpecialisation.nomAffiche}";
+    }
+    else
+    {
+        boutonSpecialisationText.text = "Voir arbre";
+    }
+}
+
+    private void OnBoutonSpecialisationClicked()
+    {
+        if (equipeActuelle == null)
+            return;
+
+        if (specialisationTreeController == null)
+        {
+            Debug.LogWarning("specialisationTreeController non assigné.");
+            return;
+        }
+
+        specialisationTreeController.Open(equipeActuelle);
     }
 
     private int CalculerCoutLancementExploration()
@@ -327,13 +384,33 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
             enclavement = Mathf.RoundToInt(equipeActuelle.provinceAffectee.data.accesibilite);
         }
 
+        DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipeActuelle);
+
+        int toursModifies = SVC_EQUIPE_ExplorationEffects.GetToursBaseModifies(
+            equipeActuelle,
+            joueur,
+            toursBase
+        );
+
+        float chanceArtefactModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactModifiee(
+            equipeActuelle,
+            joueur,
+            chanceArtefactBase
+        );
+
+        float chanceArtefactRareModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactRareModifiee(
+            equipeActuelle,
+            joueur,
+            chanceArtefactRareBase
+        );
+
         ENUM_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
             stats,
-            toursBase,
+            toursModifies,
             coutParTourBase,
             prestigeBase,
-            chanceArtefactBase,
-            chanceArtefactRareBase,
+            chanceArtefactModifiee,
+            chanceArtefactRareModifiee,
             enclavement
         );
 
@@ -431,17 +508,11 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         }
 
         int coutLancement = CalculerCoutLancementExploration();
-        if (JoueurHumainAPasAssezFonds(coutLancement))
-        {
-            RefreshEtatBoutons();
-            return;
-        }
 
         if (confirmationExplorationText != null)
         {
             confirmationExplorationText.text =
-                $"Démarrer l'exploration de {equipeActuelle.provinceAffectee.data.nom} " +
-                $"avec {equipeActuelle.data.nomEquipe} pour {coutLancement} Etrinium ?";
+                $"Voulez-vous lancer cette exploration pour {coutLancement} Etrinium ?";
         }
 
         if (panelConfirmationExploration != null)
@@ -615,23 +686,24 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
 
         return true;
     }
+
     private void RefreshToggles()
-{
-    if (equipeActuelle == null)
-        return;
-
-    if (toggleAffectationAutomatique != null)
     {
-        toggleAffectationAutomatique.SetIsOnWithoutNotify(
-            equipeActuelle.affectationAutomatique
-        );
-    }
+        if (equipeActuelle == null)
+            return;
 
-    if (toggleLancementExplorationAutomatique != null)
-    {
-        toggleLancementExplorationAutomatique.SetIsOnWithoutNotify(
-            equipeActuelle.lancementExplorationAutomatique
-        );
+        if (toggleAffectationAutomatique != null)
+        {
+            toggleAffectationAutomatique.SetIsOnWithoutNotify(
+                equipeActuelle.affectationAutomatique
+            );
+        }
+
+        if (toggleLancementExplorationAutomatique != null)
+        {
+            toggleLancementExplorationAutomatique.SetIsOnWithoutNotify(
+                equipeActuelle.lancementExplorationAutomatique
+            );
+        }
     }
-}
 }

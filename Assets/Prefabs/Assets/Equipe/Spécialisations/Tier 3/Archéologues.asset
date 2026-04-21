@@ -15,10 +15,12 @@ MonoBehaviour:
   type: 11
   tier: 3
   nomAffiche: "Equipe d'arch\xE9ologues"
-  description: 
+  description: "Equipe de fin de jeu d\xE9di\xE9 \xE0 l'exploration.\n\n-Forte augmentation
+    d'artefact trouv\xE9e\n-Augmentation de la raret\xE9 des artefacts "
   icone: {fileID: 0}
   niveauMinimum: 6
   specialisationParent: 10
   coutDeblocage: 1000
   actionPrincipale: 1
-  effets: []
+  effets:
+  - {fileID: 11400000, guid: 3bb3ba30b380542419dccee8b57b9c12, type: 2}

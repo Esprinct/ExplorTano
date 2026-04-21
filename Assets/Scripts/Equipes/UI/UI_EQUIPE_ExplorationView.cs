@@ -92,52 +92,71 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
         }
     }
 
-    private ExplorationPreviewData BuildPreview(STATE_EQUIPE equipe, SYS_GameManager gameManager)
+  private ExplorationPreviewData BuildPreview(STATE_EQUIPE equipe, SYS_GameManager gameManager)
+{
+    if (equipe == null || gameManager == null || gameManager.ExplorationConfig == null)
+        return null;
+
+    ExplorationConfig config = gameManager.ExplorationConfig;
+    EQUIPE_StatsSnapshot stats = CALC_EQUIPE_StatsCalculator.Calculer(equipe);
+    DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
+
+    int enclavement = 0;
+    float etriniumProvince = 0f;
+
+    if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
     {
-        if (equipe == null || gameManager == null || gameManager.ExplorationConfig == null)
-            return null;
-
-        ExplorationConfig config = gameManager.ExplorationConfig;
-        EQUIPE_StatsSnapshot stats = CALC_EQUIPE_StatsCalculator.Calculer(equipe);
-
-        int enclavement = 0;
-        float etriniumProvince = 0f;
-
-        if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
-        {
-            enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
-            etriniumProvince = equipe.provinceAffectee.data.etrinium;
-        }
-
-        ENUM_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
-            stats,
-            config.toursBase,
-            config.coutParTourBase,
-            config.prestigeBase,
-            config.chanceArtefactBase,
-            config.chanceArtefactRareBase,
-            enclavement
-        );
-
-        if (result == null)
-            return null;
-
-        return new ExplorationPreviewData
-        {
-            toursFinaux = result.toursFinaux,
-            prestigeFinal = result.prestigeFinal,
-            chanceRelique = result.chanceRelique,
-            chanceReliqueRare = result.chanceReliqueRare,
-            influenceActuellePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
-            influenceProjeteePct = CalculerPourcentageInfluenceProjeteDansProvince(equipe, config.gainInfluence),
-            gainEtriniumParTour = CalculerGainPotentielEtriniumParTour(
-                equipe,
-                gameManager,
-                etriniumProvince,
-                config.gainInfluence
-            )
-        };
+        enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
+        etriniumProvince = equipe.provinceAffectee.data.etrinium;
     }
+
+    int toursModifies = SVC_EQUIPE_ExplorationEffects.GetToursBaseModifies(
+        equipe,
+        joueur,
+        config.toursBase
+    );
+
+    float chanceArtefactModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactModifiee(
+        equipe,
+        joueur,
+        config.chanceArtefactBase
+    );
+
+    float chanceArtefactRareModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactRareModifiee(
+        equipe,
+        joueur,
+        config.chanceArtefactRareBase
+    );
+
+    ENUM_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
+        stats,
+        toursModifies,
+        config.coutParTourBase,
+        config.prestigeBase,
+        chanceArtefactModifiee,
+        chanceArtefactRareModifiee,
+        enclavement
+    );
+
+    if (result == null)
+        return null;
+
+    return new ExplorationPreviewData
+    {
+        toursFinaux = result.toursFinaux,
+        prestigeFinal = result.prestigeFinal,
+        chanceRelique = result.chanceRelique,
+        chanceReliqueRare = result.chanceReliqueRare,
+        influenceActuellePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
+        influenceProjeteePct = CalculerPourcentageInfluenceProjeteDansProvince(equipe, config.gainInfluence),
+        gainEtriniumParTour = CalculerGainPotentielEtriniumParTour(
+            equipe,
+            gameManager,
+            etriniumProvince,
+            config.gainInfluence
+        )
+    };
+}
 
     private void Clear()
     {

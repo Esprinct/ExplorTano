@@ -36,19 +36,37 @@ public class ExplorationSystem
             enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
         }
 
-        ENUM_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
-            stats,
-            toursBase,
-            coutParTourBase,
-            prestigeBase,
-            chanceArtefactBase,
-            chanceArtefactRareBase,
-            enclavement
-        );
-
-        DATA_JOUEUR joueur = gameManager.GetDATA_JOUEURByCompagnie(compagnie);
+        DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
         if (joueur == null)
             return;
+
+        int toursModifies = SVC_EQUIPE_ExplorationEffects.GetToursBaseModifies(
+            equipe,
+            joueur,
+            toursBase
+        );
+
+        float chanceArtefactModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactModifiee(
+            equipe,
+            joueur,
+            chanceArtefactBase
+        );
+
+        float chanceArtefactRareModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactRareModifiee(
+            equipe,
+            joueur,
+            chanceArtefactRareBase
+        );
+
+        ENUM_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
+            stats,
+            toursModifies,
+            coutParTourBase,
+            prestigeBase,
+            chanceArtefactModifiee,
+            chanceArtefactRareModifiee,
+            enclavement
+        );
 
         int coutLancement = result.coutTotal;
 
@@ -75,7 +93,9 @@ public class ExplorationSystem
         Debug.Log(
             $"[EXPLORATION START] Equipe={equipe.data?.nomEquipe} | " +
             $"Province={equipe.provinceAffectee?.data?.nom} | " +
-            $"Tours attendus={result.toursFinaux} | " +
+            $"Tours base={toursBase} | Tours finaux={result.toursFinaux} | " +
+            $"Chance artefact={result.chanceRelique:0.##}% | " +
+            $"Chance artefact rare={result.chanceReliqueRare:0.##}% | " +
             $"Prestige attendu={result.prestigeFinal} | " +
             $"Coût lancement={coutLancement}"
         );
@@ -128,84 +148,127 @@ public class ExplorationSystem
         }
     }
 
-   private SCOBJ_OBJET_EQUIPPABLE DonnerArtefactFinExploration(
-    SYS_GameManager gameManager,
-    DATA_JOUEUR joueur,
-    STATE_EQUIPE equipe)
-{
-    if (gameManager == null || joueur == null || equipe == null)
-        return null;
-
-    ExplorationConfig config = gameManager.ExplorationConfig;
-    if (config == null)
-        return null;
-
-    ENUM_EXPLORATION_Resultat resultat = equipe.resultatExploration;
-    if (resultat == null)
-        return null;
-
-    float chanceRare = Mathf.Clamp(resultat.chanceReliqueRare, 0f, 100f);
-    float chanceNormale = Mathf.Clamp(resultat.chanceRelique, 0f, 100f);
-
-    float rollRare = Random.Range(0f, 100f);
-    if (rollRare <= chanceRare)
+    private void DonnerXpEquipeRuntime(STATE_EQUIPE equipe)
     {
-        SCOBJ_OBJET_EQUIPPABLE artefactRare = TirerArtefactDepuisPool(config, true);
+        if (equipe == null)
+            return;
 
-        if (artefactRare != null)
+        if (equipe.progression == null || equipe.progressionConfig == null)
         {
-            UTIL_JOUEUR_INVENTAIRE.AjouterObjetAuJoueur(joueur, artefactRare, 1);
+            Debug.LogWarning($"[XP_EQUIPE] Progression manquante pour {equipe.data?.nomEquipe}");
+            return;
+        }
 
-            Debug.Log(
-                $"[ARTEFACT] Artefact rare obtenu | " +
-                $"joueur={joueur.nomJoueur} | " +
-                $"equipe={equipe.data?.nomEquipe} | " +
-                $"objet={artefactRare.nom} | " +
+        int xpEquipe = 50;
+
+        int ancienNiveau = equipe.progression.niveau;
+
+        int niveauxGagnes = SVC_LevelProgression.AddXp(
+            equipe.progression,
+            equipe.progressionConfig,
+            xpEquipe
+        );
+
+        equipe.SynchroniserNiveauLegacyDepuisProgression();
+
+        Debug.Log(
+            $"[XP_EQUIPE] {equipe.data?.nomEquipe} +{xpEquipe} XP | " +
+            $"Niveau={equipe.progression.niveau} | +{niveauxGagnes} niveaux"
+        );
+
+        if (ancienNiveau < 3 && equipe.NiveauActuel >= 3 &&
+            equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
+        {
+            Debug.Log($"[SPECIALISATION] {equipe.data?.nomEquipe} a débloqué le choix Tier 2.");
+        }
+
+        if (ancienNiveau < 6 && equipe.NiveauActuel >= 6 &&
+            (equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Exploration ||
+             equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Construction ||
+             equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Miliciens))
+        {
+            Debug.Log($"[SPECIALISATION] {equipe.data?.nomEquipe} a débloqué le choix Tier 3.");
+        }
+    }
+
+    private SCOBJ_OBJET_EQUIPPABLE DonnerArtefactFinExploration(
+        SYS_GameManager gameManager,
+        DATA_JOUEUR joueur,
+        STATE_EQUIPE equipe)
+    {
+        if (gameManager == null || joueur == null || equipe == null)
+            return null;
+
+        ExplorationConfig config = gameManager.ExplorationConfig;
+        if (config == null)
+            return null;
+
+        ENUM_EXPLORATION_Resultat resultat = equipe.resultatExploration;
+        if (resultat == null)
+            return null;
+
+        float chanceRare = Mathf.Clamp(resultat.chanceReliqueRare, 0f, 100f);
+        float chanceNormale = Mathf.Clamp(resultat.chanceRelique, 0f, 100f);
+
+        float rollRare = Random.Range(0f, 100f);
+        if (rollRare <= chanceRare)
+        {
+            SCOBJ_OBJET_EQUIPPABLE artefactRare = TirerArtefactDepuisPool(config, true);
+
+            if (artefactRare != null)
+            {
+                UTIL_JOUEUR_INVENTAIRE.AjouterObjetAuJoueur(joueur, artefactRare, 1);
+
+                Debug.Log(
+                    $"[ARTEFACT] Artefact rare obtenu | " +
+                    $"joueur={joueur.nomJoueur} | " +
+                    $"equipe={equipe.data?.nomEquipe} | " +
+                    $"objet={artefactRare.nom} | " +
+                    $"rollRare={rollRare:0.00} | chanceRare={chanceRare:0.00}"
+                );
+
+                return artefactRare;
+            }
+
+            Debug.LogWarning(
+                $"[ARTEFACT] Jet rare réussi mais aucun artefact rare disponible | " +
                 $"rollRare={rollRare:0.00} | chanceRare={chanceRare:0.00}"
             );
-
-            return artefactRare;
         }
 
-        Debug.LogWarning(
-            $"[ARTEFACT] Jet rare réussi mais aucun artefact rare disponible | " +
-            $"rollRare={rollRare:0.00} | chanceRare={chanceRare:0.00}"
-        );
-    }
-
-    float rollNormal = Random.Range(0f, 100f);
-    if (rollNormal <= chanceNormale)
-    {
-        SCOBJ_OBJET_EQUIPPABLE artefactNormal = TirerArtefactDepuisPool(config, false);
-
-        if (artefactNormal != null)
+        float rollNormal = Random.Range(0f, 100f);
+        if (rollNormal <= chanceNormale)
         {
-            UTIL_JOUEUR_INVENTAIRE.AjouterObjetAuJoueur(joueur, artefactNormal, 1);
+            SCOBJ_OBJET_EQUIPPABLE artefactNormal = TirerArtefactDepuisPool(config, false);
 
-            Debug.Log(
-                $"[ARTEFACT] Artefact normal obtenu | " +
-                $"joueur={joueur.nomJoueur} | " +
-                $"equipe={equipe.data?.nomEquipe} | " +
-                $"objet={artefactNormal.nom} | " +
+            if (artefactNormal != null)
+            {
+                UTIL_JOUEUR_INVENTAIRE.AjouterObjetAuJoueur(joueur, artefactNormal, 1);
+
+                Debug.Log(
+                    $"[ARTEFACT] Artefact normal obtenu | " +
+                    $"joueur={joueur.nomJoueur} | " +
+                    $"equipe={equipe.data?.nomEquipe} | " +
+                    $"objet={artefactNormal.nom} | " +
+                    $"rollNormal={rollNormal:0.00} | chanceNormale={chanceNormale:0.00}"
+                );
+
+                return artefactNormal;
+            }
+
+            Debug.LogWarning(
+                $"[ARTEFACT] Jet normal réussi mais aucun artefact commun disponible | " +
                 $"rollNormal={rollNormal:0.00} | chanceNormale={chanceNormale:0.00}"
             );
-
-            return artefactNormal;
         }
 
-        Debug.LogWarning(
-            $"[ARTEFACT] Jet normal réussi mais aucun artefact commun disponible | " +
-            $"rollNormal={rollNormal:0.00} | chanceNormale={chanceNormale:0.00}"
+        Debug.Log(
+            $"[ARTEFACT] Aucun artefact obtenu | " +
+            $"chanceRare={chanceRare:0.00} | chanceNormale={chanceNormale:0.00}"
         );
+
+        return null;
     }
-
-    Debug.Log(
-        $"[ARTEFACT] Aucun artefact obtenu | " +
-        $"chanceRare={chanceRare:0.00} | chanceNormale={chanceNormale:0.00}"
-    );
-
-    return null;
-}
 
     private SCOBJ_OBJET_EQUIPPABLE TirerArtefactDepuisPool(ExplorationConfig config, bool rare)
     {
@@ -228,107 +291,82 @@ public class ExplorationSystem
             }
         }
 
-        List<SCOBJ_OBJET_EQUIPPABLE> candidats = new();
+        int index = Random.Range(0, pool.Count);
+        return pool[index];
+    }
 
-        foreach (SCOBJ_OBJET_EQUIPPABLE objet in pool)
+    private static bool PoolEstVide(List<SCOBJ_OBJET_EQUIPPABLE> pool)
+    {
+        return pool == null || pool.Count == 0;
+    }
+
+    private void AfficherPopupRecompenseExploration(
+        SYS_GameManager gameManager,
+        STATE_EQUIPE equipe,
+        STATE_PROVINCE province,
+        int gainPrestige,
+        SCOBJ_OBJET_EQUIPPABLE artefactGagne)
+    {
+        if (gameManager == null || equipe == null)
+            return;
+
+        DATA_JOUEUR humain = gameManager.GetHumanPlayer();
+        if (humain == null)
         {
-            if (objet != null)
-                candidats.Add(objet);
+            Debug.LogWarning("[POPUP] Aucun humain trouvé.");
+            return;
         }
 
-        if (candidats.Count == 0)
-            return null;
-
-        int index = Random.Range(0, candidats.Count);
-        return candidats[index];
-    }
-
-    private bool PoolEstVide(List<SCOBJ_OBJET_EQUIPPABLE> pool)
-    {
-        if (pool == null || pool.Count == 0)
-            return true;
-
-        foreach (SCOBJ_OBJET_EQUIPPABLE objet in pool)
+        if (humain.equipes == null || !humain.equipes.Contains(equipe))
         {
-            if (objet != null)
-                return false;
+            Debug.LogWarning("[POPUP] équipe non humaine, popup annulée");
+            return;
         }
 
-        return true;
+        UI_EXPLORATION_RecompensePopup popup = gameManager.ExplorationRecompensePopup;
+
+        if (popup == null)
+        {
+            Debug.LogWarning("[POPUP] Référence popup null sur GameManager, recherche auto...");
+            popup = Object.FindAnyObjectByType<UI_EXPLORATION_RecompensePopup>(FindObjectsInactive.Include);
+            gameManager.ExplorationRecompensePopup = popup;
+        }
+
+        if (popup == null)
+        {
+            Debug.LogError("[POPUP] UI_EXPLORATION_RecompensePopup introuvable.");
+            return;
+        }
+
+        if (humain.equipes == null || !humain.equipes.Contains(equipe))
+        {
+            Debug.Log(
+                $"[POPUP] ignorée pour équipe non humaine | " +
+                $"équipe={equipe?.data?.nomEquipe} | compagnie={equipe?.compagnie}"
+            );
+            return;
+        }
+
+        Debug.Log($"[POPUP] Popup trouvée : {popup.name}");
+
+        ExplorationConfig config = gameManager.ExplorationConfig;
+
+        DATA_EXPLORATION_RecompensePopup data = new DATA_EXPLORATION_RecompensePopup
+        {
+            nomEquipe = equipe.data != null ? equipe.data.nomEquipe : "Équipe",
+            nomProvince = province != null && province.data != null ? province.data.nom : "Province inconnue",
+            prestigeGagne = gainPrestige,
+            xpGagneParPersonnage = config != null ? config.xpPersonnageParExploration : 25,
+            artefactTrouve = artefactGagne != null,
+            nomArtefact = artefactGagne != null ? artefactGagne.nom : "",
+            descriptionArtefact = artefactGagne != null ? artefactGagne.description : "",
+            iconeArtefact = artefactGagne != null ? artefactGagne.icone : null,
+            rareteArtefact = artefactGagne != null ? artefactGagne.rareteEtoiles : 0
+        };
+
+        Debug.Log("[POPUP] OpenMenu appelé");
+        popup.OpenMenu(data, true);
     }
-
-  private void AfficherPopupRecompenseExploration(
-    SYS_GameManager gameManager,
-    STATE_EQUIPE equipe,
-    STATE_PROVINCE province,
-    int gainPrestige,
-    SCOBJ_OBJET_EQUIPPABLE artefactGagne)
-{
-    Debug.Log("[POPUP] Tentative affichage popup exploration");
-
-    if (gameManager == null || equipe == null)
-    {
-        Debug.LogWarning("[POPUP] gameManager ou equipe null");
-        return;
-    }
-
-    DATA_JOUEUR humain = gameManager.GetHumanPlayer();
-    if (humain == null)
-    {
-        Debug.LogWarning("[POPUP] humain null");
-        return;
-    }
-
-    Debug.Log($"[POPUP] compagnie équipe={equipe.compagnie} | compagnie humain={humain.compagnie}");
-
-    if (equipe.compagnie != humain.compagnie)
-    {
-        Debug.LogWarning("[POPUP] équipe non humaine, popup annulée");
-        return;
-    }
-
-    UI_EXPLORATION_RecompensePopup popup = gameManager.ExplorationRecompensePopup;
-
-    if (popup == null)
-    {
-        Debug.LogWarning("[POPUP] Référence popup null sur GameManager, recherche auto...");
-        popup = Object.FindAnyObjectByType<UI_EXPLORATION_RecompensePopup>(FindObjectsInactive.Include);
-        gameManager.ExplorationRecompensePopup = popup;
-    }
-
-    if (popup == null)
-    {
-        Debug.LogError("[POPUP] UI_EXPLORATION_RecompensePopup introuvable.");
-        return;
-    }
-if (humain.equipes == null || !humain.equipes.Contains(equipe))
-{
-    Debug.Log(
-        $"[POPUP] ignorée pour équipe non humaine | " +
-        $"équipe={equipe?.data?.nomEquipe} | compagnie={equipe?.compagnie}"
-    );
-    return;
-}
-    Debug.Log($"[POPUP] Popup trouvée : {popup.name}");
-
-    ExplorationConfig config = gameManager.ExplorationConfig;
-
-    DATA_EXPLORATION_RecompensePopup data = new DATA_EXPLORATION_RecompensePopup
-    {
-        nomEquipe = equipe.data != null ? equipe.data.nomEquipe : "Équipe",
-        nomProvince = province != null && province.data != null ? province.data.nom : "Province inconnue",
-        prestigeGagne = gainPrestige,
-        xpGagneParPersonnage = config != null ? config.xpPersonnageParExploration : 25,
-        artefactTrouve = artefactGagne != null,
-        nomArtefact = artefactGagne != null ? artefactGagne.nom : "",
-        descriptionArtefact = artefactGagne != null ? artefactGagne.description : "",
-        iconeArtefact = artefactGagne != null ? artefactGagne.icone : null,
-        rareteArtefact = artefactGagne != null ? artefactGagne.rareteEtoiles : 0
-    };
-
-    Debug.Log("[POPUP] OpenMenu appelé");
-    popup.OpenMenu(data, true);
-}
 
     private void TerminerExploration(SYS_GameManager gameManager, STATE_EQUIPE equipe)
     {
@@ -363,6 +401,7 @@ if (humain.equipes == null || !humain.equipes.Contains(equipe))
         {
             joueur.prestige += gainPrestige;
             DonnerXpEquipe(equipe, gameManager.ExplorationConfig);
+            DonnerXpEquipeRuntime(equipe);
             artefactGagne = DonnerArtefactFinExploration(gameManager, joueur, equipe);
         }
 
@@ -380,23 +419,23 @@ if (humain.equipes == null || !humain.equipes.Contains(equipe))
         gameManager.SynchroniserHudAvecJoueurHumain();
         uiSystem.RefreshToutLeHUD(gameManager);
 
-      DATA_JOUEUR humain = gameManager.GetHumanPlayer();
+        DATA_JOUEUR humain = gameManager.GetHumanPlayer();
 
-bool equipeHumaine =
-    humain != null &&
-    humain.equipes != null &&
-    humain.equipes.Contains(equipe);
+        bool equipeHumaine =
+            humain != null &&
+            humain.equipes != null &&
+            humain.equipes.Contains(equipe);
 
-if (equipeHumaine)
-{
-    AfficherPopupRecompenseExploration(
-        gameManager,
-        equipe,
-        province,
-        gainPrestige,
-        artefactGagne
-    );
-}
+        if (equipeHumaine)
+        {
+            AfficherPopupRecompenseExploration(
+                gameManager,
+                equipe,
+                province,
+                gainPrestige,
+                artefactGagne
+            );
+        }
 
         if (artefactGagne != null)
         {

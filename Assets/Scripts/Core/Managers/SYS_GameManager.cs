@@ -11,6 +11,8 @@ public class SYS_GameManager : MonoBehaviour
     [SerializeField] private CFG_LevelProgression progressionConfigPersonnage;
     [SerializeField] private SYS_DebugEquipesRuntimeView debugEquipesRuntimeView;
     [SerializeField] private SYS_AutoPlayController autoPlayController;
+[SerializeField] private CFG_LevelProgression progressionConfigEquipe;
+
 
     [Header("Références UI")]
     [SerializeField] private HudController hudController;
@@ -63,7 +65,7 @@ public class SYS_GameManager : MonoBehaviour
     public IReadOnlyList<ENUM_Compagnie> OrdreTourCourant => ordreTourCourant;
     public int IndexJoueurActifTour => indexJoueurActifTour;
     public int MaxEquipesParJoueur => maxEquipesParJoueur;
-
+public CFG_LevelProgression ProgressionConfigEquipe => progressionConfigEquipe;
     public HudController HudController
     {
         get => hudController;
@@ -427,72 +429,74 @@ public class SYS_GameManager : MonoBehaviour
         );
     }
 
-    public bool CreerEquipePourJoueurHumain()
+   public bool CreerEquipePourJoueurHumain()
+{
+    DATA_JOUEUR humain = GetHumanPlayer();
+
+    if (humain == null)
     {
-        DATA_JOUEUR humain = GetHumanPlayer();
-
-        if (humain == null)
-        {
-            Debug.LogWarning("Aucun joueur humain trouvé.");
-            return false;
-        }
-
-        bool success = EquipeManagementService.CreerEquipePourJoueur(
-            humain,
-            EquipesRuntime,
-            modeleEquipeVide,
-            GetCoutCreationEquipe(humain),
-            maxEquipesParJoueur,
-            RulesService,
-            out STATE_EQUIPE _
-        );
-
-        if (!success)
-            return false;
-
-        SynchroniserHudAvecJoueurHumain();
-        RefreshToutLeHUD();
-        return true;
+        Debug.LogWarning("Aucun joueur humain trouvé.");
+        return false;
     }
 
-    public bool CreerEquipePourIA(DATA_JOUEUR joueur)
+    bool success = EquipeManagementService.CreerEquipePourJoueur(
+        humain,
+        EquipesRuntime,
+        modeleEquipeVide,
+        GetCoutCreationEquipe(humain),
+        maxEquipesParJoueur,
+        RulesService,
+        ProgressionConfigEquipe,
+        out STATE_EQUIPE _
+    );
+
+    if (!success)
+        return false;
+
+    SynchroniserHudAvecJoueurHumain();
+    RefreshToutLeHUD();
+    return true;
+}
+
+  public bool CreerEquipePourIA(DATA_JOUEUR joueur)
+{
+    if (joueur == null)
     {
-        if (joueur == null)
-        {
-            Debug.LogWarning("CreerEquipePourIA : joueur null.");
-            return false;
-        }
-
-        if (EquipeManagementService == null || RulesService == null)
-        {
-            Debug.LogWarning("CreerEquipePourIA : services de gestion d'équipe indisponibles.");
-            return false;
-        }
-
-        int coutCreation = GetCoutCreationEquipe(joueur);
-
-        bool success = EquipeManagementService.CreerEquipePourJoueur(
-            joueur,
-            EquipesRuntime,
-            modeleEquipeVide,
-            coutCreation,
-            maxEquipesParJoueur,
-            RulesService,
-            out STATE_EQUIPE nouvelleEquipe
-        );
-
-        if (!success)
-            return false;
-
-        Debug.Log(
-            $"[IA] Nouvelle équipe créée | joueur={joueur.nomJoueur} | " +
-            $"compagnie={joueur.compagnie} | " +
-            $"équipe={nouvelleEquipe?.data?.nomEquipe} | " +
-            $"coût={coutCreation}"
-        );
-
-        return true;
+        Debug.LogWarning("CreerEquipePourIA : joueur null.");
+        return false;
     }
+
+    if (EquipeManagementService == null || RulesService == null)
+    {
+        Debug.LogWarning("CreerEquipePourIA : services de gestion d'équipe indisponibles.");
+        return false;
+    }
+
+    int coutCreation = GetCoutCreationEquipe(joueur);
+
+    bool success = EquipeManagementService.CreerEquipePourJoueur(
+        joueur,
+        EquipesRuntime,
+        modeleEquipeVide,
+        coutCreation,
+        maxEquipesParJoueur,
+        RulesService,
+        ProgressionConfigEquipe,
+        out STATE_EQUIPE nouvelleEquipe
+    );
+
+    if (!success)
+        return false;
+
+    Debug.Log(
+        $"[IA] Nouvelle équipe créée | joueur={joueur.nomJoueur} | " +
+        $"compagnie={joueur.compagnie} | " +
+        $"équipe={nouvelleEquipe?.data?.nomEquipe} | " +
+        $"coût={coutCreation}"
+    );
+
+    return true;
+}
 
     public bool PeutRecruterCeTour(DATA_JOUEUR joueur)
     {
@@ -550,4 +554,20 @@ public class SYS_GameManager : MonoBehaviour
             ref indexJoueurActifTour
         );
     }
+    public DATA_JOUEUR GetJoueurProprietaireEquipe(STATE_EQUIPE equipe)
+{
+    if (equipe == null)
+        return null;
+
+    if (Joueur1 != null && Joueur1.equipes != null && Joueur1.equipes.Contains(equipe))
+        return Joueur1;
+
+    if (Joueur2 != null && Joueur2.equipes != null && Joueur2.equipes.Contains(equipe))
+        return Joueur2;
+
+    if (Joueur3 != null && Joueur3.equipes != null && Joueur3.equipes.Contains(equipe))
+        return Joueur3;
+
+    return GetDATA_JOUEURByCompagnie(equipe.compagnie);
+}
 }

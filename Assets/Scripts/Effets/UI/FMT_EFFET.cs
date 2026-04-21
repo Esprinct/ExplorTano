@@ -81,4 +81,61 @@ public static class FMT_EFFET
             default: return "?";
         }
     }
+    public static string BuildValeurAfficheeLongue(SCOBJ_EFFET effet)
+{
+    if (effet == null || effet.modificateurs == null || effet.modificateurs.Count == 0)
+        return "";
+
+    List<string> lignes = new();
+
+    foreach (DATA_StatModifier modificateur in effet.modificateurs)
+    {
+        if (modificateur == null || modificateur.stat == EffetENUM_Stats.Aucune || modificateur.valeur == 0)
+            continue;
+
+        string nomStat = GetNomLongStat(modificateur.stat);
+        string signe = modificateur.valeur >= 0 ? "+" : "";
+        string suffixe = modificateur.valeurType == EffetValeurType.Pourcentage ? "%" : "";
+
+        lignes.Add($"{nomStat} {signe}{modificateur.valeur}{suffixe}");
+    }
+
+    return string.Join("\n", lignes);
+}
+
+public static string GetNomLongStat(EffetENUM_Stats stat)
+{
+    switch (stat)
+    {
+        case EffetENUM_Stats.Force: return "Force";
+        case EffetENUM_Stats.Intelligence: return "Intelligence";
+        case EffetENUM_Stats.Dexterite: return "Dextérité";
+        case EffetENUM_Stats.Endurance: return "Endurance";
+
+        case EffetENUM_Stats.Curiosite: return "Curiosité";
+        case EffetENUM_Stats.Ingeniosite: return "Ingéniosité";
+        case EffetENUM_Stats.Combativite: return "Combativité";
+
+        case EffetENUM_Stats.ToursExploration: return "Tours d'exploration";
+        case EffetENUM_Stats.ToursConstruction: return "Tours de construction";
+        case EffetENUM_Stats.ToursVadrouille: return "Tours de vadrouille";
+
+        case EffetENUM_Stats.ChanceRelique: return "Chance d'artefact";
+        case EffetENUM_Stats.ChanceReliqueRare: return "Chance d'artefact rare";
+
+        case EffetENUM_Stats.BeneficesParTour: return "Bénéfices par tour";
+        case EffetENUM_Stats.GainEsterlinFinConstruction: return "Esterlin en fin de construction";
+        case EffetENUM_Stats.GainPrestigeFinConstruction: return "Prestige en fin de construction";
+
+        case EffetENUM_Stats.OccupationGainVadrouille: return "Occupation gagnée en vadrouille";
+        case EffetENUM_Stats.OccupationReductionAdverseVadrouille: return "Réduction d'occupation adverse";
+
+        case EffetENUM_Stats.Prestige: return "Prestige";
+        case EffetENUM_Stats.Influence: return "Influence";
+        case EffetENUM_Stats.Revenus: return "Revenus";
+        case EffetENUM_Stats.CoutExploration: return "Coût d'exploration";
+
+        default: return stat.ToString();
+    }
+}
 }

@@ -250,7 +250,7 @@ public class UI_PROVINCE_View : MonoBehaviour
         else
             Selectionner();
 
-        if (equipeDetailControllerCache != null && equipeDetailControllerCache.EstEnAttenteSelectionProvince())
+        if (equipeDetailControllerCache != null && equipeDetailControllerCache.EstEnAttenteSelectionProvince)
         {
             equipeDetailControllerCache.OnProvinceCliqueePourAffectation(STATE_PROVINCE);
             return;

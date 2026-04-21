@@ -47,7 +47,7 @@ public class SYS_GameInitializationService
             DATA_JOUEUR proprietaire = joueurs[indexAttribution % joueurs.Count];
             indexAttribution++;
 
-            STATE_EQUIPE equipeRuntime = CreerEquipeRuntime(equipeSource, proprietaire);
+            STATE_EQUIPE equipeRuntime = CreerEquipeRuntime(gameManager, equipeSource, proprietaire);
             if (equipeRuntime == null)
                 continue;
 
@@ -103,47 +103,69 @@ public class SYS_GameInitializationService
         return joueurs;
     }
 
-    private STATE_EQUIPE CreerEquipeRuntime(SCOBJ_EQUIPE equipeSource, DATA_JOUEUR proprietaire)
+  private STATE_EQUIPE CreerEquipeRuntime(SYS_GameManager gameManager, SCOBJ_EQUIPE equipeSource, DATA_JOUEUR proprietaire)
+{
+    if (equipeSource == null || proprietaire == null || gameManager == null)
+        return null;
+
+    SCOBJ_EQUIPE equipeRuntimeData = ScriptableObject.Instantiate(equipeSource);
+    equipeRuntimeData.name = $"{equipeSource.name}_Runtime";
+
+    List<SCOBJ_Personnage> membresRuntime = new();
+
+    if (equipeSource.membres != null)
     {
-        if (equipeSource == null || proprietaire == null)
-            return null;
-
-        SCOBJ_EQUIPE equipeRuntimeData = ScriptableObject.Instantiate(equipeSource);
-        equipeRuntimeData.name = $"{equipeSource.name}_Runtime";
-
-        List<SCOBJ_Personnage> membresRuntime = new();
-
-        if (equipeSource.membres != null)
+        foreach (SCOBJ_Personnage membre in equipeSource.membres)
         {
-            foreach (SCOBJ_Personnage membre in equipeSource.membres)
-            {
-                if (membre != null)
-                    membresRuntime.Add(membre);
-            }
+            if (membre != null)
+                membresRuntime.Add(membre);
         }
-
-        equipeRuntimeData.membres = new List<SCOBJ_Personnage>(membresRuntime);
-
-        STATE_EQUIPE equipeRuntime = new STATE_EQUIPE
-        {
-            data = equipeRuntimeData,
-            compagnie = proprietaire.compagnie,
-            niveauActuel = Mathf.Max(1, equipeSource.niveauDeBase),
-            provinceAffectee = null,
-            explorationEnCours = false,
-            explorationTerminee = false,
-            toursRestants = 0,
-            toursTotaux = 0,
-            affectationAutomatique = !proprietaire.estHumain,
-            lancementExplorationAutomatique = !proprietaire.estHumain,
-            membresActuels = new List<SCOBJ_Personnage>(membresRuntime),
-            objetsEquipes = new List<SCOBJ_OBJET_EQUIPPABLE>(),
-            consommables = new List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack>()
-        };
-
-        return equipeRuntime;
     }
 
+    equipeRuntimeData.membres = new List<SCOBJ_Personnage>(membresRuntime);
+
+    if (gameManager.ProgressionConfigEquipe == null)
+    {
+        Debug.LogWarning(
+            $"[CREATE_EQUIPE] ProgressionConfigEquipe est NULL pour {equipeSource.nomEquipe}"
+        );
+    }
+
+    STATE_EQUIPE equipeRuntime = new STATE_EQUIPE
+    {
+        data = equipeRuntimeData,
+        compagnie = proprietaire.compagnie,
+        niveauActuel = Mathf.Max(1, equipeSource.niveauDeBase),
+        provinceAffectee = null,
+        explorationEnCours = false,
+        explorationTerminee = false,
+        toursRestants = 0,
+        toursTotaux = 0,
+        affectationAutomatique = !proprietaire.estHumain,
+        lancementExplorationAutomatique = !proprietaire.estHumain,
+        membresActuels = new List<SCOBJ_Personnage>(membresRuntime),
+        objetsEquipes = new List<SCOBJ_OBJET_EQUIPPABLE>(),
+        consommables = new List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack>(),
+        progression = new STATE_LevelProgression(),
+        progressionConfig = gameManager.ProgressionConfigEquipe,
+
+        // très conseillé aussi
+        specialisation = equipeSource.specialisationInitiale,
+        dataSpecialisation = equipeSource.dataSpecialisationInitiale
+    };
+
+    equipeRuntime.progression.niveau = Mathf.Max(1, equipeSource.niveauDeBase);
+    equipeRuntime.niveauActuel = equipeRuntime.progression.niveau;
+
+    Debug.Log(
+        $"[CREATE_EQUIPE] runtime={equipeRuntime.data.nomEquipe} | " +
+        $"niveau={equipeRuntime.niveauActuel} | " +
+        $"progressionConfigNull={equipeRuntime.progressionConfig == null} | " +
+        $"specialisation={equipeRuntime.specialisation}"
+    );
+
+    return equipeRuntime;
+}
     private void AjouterMembresAuRosterDuJoueur(DATA_JOUEUR joueur, List<SCOBJ_Personnage> membres)
     {
         if (joueur == null || membres == null)

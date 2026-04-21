@@ -21,4 +21,5 @@ MonoBehaviour:
   specialisationParent: 30
   coutDeblocage: 1000
   actionPrincipale: 3
-  effets: []
+  effets:
+  - {fileID: 11400000, guid: 04109cb528eb90d4685054ee208909a5, type: 2}

@@ -255,39 +255,64 @@ private void GererCreationEquipesIA(SYS_GameManager gameManager, DATA_JOUEUR jou
         return false;
     }
 
-    private STATE_EQUIPE ConstruireNouvelleEquipe(SYS_GameManager gameManager, DATA_JOUEUR joueur)
+  private STATE_EQUIPE ConstruireNouvelleEquipe(SYS_GameManager gameManager, DATA_JOUEUR joueur)
+{
+    if (gameManager == null || joueur == null)
+        return null;
+
+    SCOBJ_EQUIPE dataEquipe = ScriptableObject.CreateInstance<SCOBJ_EQUIPE>();
+    if (dataEquipe == null)
+        return null;
+
+    int index = GetNombreEquipesValides(joueur) + 1;
+
+    dataEquipe.name = $"Equipe_IA_{joueur.compagnie}_{index}";
+    dataEquipe.nomEquipe = $"Équipe {joueur.compagnie} {index}";
+    dataEquipe.niveauDeBase = 1;
+    dataEquipe.membres = new List<SCOBJ_Personnage>();
+
+    STATE_EQUIPE equipe = new STATE_EQUIPE
     {
-        if (gameManager == null || joueur == null)
-            return null;
+        data = dataEquipe,
+        compagnie = joueur.compagnie,
+        niveauActuel = 1,
+        provinceAffectee = null,
+        explorationEnCours = false,
+        explorationTerminee = false,
+        toursRestants = 0,
+        toursTotaux = 0,
+        membresActuels = new List<SCOBJ_Personnage>(),
+        affectationAutomatique = true,
+        lancementExplorationAutomatique = true,
+        objetsEquipes = new List<SCOBJ_OBJET_EQUIPPABLE>(),
+        consommables = new List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack>(),
 
-        SCOBJ_EQUIPE dataEquipe = ScriptableObject.CreateInstance<SCOBJ_EQUIPE>();
-        if (dataEquipe == null)
-            return null;
+        // IMPORTANT
+        progression = new STATE_LevelProgression(),
+        progressionConfig = gameManager.ProgressionConfigEquipe,
 
-        int index = GetNombreEquipesValides(joueur) + 1;
+        // spécialisation par défaut
+        specialisation = ENUM_EQUIPE_SPECIALISATION.Reconnaissance,
+        dataSpecialisation = null
+    };
 
-        dataEquipe.name = $"Equipe_IA_{joueur.compagnie}_{index}";
-        dataEquipe.nomEquipe = $"Équipe {joueur.compagnie} {index}";
-        dataEquipe.niveauDeBase = 1;
-        dataEquipe.membres = new List<SCOBJ_Personnage>();
-
-        return new STATE_EQUIPE
-        {
-            data = dataEquipe,
-            compagnie = joueur.compagnie,
-            niveauActuel = 1,
-            provinceAffectee = null,
-            explorationEnCours = false,
-            explorationTerminee = false,
-            toursRestants = 0,
-            toursTotaux = 0,
-            membresActuels = new List<SCOBJ_Personnage>(),
-            affectationAutomatique = true,
-            lancementExplorationAutomatique = true,
-            objetsEquipes = new List<SCOBJ_OBJET_EQUIPPABLE>(),
-            consommables = new List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack>()
-        };
+    if (equipe.progression != null)
+    {
+        equipe.progression.niveau = 1;
+        equipe.progression.xpActuelle = 0;
+        equipe.progression.pointsDisponibles = 0;
     }
+
+    equipe.niveauActuel = 1;
+
+    Debug.Log(
+        $"[CREATE_EQUIPE_IA] runtime={equipe.data?.nomEquipe} | " +
+        $"progressionNull={equipe.progression == null} | " +
+        $"progressionConfigNull={equipe.progressionConfig == null}"
+    );
+
+    return equipe;
+}
 
     private int GetNombreEquipesValides(DATA_JOUEUR joueur)
     {
@@ -695,15 +720,35 @@ private bool ExisteEncoreDesZonesNeutresInteressantes(SYS_GameManager gameManage
             enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
         }
 
-        ENUM_EXPLORATION_Resultat resultat = CALC_EXPLORATION_Resolver.CalculerResultat(
-            stats,
-            config.toursBase,
-            config.coutParTourBase,
-            config.prestigeBase,
-            config.chanceArtefactBase,
-            config.chanceArtefactRareBase,
-            enclavement
-        );
+      DATA_JOUEUR joueur = gameManager.GetDATA_JOUEURByCompagnie(equipe.compagnie);
+
+int toursModifies = SVC_EQUIPE_ExplorationEffects.GetToursBaseModifies(
+    equipe,
+    joueur,
+    config.toursBase
+);
+
+float chanceArtefactModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactModifiee(
+    equipe,
+    joueur,
+    config.chanceArtefactBase
+);
+
+float chanceArtefactRareModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactRareModifiee(
+    equipe,
+    joueur,
+    config.chanceArtefactRareBase
+);
+
+ENUM_EXPLORATION_Resultat resultat = CALC_EXPLORATION_Resolver.CalculerResultat(
+    stats,
+    toursModifies,
+    config.coutParTourBase,
+    config.prestigeBase,
+    chanceArtefactModifiee,
+    chanceArtefactRareModifiee,
+    enclavement
+);
 
         return resultat != null ? resultat.coutTotal : 0;
     }
