@@ -52,31 +52,64 @@ public static class SVC_EQUIPE_ActionRulesService
         }
     }
 
-    public static string GetNomActionPrincipale(STATE_EQUIPE equipe)
+    public static ENUM_EQUIPE_ACTION GetActionPrincipale(STATE_EQUIPE equipe)
     {
         if (PeutVadrouiller(equipe))
-            return "Démarrer la vadrouille";
+            return ENUM_EQUIPE_ACTION.Vadrouille;
 
         if (PeutConstruire(equipe))
-            return "Démarrer la construction";
+            return ENUM_EQUIPE_ACTION.Construction;
 
         if (PeutExplorer(equipe))
-            return "Démarrer l'exploration";
+            return ENUM_EQUIPE_ACTION.Exploration;
 
-        return "Aucune action";
+        return ENUM_EQUIPE_ACTION.Aucune;
+    }
+
+    public static string GetNomActionPrincipale(STATE_EQUIPE equipe)
+    {
+        switch (GetActionPrincipale(equipe))
+        {
+            case ENUM_EQUIPE_ACTION.Vadrouille:
+                return "Démarrer la vadrouille";
+
+            case ENUM_EQUIPE_ACTION.Construction:
+                return "Démarrer la construction";
+
+            case ENUM_EQUIPE_ACTION.Exploration:
+                return "Démarrer l'exploration";
+
+            default:
+                return "Aucune action";
+        }
     }
 
     public static string GetNomAffectation(STATE_EQUIPE equipe)
     {
-        if (PeutVadrouiller(equipe))
-            return "Affecter à une province à sécuriser";
+        switch (GetActionPrincipale(equipe))
+        {
+            case ENUM_EQUIPE_ACTION.Vadrouille:
+                return "Affecter à une province à sécuriser";
 
-        if (PeutConstruire(equipe))
-            return "Affecter à une province à construire";
+            case ENUM_EQUIPE_ACTION.Construction:
+                return "Affecter à une province à construire";
 
-        if (PeutExplorer(equipe))
-            return "Affecter à une province à explorer";
+            case ENUM_EQUIPE_ACTION.Exploration:
+                return "Affecter à une province à explorer";
 
-        return "Affecter à une province";
+            default:
+                return "Affecter à une province";
+        }
+    }
+
+    public static bool PeutDemarrerAction(STATE_EQUIPE equipe)
+    {
+        if (equipe == null)
+            return false;
+
+        if (equipe.AUneActionEnCours)
+            return false;
+
+        return GetActionPrincipale(equipe) != ENUM_EQUIPE_ACTION.Aucune;
     }
 }

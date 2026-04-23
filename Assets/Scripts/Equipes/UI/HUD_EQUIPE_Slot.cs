@@ -12,34 +12,27 @@ public class HUD_EQUIPE_Slot : MonoBehaviour
     [SerializeField] private TMP_Text nomProvince;
     [SerializeField] private Button button;
     [SerializeField] private TMP_Text progressionExplorationText;
+    [SerializeField] private TMP_Text autoActionText;
 
-    private DATA_EQUIPE_DetailData SCOBJ_EQUIPE;
+    private DATA_EQUIPE_DetailData equipeData;
     private STATE_EQUIPE equipeSource;
     private UI_EQUIPE_DetailController equipeDetailController;
 
     private void Awake()
     {
         if (button == null)
-        {
             button = GetComponentInChildren<Button>();
-        }
 
         if (button != null)
-        {
             button.onClick.AddListener(OnClickSlot);
-        }
         else
-        {
             Debug.LogWarning("Aucun Button trouvé dans HUD_EQUIPE_Slot.");
-        }
     }
 
     private void OnDestroy()
     {
         if (button != null)
-        {
             button.onClick.RemoveListener(OnClickSlot);
-        }
     }
 
     public void SetDetailController(UI_EQUIPE_DetailController controller)
@@ -49,7 +42,7 @@ public class HUD_EQUIPE_Slot : MonoBehaviour
 
     public void Refresh(DATA_EQUIPE_DetailData data)
     {
-        SCOBJ_EQUIPE = data;
+        equipeData = data;
         equipeSource = data != null ? data.source : null;
 
         if (data == null)
@@ -67,9 +60,7 @@ public class HUD_EQUIPE_Slot : MonoBehaviour
         }
 
         if (niveauEquipeText != null)
-        {
             niveauEquipeText.text = $"Nv {data.niveau}";
-        }
 
         if (nomProvince != null)
         {
@@ -79,54 +70,64 @@ public class HUD_EQUIPE_Slot : MonoBehaviour
         }
 
         if (statutExplorationText != null)
-        {
             statutExplorationText.text = data.statutExploration;
+
+        if (autoActionText != null)
+        {
+            autoActionText.gameObject.SetActive(data.lancementActionAutomatique);
+            autoActionText.text = data.lancementActionAutomatique ? "Auto" : "";
         }
 
-        RefreshExplorationProgress(data);
+        RefreshActionProgress(data);
 
         if (button != null)
-        {
             button.interactable = equipeSource != null;
+    }
+
+    private void RefreshActionProgress(DATA_EQUIPE_DetailData data)
+    {
+        if (explorationSlider == null)
+            return;
+
+        bool afficherProgression =
+            data != null &&
+            data.actionEnCours &&
+            data.toursTotaux > 0;
+
+        explorationSlider.gameObject.SetActive(afficherProgression);
+
+        if (!afficherProgression)
+        {
+            explorationSlider.minValue = 0f;
+            explorationSlider.maxValue = 1f;
+            explorationSlider.value = 0f;
+
+            if (progressionExplorationText != null)
+                progressionExplorationText.text = "";
+
+            return;
+        }
+
+        int toursEffectues = data.toursTotaux - data.toursRestants;
+        toursEffectues = Mathf.Clamp(toursEffectues, 0, data.toursTotaux);
+
+        explorationSlider.minValue = 0f;
+        explorationSlider.maxValue = Mathf.Max(1, data.toursTotaux);
+        explorationSlider.value = toursEffectues;
+
+        if (progressionExplorationText != null)
+        {
+            string nomAction = string.IsNullOrWhiteSpace(data.nomActionEnCours)
+                ? "Action"
+                : data.nomActionEnCours;
+
+            progressionExplorationText.text = $"{nomAction} {toursEffectues} / {data.toursTotaux}";
         }
     }
-
-   private void RefreshExplorationProgress(DATA_EQUIPE_DetailData data)
-{
-    if (explorationSlider == null)
-        return;
-
-    bool actionEnCours =
-        data != null &&
-        (data.explorationEnCours || data.vadrouilleEnCours) &&
-        data.toursTotaux > 0;
-
-    explorationSlider.gameObject.SetActive(actionEnCours);
-
-    if (!actionEnCours)
-    {
-        if (progressionExplorationText != null)
-            progressionExplorationText.text = "";
-
-        return;
-    }
-
-    int toursEffectues = data.toursTotaux - data.toursRestants;
-
-    explorationSlider.minValue = 0f;
-    explorationSlider.maxValue = data.toursTotaux;
-    explorationSlider.value = Mathf.Clamp(toursEffectues, 0, data.toursTotaux);
-
-    if (progressionExplorationText != null)
-    {
-        string prefixe = data.vadrouilleEnCours ? "Vadrouille" : "Exploration";
-        progressionExplorationText.text = $"{prefixe} {toursEffectues} / {data.toursTotaux}";
-    }
-}
 
     public void Hide()
     {
-        SCOBJ_EQUIPE = null;
+        equipeData = null;
         equipeSource = null;
         gameObject.SetActive(false);
     }

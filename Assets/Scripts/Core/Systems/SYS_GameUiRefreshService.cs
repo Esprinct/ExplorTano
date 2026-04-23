@@ -8,31 +8,48 @@ public class SYS_GameUiRefreshService
     private UI_PROVINCE_MenuController provinceMenuControllerCache;
 
     private DATA_EQUIPE_DetailData BuildDATA_EQUIPE_DetailData(STATE_EQUIPE equipe)
-{
-    return new DATA_EQUIPE_DetailData
     {
-        source = equipe,
-        nomEquipe = equipe.data != null ? equipe.data.nomEquipe : "Equipe",
-        nomProvince = equipe.provinceAffectee != null && equipe.provinceAffectee.data != null
-            ? equipe.provinceAffectee.data.nom
-            : "Aucune province",
-        portraitChef = equipe.data != null ? equipe.data.portraitChef : null,
-        niveau = equipe.niveauActuel,
+        bool explorationEnCours = equipe != null && equipe.explorationEnCours;
+        bool vadrouilleEnCours = equipe != null && equipe.vadrouilleEnCours;
+        bool actionEnCours = explorationEnCours || vadrouilleEnCours;
 
-        explorationEnCours = equipe.explorationEnCours,
-        vadrouilleEnCours = equipe.vadrouilleEnCours,
+        string nomActionEnCours = "";
+        if (vadrouilleEnCours)
+            nomActionEnCours = "Vadrouille";
+        else if (explorationEnCours)
+            nomActionEnCours = "Exploration";
 
-        toursRestants = equipe.toursRestants,
-        toursTotaux = equipe.toursTotaux,
+        string statut = "Non affectée";
+        if (vadrouilleEnCours)
+            statut = "Vadrouille en cours";
+        else if (explorationEnCours)
+            statut = "Exploration en cours";
+        else if (equipe != null && equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
+            statut = "Affectée";
 
-        statutExploration =
-            equipe.vadrouilleEnCours
-                ? "Vadrouille en cours"
-                : equipe.explorationEnCours
-                    ? "Exploration en cours"
-                    : (equipe.provinceAffectee == null ? "Non affectée" : "Affectée")
-    };
-}
+        return new DATA_EQUIPE_DetailData
+        {
+            source = equipe,
+            nomEquipe = equipe != null && equipe.data != null ? equipe.data.nomEquipe : "Equipe",
+            nomProvince = equipe != null && equipe.provinceAffectee != null && equipe.provinceAffectee.data != null
+                ? equipe.provinceAffectee.data.nom
+                : "Aucune province",
+            portraitChef = equipe != null && equipe.data != null ? equipe.data.portraitChef : null,
+            niveau = equipe != null ? equipe.niveauActuel : 1,
+
+            explorationEnCours = explorationEnCours,
+            vadrouilleEnCours = vadrouilleEnCours,
+            actionEnCours = actionEnCours,
+            nomActionEnCours = nomActionEnCours,
+
+            lancementActionAutomatique = equipe != null && equipe.lancementExplorationAutomatique,
+
+            toursRestants = equipe != null ? equipe.toursRestants : 0,
+            toursTotaux = equipe != null ? equipe.toursTotaux : 0,
+
+            statutExploration = statut
+        };
+    }
 
     public void RefreshToutLeHUD(SYS_GameManager gameManager)
     {

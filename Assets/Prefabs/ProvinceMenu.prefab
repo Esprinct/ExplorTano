@@ -673,9 +673,9 @@ MonoBehaviour:
   explorationText: {fileID: 2058512030303814604}
   toursRestantsText: {fileID: 0}
   illustrationProvinceImage: {fileID: 0}
-  influenceMaizinText: {fileID: 1323982714070476680}
-  influenceKiniaText: {fileID: 313276287108269021}
-  influenceJohoText: {fileID: 5410226185069356950}
+  influenceMaizinText: {fileID: 4375757913502007915}
+  influenceKiniaText: {fileID: 6856676289065372830}
+  influenceJohoText: {fileID: 9147504336075124489}
   influenceAutreText: {fileID: 2716869431625543173}
   populationShikiText: {fileID: 1353623930861536236}
   populationFrisienText: {fileID: 2535753787049982937}

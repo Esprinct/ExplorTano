@@ -377,23 +377,38 @@ TurnSystem = new SYS_TurnSystem(ExplorationSystem, VadrouilleSystem, InfluenceSy
         SynchroniserHudAvecJoueurHumain();
         RefreshToutLeHUD();
     }
-public void DemarrerVadrouille(STATE_EQUIPE equipe)
+public void DemarrerVadrouille(SYS_GameManager gameManager, STATE_EQUIPE equipe, ENUM_Compagnie compagnie)
 {
-    if (VadrouilleSystem == null)
-    {
-        Debug.LogWarning("VadrouilleSystem introuvable.");
+    if (gameManager == null || equipe == null)
         return;
-    }
 
-    if (equipe == null)
-    {
-        Debug.LogWarning("DemarrerVadrouille : équipe null.");
-        return;
-    }
+    equipe.compagnie = compagnie;
+    equipe.vadrouilleEnCours = true;
+    equipe.explorationEnCours = false;
+    equipe.explorationTerminee = false;
 
-    VadrouilleSystem.DemarrerVadrouille(this, equipe, equipe.compagnie);
-    SynchroniserHudAvecJoueurHumain();
-    RefreshToutLeHUD();
+    VadrouilleConfig config = gameManager.VadrouilleConfig;
+    DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
+
+    int toursBase = config != null ? config.toursBase : 1;
+
+    int toursFinaux = SVC_EQUIPE_VadrouilleEffects.GetToursVadrouilleFinals(
+        equipe,
+        joueur,
+        toursBase
+    );
+
+    toursFinaux = Mathf.Max(1, toursFinaux);
+
+    equipe.toursTotaux = toursFinaux;
+    equipe.toursRestants = toursFinaux;
+
+    Debug.Log(
+        $"[DEMARRAGE_VADROUILLE] equipe={equipe.data?.nomEquipe} | " +
+        $"tours={equipe.toursRestants}/{equipe.toursTotaux}"
+    );
+
+    gameManager.UiSystem?.RefreshToutLeHUD(gameManager);
 }
     public void RefreshToutLeHUD()
     {

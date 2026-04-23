@@ -272,31 +272,53 @@ private int CalculerCoutLancementVadrouille()
         }
     }
 
-    private void OnToggleAffectationAutomatiqueChanged(bool value)
-    {
-        if (equipeActuelle == null)
-            return;
+   private void OnToggleAffectationAutomatiqueChanged(bool value)
+{
+    if (equipeActuelle == null)
+        return;
 
-        equipeActuelle.affectationAutomatique = value;
+    bool actionEnCours = equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours;
+
+    if (actionEnCours && value)
+    {
+        if (toggleAffectationAutomatique != null)
+            toggleAffectationAutomatique.SetIsOnWithoutNotify(equipeActuelle.affectationAutomatique);
+
+        Debug.LogWarning("Impossible d'activer l'affectation automatique pendant une action en cours.");
+        return;
     }
 
-    private void OnToggleLancementAutomatiqueChanged(bool value)
+    equipeActuelle.affectationAutomatique = value;
+}
+
+   private void OnToggleLancementAutomatiqueChanged(bool value)
+{
+    if (equipeActuelle == null)
+        return;
+
+    bool actionEnCours = equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours;
+
+    if (actionEnCours && value)
     {
-        if (equipeActuelle == null)
-            return;
+        if (toggleLancementExplorationAutomatique != null)
+            toggleLancementExplorationAutomatique.SetIsOnWithoutNotify(equipeActuelle.lancementExplorationAutomatique);
 
-        equipeActuelle.lancementExplorationAutomatique = value;
-
-        if (value)
-        {
-            equipeActuelle.affectationAutomatique = true;
-
-            if (toggleAffectationAutomatique != null)
-            {
-                toggleAffectationAutomatique.SetIsOnWithoutNotify(true);
-            }
-        }
+        Debug.LogWarning("Impossible d'activer le lancement automatique pendant une action en cours.");
+        return;
     }
+
+    equipeActuelle.lancementExplorationAutomatique = value;
+
+    if (value)
+    {
+        equipeActuelle.affectationAutomatique = true;
+
+        if (toggleAffectationAutomatique != null)
+            toggleAffectationAutomatique.SetIsOnWithoutNotify(true);
+    }
+
+    RefreshEtatBoutons();
+}
 
     public void OpenEquipeMenu(STATE_EQUIPE equipe)
     {
@@ -357,124 +379,143 @@ private int CalculerCoutLancementVadrouille()
         RefreshEtatBoutons();
     }
 
-    private void RefreshEtatBoutons()
-    {
-        bool equipeValide = equipeActuelle != null && equipeActuelle.data != null;
-bool actionEnCours =
-    equipeValide &&
-    (equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours);
-
-bool peutExplorer = SVC_EQUIPE_ActionRulesService.PeutExplorer(equipeActuelle);
-bool peutConstruire = SVC_EQUIPE_ActionRulesService.PeutConstruire(equipeActuelle);
-bool peutVadrouiller = SVC_EQUIPE_ActionRulesService.PeutVadrouiller(equipeActuelle);
-bool peutFaireAction = peutExplorer || peutConstruire || peutVadrouiller;
-
-int coutLancement = peutVadrouiller
-    ? CalculerCoutLancementVadrouille()
-    : CalculerCoutLancementExploration();
-
-bool aLesFonds = !JoueurHumainAPasAssezFonds(coutLancement);
-
-
-        bool aDesMembres =
-            equipeValide &&
-            equipeActuelle.membresActuels != null &&
-            equipeActuelle.membresActuels.Exists(p => p != null);
-
-        bool explorationEnCours =
-            equipeValide &&
-            equipeActuelle.explorationEnCours;
-
-        bool provinceAffectee =
-            equipeValide &&
-            equipeActuelle.provinceAffectee != null &&
-            equipeActuelle.provinceAffectee.data != null;
-
-        bool boutonAffecterInteractable =
-            equipeValide &&
-            aDesMembres &&
-            !enAttenteSelectionProvince &&
-            !explorationEnCours;
-
-       bool boutonDemarrerInteractable =
-    equipeValide &&
-    peutFaireAction &&
-    aDesMembres &&
-    provinceAffectee &&
-    !enAttenteSelectionProvince &&
-    !explorationEnCours &&
-    aLesFonds;
-
-        if (boutonAffecterProvince != null)
-            boutonAffecterProvince.interactable = boutonAffecterInteractable;
-
-        if (boutonDemarrerExploration != null)
-            boutonDemarrerExploration.interactable = boutonDemarrerInteractable;
-
-      if (boutonAffecterProvinceText != null)
+   private void RefreshEtatBoutons()
 {
-    boutonAffecterProvinceText.text = SVC_EQUIPE_ActionRulesService.GetNomAffectation(equipeActuelle);
-    boutonAffecterProvinceText.color = boutonAffecterInteractable
-        ? couleurTexteBoutonActif
-        : couleurTexteBoutonInactif;
-}
+    bool equipeValide = equipeActuelle != null && equipeActuelle.data != null;
 
-if (boutonDemarrerExplorationText != null)
-{
+    bool aDesMembres =
+        equipeValide &&
+        equipeActuelle.membresActuels != null &&
+        equipeActuelle.membresActuels.Exists(p => p != null);
+
+    bool actionEnCours =
+        equipeValide &&
+        (equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours);
+
+    bool provinceAffectee =
+        equipeValide &&
+        equipeActuelle.provinceAffectee != null &&
+        equipeActuelle.provinceAffectee.data != null;
+
+    bool peutExplorer = SVC_EQUIPE_ActionRulesService.PeutExplorer(equipeActuelle);
+    bool peutConstruire = SVC_EQUIPE_ActionRulesService.PeutConstruire(equipeActuelle);
+    bool peutVadrouiller = SVC_EQUIPE_ActionRulesService.PeutVadrouiller(equipeActuelle);
+    bool peutFaireAction = peutExplorer || peutConstruire || peutVadrouiller;
+
     string labelAction = SVC_EQUIPE_ActionRulesService.GetNomActionPrincipale(equipeActuelle);
-    boutonDemarrerExplorationText.text = $"{labelAction} ({coutLancement})";
-    boutonDemarrerExplorationText.color = boutonDemarrerInteractable
-        ? couleurTexteBoutonActif
-        : couleurTexteBoutonInactif;
-}
 
-        if (boutonAjouterPersonnage != null)
+    int coutLancement = 0;
+    if (peutVadrouiller)
+        coutLancement = CalculerCoutLancementVadrouille();
+    else if (peutExplorer)
+        coutLancement = CalculerCoutLancementExploration();
+
+    bool aLesFonds = !JoueurHumainAPasAssezFonds(coutLancement);
+
+    bool boutonAffecterInteractable =
+        equipeValide &&
+        aDesMembres &&
+        !enAttenteSelectionProvince &&
+        !actionEnCours;
+
+    bool boutonDemarrerInteractable =
+        equipeValide &&
+        peutFaireAction &&
+        aDesMembres &&
+        provinceAffectee &&
+        !enAttenteSelectionProvince &&
+        !actionEnCours &&
+        aLesFonds;
+
+    if (boutonAffecterProvince != null)
+        boutonAffecterProvince.interactable = boutonAffecterInteractable;
+
+    if (boutonDemarrerExploration != null)
+        boutonDemarrerExploration.interactable = boutonDemarrerInteractable;
+
+    if (boutonAffecterProvinceText != null)
+    {
+        boutonAffecterProvinceText.text = SVC_EQUIPE_ActionRulesService.GetNomAffectation(equipeActuelle);
+        boutonAffecterProvinceText.color = boutonAffecterInteractable
+            ? couleurTexteBoutonActif
+            : couleurTexteBoutonInactif;
+    }
+
+    if (boutonDemarrerExplorationText != null)
+    {
+        if (actionEnCours)
         {
-            boutonAjouterPersonnage.interactable = equipeValide && !explorationEnCours;
+            if (equipeActuelle.vadrouilleEnCours)
+                boutonDemarrerExplorationText.text = "Vadrouille en cours";
+            else if (equipeActuelle.explorationEnCours)
+                boutonDemarrerExplorationText.text = "Exploration en cours";
+            else
+                boutonDemarrerExplorationText.text = "Action en cours";
+        }
+        else
+        {
+            boutonDemarrerExplorationText.text = $"{labelAction} ({coutLancement})";
         }
 
-if (modificationsVerrouilleesText != null)
-{
-    bool afficherMessage =
-        actionEnCours ||
-        enAttenteSelectionProvince ||
-        (aDesMembres && !provinceAffectee) ||
-        (provinceAffectee && !aLesFonds);
+        boutonDemarrerExplorationText.color = boutonDemarrerInteractable
+            ? couleurTexteBoutonActif
+            : couleurTexteBoutonInactif;
+    }
 
-    modificationsVerrouilleesText.gameObject.SetActive(afficherMessage);
+    if (boutonAjouterPersonnage != null)
+        boutonAjouterPersonnage.interactable = equipeValide && !actionEnCours;
 
-    if (actionEnCours)
+ if (toggleAffectationAutomatique != null)
+    toggleAffectationAutomatique.interactable = equipeValide;
+
+if (toggleLancementExplorationAutomatique != null)
+    toggleLancementExplorationAutomatique.interactable = equipeValide;
+
+    if (modificationsVerrouilleesText != null)
     {
-        modificationsVerrouilleesText.text = "Action en cours : modifications verrouillées";
+        bool afficherMessage =
+            actionEnCours ||
+            enAttenteSelectionProvince ||
+            (aDesMembres && !provinceAffectee) ||
+            (provinceAffectee && !aLesFonds);
+
+        modificationsVerrouilleesText.gameObject.SetActive(afficherMessage);
+
+        if (actionEnCours)
+        {
+            modificationsVerrouilleesText.text = "Action en cours : modifications verrouillées";
+        }
+        else if (enAttenteSelectionProvince)
+        {
+            modificationsVerrouilleesText.text = "Sélectionnez une province à affecter";
+        }
+        else if (aDesMembres && !provinceAffectee)
+        {
+            if (peutVadrouiller)
+                modificationsVerrouilleesText.text = "Affectez une province pour lancer la vadrouille";
+            else if (peutConstruire)
+                modificationsVerrouilleesText.text = "Affectez une province pour lancer la construction";
+            else
+                modificationsVerrouilleesText.text = "Affectez une province pour lancer l'exploration";
+        }
+        else if (provinceAffectee && !aLesFonds)
+        {
+            modificationsVerrouilleesText.text = $"Fonds insuffisants : {coutLancement} Etrinium requis";
+        }
     }
-    else if (enAttenteSelectionProvince)
-    {
-        modificationsVerrouilleesText.text = "Sélectionnez une province à affecter";
-    }
-    else if (aDesMembres && !provinceAffectee)
-    {
-        if (peutVadrouiller)
-            modificationsVerrouilleesText.text = "Affectez une province pour lancer la vadrouille";
-        else if (peutConstruire)
-            modificationsVerrouilleesText.text = "Affectez une province pour lancer la construction";
-        else
-            modificationsVerrouilleesText.text = "Affectez une province pour lancer l'exploration";
-    }
-    else if (provinceAffectee && !aLesFonds)
-    {
-        modificationsVerrouilleesText.text = $"Fonds insuffisants : {coutLancement} Etrinium requis";
-    }
+
+    Debug.Log(
+        $"[ACTION_EQUIPE] equipe={equipeActuelle?.data?.nomEquipe} | " +
+        $"specialisation={equipeActuelle?.specialisation} | " +
+        $"peutExplorer={peutExplorer} | " +
+        $"peutConstruire={peutConstruire} | " +
+        $"peutVadrouiller={peutVadrouiller} | " +
+        $"actionEnCours={actionEnCours} | " +
+        $"tours={equipeActuelle?.toursRestants}/{equipeActuelle?.toursTotaux}"
+    );
+
+    RefreshBoutonSpecialisation();
 }
-Debug.Log(
-    $"[ACTION_EQUIPE] equipe={equipeActuelle?.data?.nomEquipe} | " +
-    $"specialisation={equipeActuelle?.specialisation} | " +
-    $"peutExplorer={SVC_EQUIPE_ActionRulesService.PeutExplorer(equipeActuelle)} | " +
-    $"peutConstruire={SVC_EQUIPE_ActionRulesService.PeutConstruire(equipeActuelle)} | " +
-    $"peutVadrouiller={SVC_EQUIPE_ActionRulesService.PeutVadrouiller(equipeActuelle)}"
-);
-
-        RefreshBoutonSpecialisation();
-    }
 
   private void RefreshBoutonSpecialisation()
 {
@@ -784,14 +825,22 @@ private void ConfirmerDemarrageVadrouille()
 
     if (gameManager != null)
     {
-        gameManager.DemarrerVadrouille(equipeActuelle);
+        gameManager.DemarrerVadrouille(gameManager, equipeActuelle, equipeActuelle.compagnie);
         gameManager.RefreshToutLeHUD();
     }
     else
     {
-        equipeActuelle.vadrouilleEnCours = true;
+           equipeActuelle.vadrouilleEnCours = true;
+    equipeActuelle.toursTotaux = 1;
+    equipeActuelle.toursRestants = 1;
     }
-
+Debug.Log(
+    $"[VADROUILLE_RUNTIME] enCours={equipeActuelle.vadrouilleEnCours} | " +
+    $"restants={equipeActuelle.toursRestants} | " +
+    $"totaux={equipeActuelle.toursTotaux} | " +
+    $"autoAffect={equipeActuelle.affectationAutomatique} | " +
+    $"autoAction={equipeActuelle.lancementExplorationAutomatique}"
+);
     RefreshVueComplete();
 }
 
