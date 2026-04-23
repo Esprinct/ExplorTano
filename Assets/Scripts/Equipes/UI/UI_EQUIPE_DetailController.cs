@@ -291,21 +291,10 @@ private int CalculerCoutLancementVadrouille()
     equipeActuelle.affectationAutomatique = value;
 }
 
-   private void OnToggleLancementAutomatiqueChanged(bool value)
+  private void OnToggleLancementAutomatiqueChanged(bool value)
 {
     if (equipeActuelle == null)
         return;
-
-    bool actionEnCours = equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours;
-
-    if (actionEnCours && value)
-    {
-        if (toggleLancementExplorationAutomatique != null)
-            toggleLancementExplorationAutomatique.SetIsOnWithoutNotify(equipeActuelle.lancementExplorationAutomatique);
-
-        Debug.LogWarning("Impossible d'activer le lancement automatique pendant une action en cours.");
-        return;
-    }
 
     equipeActuelle.lancementExplorationAutomatique = value;
 
@@ -379,7 +368,7 @@ private int CalculerCoutLancementVadrouille()
         RefreshEtatBoutons();
     }
 
-   private void RefreshEtatBoutons()
+  private void RefreshEtatBoutons()
 {
     bool equipeValide = equipeActuelle != null && equipeActuelle.data != null;
 
@@ -390,25 +379,33 @@ private int CalculerCoutLancementVadrouille()
 
     bool actionEnCours =
         equipeValide &&
-        (equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours);
+        equipeActuelle.AUneActionEnCours;
 
     bool provinceAffectee =
         equipeValide &&
         equipeActuelle.provinceAffectee != null &&
         equipeActuelle.provinceAffectee.data != null;
 
-    bool peutExplorer = SVC_EQUIPE_ActionRulesService.PeutExplorer(equipeActuelle);
-    bool peutConstruire = SVC_EQUIPE_ActionRulesService.PeutConstruire(equipeActuelle);
-    bool peutVadrouiller = SVC_EQUIPE_ActionRulesService.PeutVadrouiller(equipeActuelle);
-    bool peutFaireAction = peutExplorer || peutConstruire || peutVadrouiller;
+    ENUM_EQUIPE_ACTION actionPrincipale = SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipeActuelle);
+    bool peutFaireAction = actionPrincipale != ENUM_EQUIPE_ACTION.Aucune;
 
     string labelAction = SVC_EQUIPE_ActionRulesService.GetNomActionPrincipale(equipeActuelle);
 
     int coutLancement = 0;
-    if (peutVadrouiller)
-        coutLancement = CalculerCoutLancementVadrouille();
-    else if (peutExplorer)
-        coutLancement = CalculerCoutLancementExploration();
+    switch (actionPrincipale)
+    {
+        case ENUM_EQUIPE_ACTION.Vadrouille:
+            coutLancement = CalculerCoutLancementVadrouille();
+            break;
+
+        case ENUM_EQUIPE_ACTION.Exploration:
+            coutLancement = CalculerCoutLancementExploration();
+            break;
+
+        case ENUM_EQUIPE_ACTION.Construction:
+            coutLancement = 0;
+            break;
+    }
 
     bool aLesFonds = !JoueurHumainAPasAssezFonds(coutLancement);
 
@@ -445,12 +442,21 @@ private int CalculerCoutLancementVadrouille()
     {
         if (actionEnCours)
         {
-            if (equipeActuelle.vadrouilleEnCours)
-                boutonDemarrerExplorationText.text = "Vadrouille en cours";
-            else if (equipeActuelle.explorationEnCours)
-                boutonDemarrerExplorationText.text = "Exploration en cours";
-            else
-                boutonDemarrerExplorationText.text = "Action en cours";
+            switch (equipeActuelle.actionEnCours)
+            {
+                case ENUM_EQUIPE_ACTION.Vadrouille:
+                    boutonDemarrerExplorationText.text = "Vadrouille en cours";
+                    break;
+                case ENUM_EQUIPE_ACTION.Construction:
+                    boutonDemarrerExplorationText.text = "Construction en cours";
+                    break;
+                case ENUM_EQUIPE_ACTION.Exploration:
+                    boutonDemarrerExplorationText.text = "Exploration en cours";
+                    break;
+                default:
+                    boutonDemarrerExplorationText.text = "Action en cours";
+                    break;
+            }
         }
         else
         {
@@ -465,11 +471,11 @@ private int CalculerCoutLancementVadrouille()
     if (boutonAjouterPersonnage != null)
         boutonAjouterPersonnage.interactable = equipeValide && !actionEnCours;
 
- if (toggleAffectationAutomatique != null)
-    toggleAffectationAutomatique.interactable = equipeValide;
+    if (toggleAffectationAutomatique != null)
+        toggleAffectationAutomatique.interactable = equipeValide;
 
-if (toggleLancementExplorationAutomatique != null)
-    toggleLancementExplorationAutomatique.interactable = equipeValide;
+    if (toggleLancementExplorationAutomatique != null)
+        toggleLancementExplorationAutomatique.interactable = equipeValide;
 
     if (modificationsVerrouilleesText != null)
     {
@@ -491,12 +497,7 @@ if (toggleLancementExplorationAutomatique != null)
         }
         else if (aDesMembres && !provinceAffectee)
         {
-            if (peutVadrouiller)
-                modificationsVerrouilleesText.text = "Affectez une province pour lancer la vadrouille";
-            else if (peutConstruire)
-                modificationsVerrouilleesText.text = "Affectez une province pour lancer la construction";
-            else
-                modificationsVerrouilleesText.text = "Affectez une province pour lancer l'exploration";
+            modificationsVerrouilleesText.text = "Affectez une province pour lancer l'action";
         }
         else if (provinceAffectee && !aLesFonds)
         {
@@ -504,19 +505,8 @@ if (toggleLancementExplorationAutomatique != null)
         }
     }
 
-    Debug.Log(
-        $"[ACTION_EQUIPE] equipe={equipeActuelle?.data?.nomEquipe} | " +
-        $"specialisation={equipeActuelle?.specialisation} | " +
-        $"peutExplorer={peutExplorer} | " +
-        $"peutConstruire={peutConstruire} | " +
-        $"peutVadrouiller={peutVadrouiller} | " +
-        $"actionEnCours={actionEnCours} | " +
-        $"tours={equipeActuelle?.toursRestants}/{equipeActuelle?.toursTotaux}"
-    );
-
     RefreshBoutonSpecialisation();
 }
-
   private void RefreshBoutonSpecialisation()
 {
     if (boutonSpecialisation == null)
@@ -852,128 +842,124 @@ Debug.Log(
         }
     }
 
-    private void OuvrirInventairePourAjout()
+ private void OuvrirInventairePourAjout()
+{
+    if (equipeActuelle == null || equipeActuelle.data == null)
     {
-        if (equipeActuelle == null || equipeActuelle.data == null)
-        {
-            Debug.LogWarning("Aucune équipe ouverte.");
-            return;
-        }
+        Debug.LogWarning("Aucune équipe ouverte.");
+        return;
+    }
 
-        if (equipeActuelle.explorationEnCours)
-        {
-            Debug.LogWarning("Impossible d'ajouter un personnage pendant une exploration.");
-            return;
-        }
+    if (equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours)
+    {
+        Debug.LogWarning("Impossible d'ajouter un personnage pendant une action en cours.");
+        return;
+    }
 
-        ResolveDependencies();
+    ResolveDependencies();
 
-        if (UI_INVENTAIRE_Controller == null)
-        {
-            Debug.LogWarning("UI_INVENTAIRE_Controller introuvable.");
-            return;
-        }
+    if (UI_INVENTAIRE_Controller == null)
+    {
+        Debug.LogWarning("UI_INVENTAIRE_Controller introuvable.");
+        return;
+    }
 
-        if (gameManager == null)
-        {
-            Debug.LogWarning("SYS_GameManager introuvable.");
-            return;
-        }
+    if (gameManager == null)
+    {
+        Debug.LogWarning("SYS_GameManager introuvable.");
+        return;
+    }
 
-        DATA_JOUEUR humain = gameManager.GetHumanPlayer();
-        if (humain == null)
-        {
-            Debug.LogWarning("Joueur humain introuvable.");
-            return;
-        }
+    DATA_JOUEUR humain = gameManager.GetHumanPlayer();
+    if (humain == null)
+    {
+        Debug.LogWarning("Joueur humain introuvable.");
+        return;
+    }
 
-        DATA_PERSONNAGE_DisplayContext contexte = new(equipeActuelle.compagnie);
+    DATA_PERSONNAGE_DisplayContext contexte = new(equipeActuelle.compagnie);
 
-        UI_INVENTAIRE_Controller.OpenMenuPourEquipe(
-            humain.personnagesRecrutes,
-            this,
-            contexte,
-            humain.objetsPossedes,
-            humain.consommablesPossedes
+    UI_INVENTAIRE_Controller.OpenMenuPourEquipe(
+        humain.personnagesRecrutes,
+        this,
+        contexte,
+        humain.objetsPossedes,
+        humain.consommablesPossedes
+    );
+}
+
+ public bool AjouterPersonnageAEquipe(SCOBJ_Personnage personnage)
+{
+    if (equipeActuelle == null || equipeActuelle.data == null)
+    {
+        Debug.LogWarning("Aucune équipe actuellement ouverte.");
+        return false;
+    }
+
+    if (equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours)
+    {
+        Debug.LogWarning("Impossible d'ajouter un personnage pendant une action en cours.");
+        return false;
+    }
+
+    if (personnage == null)
+    {
+        Debug.LogWarning("Personnage null.");
+        return false;
+    }
+
+    ResolveDependencies();
+
+    if (gameManager != null && gameManager.EstPersonnageDansUneEquipe(personnage))
+    {
+        Debug.LogWarning("Le personnage est déjà dans une autre équipe.");
+        return false;
+    }
+
+    if (equipeActuelle.membresActuels == null)
+        equipeActuelle.membresActuels = new List<SCOBJ_Personnage>();
+
+    equipeActuelle.membresActuels.RemoveAll(p => p == null);
+
+    if (equipeActuelle.membresActuels.Contains(personnage))
+    {
+        Debug.LogWarning("Le personnage est déjà dans cette équipe.");
+        return false;
+    }
+
+    if (equipeActuelle.membresActuels.Count >= 12)
+    {
+        Debug.LogWarning("L'équipe est complète.");
+        return false;
+    }
+
+    equipeActuelle.membresActuels.Add(personnage);
+
+    RefreshVueComplete();
+
+    if (gameManager != null)
+        gameManager.RefreshToutLeHUD();
+
+    return true;
+}
+
+private void RefreshToggles()
+{
+    if (equipeActuelle == null)
+        return;
+
+    if (toggleAffectationAutomatique != null)
+    {
+        toggleAffectationAutomatique.SetIsOnWithoutNotify(
+            equipeActuelle.affectationAutomatique
         );
     }
 
-    public bool AjouterPersonnageAEquipe(SCOBJ_Personnage personnage)
+    if (toggleLancementExplorationAutomatique != null)
     {
-        if (equipeActuelle == null || equipeActuelle.data == null)
-        {
-            Debug.LogWarning("Aucune équipe actuellement ouverte.");
-            return false;
-        }
-
-        if (equipeActuelle.explorationEnCours)
-        {
-            Debug.LogWarning("Impossible d'ajouter un personnage pendant une exploration.");
-            return false;
-        }
-
-        if (personnage == null)
-        {
-            Debug.LogWarning("Personnage null.");
-            return false;
-        }
-
-        ResolveDependencies();
-
-        if (gameManager != null && gameManager.EstPersonnageDansUneEquipe(personnage))
-        {
-            Debug.LogWarning("Le personnage est déjà dans une autre équipe.");
-            return false;
-        }
-
-        if (equipeActuelle.membresActuels == null)
-        {
-            equipeActuelle.membresActuels = new List<SCOBJ_Personnage>();
-        }
-
-        equipeActuelle.membresActuels.RemoveAll(p => p == null);
-
-        if (equipeActuelle.membresActuels.Contains(personnage))
-        {
-            Debug.LogWarning("Le personnage est déjà dans cette équipe.");
-            return false;
-        }
-
-        if (equipeActuelle.membresActuels.Count >= 12)
-        {
-            Debug.LogWarning("L'équipe est complète.");
-            return false;
-        }
-
-        equipeActuelle.membresActuels.Add(personnage);
-
-        RefreshVueComplete();
-
-        if (gameManager != null)
-        {
-            gameManager.RefreshToutLeHUD();
-        }
-
-        return true;
+        toggleLancementExplorationAutomatique.SetIsOnWithoutNotify(
+            equipeActuelle.lancementExplorationAutomatique
+        );
     }
-
-    private void RefreshToggles()
-    {
-        if (equipeActuelle == null)
-            return;
-
-        if (toggleAffectationAutomatique != null)
-        {
-            toggleAffectationAutomatique.SetIsOnWithoutNotify(
-                equipeActuelle.affectationAutomatique
-            );
-        }
-
-        if (toggleLancementExplorationAutomatique != null)
-        {
-            toggleLancementExplorationAutomatique.SetIsOnWithoutNotify(
-                equipeActuelle.lancementExplorationAutomatique
-            );
-        }
-    }
+}
 }

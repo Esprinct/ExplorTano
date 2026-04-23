@@ -42,4 +42,21 @@ public class SYS_EquipeActionSystem
             systeme.MettreAJour(gameManager);
         }
     }
+    
+public void DemarrerAction(SYS_GameManager gameManager, STATE_EQUIPE equipe, ENUM_EQUIPE_ACTION action)
+{
+    if (gameManager == null || equipe == null)
+        return;
+
+    if (equipe.AUneActionEnCours)
+        return;
+
+    if (action == ENUM_EQUIPE_ACTION.Aucune)
+        return;
+
+    if (!actions.TryGetValue(action, out SYS_EquipeActionBase systeme))
+        return;
+
+    systeme.Demarrer(gameManager, equipe);
+}
 }

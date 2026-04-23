@@ -90,7 +90,10 @@ public CFG_LevelProgression ProgressionConfigEquipe => progressionConfigEquipe;
     public SYS_RecrutementSystem SYS_RecrutementSystem { get; private set; }
     public SYS_RevenusSystem RevenusSystem { get; private set; }
     public SYS_VictoireSystem VictoireSystem { get; private set; }
-
+public SYS_EquipeActionSystem EquipeActionSystem { get; private set; }
+public SYS_ExplorationAction ExplorationAction { get; private set; }
+public SYS_ConstructionAction ConstructionAction { get; private set; }
+public SYS_VadrouilleAction VadrouilleAction { get; private set; }
     public SYS_GameInitializationService InitializationService { get; private set; }
     public SYS_TurnSystem TurnSystem { get; private set; }
     public ExplorationSystem ExplorationSystem { get; private set; }
@@ -182,30 +185,82 @@ public CFG_LevelProgression ProgressionConfigEquipe => progressionConfigEquipe;
         Joueur2?.SynchroniserCompagnieDepuisDirigeant();
         Joueur3?.SynchroniserCompagnieDepuisDirigeant();
     }
-
-    private void InitialiserServices()
+public void DemarrerExploration(STATE_EQUIPE equipe, int dureeTours)
+{
+    if (ExplorationSystem == null)
     {
-        PlayerAccessService = new SYS_PlayerAccessService();
-        TurnOrderService = new SYS_TurnOrderService();
-        HudSyncService = new SYS_HudSyncService();
-        PlayerInitializationService = new SYS_PlayerInitializationService();
-        RecruitmentTurnStateService = new SYS_RecruitmentTurnStateService();
-
-        RulesService = new SYS_GameRulesService();
-        EquipeManagementService = new SYS_EquipeManagementService();
-
-        RevenusSystem = new SYS_RevenusSystem();
-        VictoireSystem = new SYS_VictoireSystem();
-
-       InfluenceSystem = new SYS_InfluenceSystem();
-UiSystem = new SYS_GameUiRefreshService();
-
-ExplorationSystem = new ExplorationSystem(InfluenceSystem, UiSystem);
-VadrouilleSystem = new SYS_VadrouilleSystem(InfluenceSystem, UiSystem);
-
-InitializationService = new SYS_GameInitializationService();
-TurnSystem = new SYS_TurnSystem(ExplorationSystem, VadrouilleSystem, InfluenceSystem, UiSystem);
+        Debug.LogWarning("ExplorationSystem introuvable.");
+        return;
     }
+
+    if (equipe == null)
+    {
+        Debug.LogWarning("DemarrerExploration : équipe null.");
+        return;
+    }
+
+    ExplorationSystem.DemarrerExploration(this, equipe, equipe.compagnie, dureeTours);
+    SynchroniserHudAvecJoueurHumain();
+    RefreshToutLeHUD();
+}
+public void DemarrerVadrouille(STATE_EQUIPE equipe)
+{
+    if (VadrouilleSystem == null)
+    {
+        Debug.LogWarning("VadrouilleSystem introuvable.");
+        return;
+    }
+
+    if (equipe == null)
+    {
+        Debug.LogWarning("DemarrerVadrouille : équipe null.");
+        return;
+    }
+
+    VadrouilleSystem.DemarrerVadrouille(this, equipe, equipe.compagnie);
+    SynchroniserHudAvecJoueurHumain();
+    RefreshToutLeHUD();
+}
+   private void InitialiserServices()
+{
+    PlayerAccessService = new SYS_PlayerAccessService();
+    TurnOrderService = new SYS_TurnOrderService();
+    HudSyncService = new SYS_HudSyncService();
+    PlayerInitializationService = new SYS_PlayerInitializationService();
+    RecruitmentTurnStateService = new SYS_RecruitmentTurnStateService();
+
+    RulesService = new SYS_GameRulesService();
+    EquipeManagementService = new SYS_EquipeManagementService();
+
+    RevenusSystem = new SYS_RevenusSystem();
+    VictoireSystem = new SYS_VictoireSystem();
+
+    InfluenceSystem = new SYS_InfluenceSystem();
+    UiSystem = new SYS_GameUiRefreshService();
+
+    ExplorationSystem = new ExplorationSystem(InfluenceSystem, UiSystem);
+    VadrouilleSystem = new SYS_VadrouilleSystem(InfluenceSystem, UiSystem);
+
+    InitializationService = new SYS_GameInitializationService();
+    TurnSystem = new SYS_TurnSystem(ExplorationSystem, VadrouilleSystem, InfluenceSystem, UiSystem);
+}
+
+public DATA_JOUEUR GetJoueurProprietaireEquipe(STATE_EQUIPE equipe)
+{
+    if (equipe == null)
+        return null;
+
+    if (Joueur1 != null && Joueur1.equipes != null && Joueur1.equipes.Contains(equipe))
+        return Joueur1;
+
+    if (Joueur2 != null && Joueur2.equipes != null && Joueur2.equipes.Contains(equipe))
+        return Joueur2;
+
+    if (Joueur3 != null && Joueur3.equipes != null && Joueur3.equipes.Contains(equipe))
+        return Joueur3;
+
+    return GetDATA_JOUEURByCompagnie(equipe.compagnie);
+}
 
     private void InitialiserJoueurs()
     {
@@ -365,18 +420,9 @@ TurnSystem = new SYS_TurnSystem(ExplorationSystem, VadrouilleSystem, InfluenceSy
         TurnSystem.TourSuivant(this);
     }
 
-    public void DemarrerExploration(STATE_EQUIPE equipe, int dureeTours)
-    {
-        if (ExplorationSystem == null)
-        {
-            Debug.LogWarning("ExplorationSystem introuvable.");
-            return;
-        }
 
-        ExplorationSystem.DemarrerExploration(this, equipe, equipe.compagnie, dureeTours);
-        SynchroniserHudAvecJoueurHumain();
-        RefreshToutLeHUD();
-    }
+
+
 public void DemarrerVadrouille(SYS_GameManager gameManager, STATE_EQUIPE equipe, ENUM_Compagnie compagnie)
 {
     if (gameManager == null || equipe == null)
@@ -590,20 +636,5 @@ public void DemarrerVadrouille(SYS_GameManager gameManager, STATE_EQUIPE equipe,
             ref indexJoueurActifTour
         );
     }
-    public DATA_JOUEUR GetJoueurProprietaireEquipe(STATE_EQUIPE equipe)
-{
-    if (equipe == null)
-        return null;
-
-    if (Joueur1 != null && Joueur1.equipes != null && Joueur1.equipes.Contains(equipe))
-        return Joueur1;
-
-    if (Joueur2 != null && Joueur2.equipes != null && Joueur2.equipes.Contains(equipe))
-        return Joueur2;
-
-    if (Joueur3 != null && Joueur3.equipes != null && Joueur3.equipes.Contains(equipe))
-        return Joueur3;
-
-    return GetDATA_JOUEURByCompagnie(equipe.compagnie);
-}
+    
 }

@@ -2,36 +2,66 @@ using UnityEngine;
 
 public class SYS_VadrouilleAction : SYS_EquipeActionBase
 {
-    public SYS_VadrouilleAction(SYS_GameUiRefreshService uiSystem) : base(uiSystem)
+    private readonly SYS_InfluenceSystem influenceSystem;
+
+    public SYS_VadrouilleAction(
+        SYS_InfluenceSystem influenceSystem,
+        SYS_GameUiRefreshService uiSystem) : base(uiSystem)
     {
+        this.influenceSystem = influenceSystem;
     }
 
     public override ENUM_EQUIPE_ACTION TypeAction => ENUM_EQUIPE_ACTION.Vadrouille;
 
     public override void Demarrer(SYS_GameManager gameManager, STATE_EQUIPE equipe)
     {
-        if (gameManager == null || equipe == null)
+        if (gameManager == null || equipe == null || gameManager.VadrouilleConfig == null)
             return;
 
         DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
+        if (joueur == null)
+            return;
 
-        int toursBase = 1;
-        if (gameManager.VadrouilleConfig != null)
-            toursBase = gameManager.VadrouilleConfig.toursBase;
+        VadrouilleConfig config = gameManager.VadrouilleConfig;
+        EQUIPE_StatsSnapshot stats = CALC_EQUIPE_StatsCalculator.Calculer(equipe);
 
-        int toursFinaux = SVC_EQUIPE_VadrouilleEffects.GetToursVadrouilleFinals(
+        int toursModifies = SVC_EQUIPE_VadrouilleEffects.GetToursVadrouilleFinals(
             equipe,
             joueur,
-            toursBase
+            config.toursBase
         );
 
-        InitialiserAction(equipe, TypeAction, toursFinaux);
-
-        Debug.Log(
-            $"[DEMARRAGE_VADROUILLE] equipe={equipe.data?.nomEquipe} | " +
-            $"tours={equipe.actionToursRestants}/{equipe.actionToursTotaux}"
+        float gainOccupation = SVC_EQUIPE_VadrouilleEffects.GetGainOccupationFinal(
+            equipe,
+            joueur,
+            config.gainOccupationBase
         );
 
+        float reductionAdverse = SVC_EQUIPE_VadrouilleEffects.GetReductionOccupationAdverseFinal(
+            equipe,
+            joueur,
+            config.reductionOccupationAdverseBase
+        );
+
+        DATA_VADROUILLE_Resultat resultat = CALC_VADROUILLE_Resolver.CalculerResultat(
+            stats,
+            toursModifies,
+            config.coutParTourBase,
+            config.prestigeBase,
+            gainOccupation,
+            reductionAdverse
+        );
+
+        if (resultat == null || joueur.etrinium < resultat.coutTotal)
+            return;
+
+        joueur.etrinium -= resultat.coutTotal;
+        equipe.resultatVadrouille = resultat;
+
+        InitialiserAction(equipe, TypeAction, resultat.toursFinaux);
+
+        gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
+        gameManager.SynchroniserHudAvecJoueurHumain();
         uiSystem?.RefreshToutLeHUD(gameManager);
     }
 
@@ -50,8 +80,6 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
             if (equipe.actionToursRestants <= 0)
                 Terminer(gameManager, equipe);
         }
-
-        uiSystem?.RefreshToutLeHUD(gameManager);
     }
 
     protected override void Terminer(SYS_GameManager gameManager, STATE_EQUIPE equipe)
@@ -59,7 +87,39 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
         if (gameManager == null || equipe == null)
             return;
 
-        // TODO: appliquer ici les gains / effets de fin de vadrouille
+        STATE_PROVINCE province = equipe.provinceAffectee;
+        DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
+
+        if (province != null && equipe.resultatVadrouille != null)
+        {
+            influenceSystem.ReduireOccupationAdverse(
+                province,
+                equipe.compagnie,
+                equipe.resultatVadrouille.reductionOccupationAdverseFinal
+            );
+
+            influenceSystem.AppliquerOccupation(
+                province,
+                equipe.compagnie,
+                equipe.resultatVadrouille.gainOccupationFinal
+            );
+
+            influenceSystem.MettreAJourClaimProvince(gameManager, province);
+        }
+
+        if (joueur != null && equipe.resultatVadrouille != null)
+        {
+            joueur.prestige += equipe.resultatVadrouille.prestigeFinal;
+        }
+
         CloturerAction(equipe);
+        equipe.resultatVadrouille = null;
+
+        if (!equipe.affectationAutomatique)
+            equipe.provinceAffectee = null;
+
+        gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
+        gameManager.SynchroniserHudAvecJoueurHumain();
+        uiSystem?.RefreshToutLeHUD(gameManager);
     }
 }

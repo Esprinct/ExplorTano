@@ -30,8 +30,6 @@ public class SYS_ConstructionAction : SYS_EquipeActionBase
             if (equipe.actionToursRestants <= 0)
                 Terminer(gameManager, equipe);
         }
-
-        uiSystem?.RefreshToutLeHUD(gameManager);
     }
 
     protected override void Terminer(SYS_GameManager gameManager, STATE_EQUIPE equipe)
@@ -39,7 +37,7 @@ public class SYS_ConstructionAction : SYS_EquipeActionBase
         if (gameManager == null || equipe == null)
             return;
 
-        // TODO: appliquer ici la logique de construction
         CloturerAction(equipe);
+        uiSystem?.RefreshToutLeHUD(gameManager);
     }
 }

@@ -12,10 +12,8 @@ public class DATA_EQUIPE_DetailData
 
     public int niveau;
 
-    public bool explorationEnCours;
-    public bool vadrouilleEnCours;
-
-    public bool actionEnCours;
+    public ENUM_EQUIPE_ACTION actionEnCours;
+    public bool aUneActionEnCours;
     public string nomActionEnCours;
 
     public bool lancementActionAutomatique;
@@ -23,7 +21,7 @@ public class DATA_EQUIPE_DetailData
     public int toursRestants;
     public int toursTotaux;
 
-    public string statutExploration;
+    public string statutAction;
     public int coutParTour;
     public string forceTooltipDetail;
     public string intelligenceTooltipDetail;

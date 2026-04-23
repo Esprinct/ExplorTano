@@ -9,23 +9,32 @@ public class SYS_GameUiRefreshService
 
     private DATA_EQUIPE_DetailData BuildDATA_EQUIPE_DetailData(STATE_EQUIPE equipe)
     {
-        bool explorationEnCours = equipe != null && equipe.explorationEnCours;
-        bool vadrouilleEnCours = equipe != null && equipe.vadrouilleEnCours;
-        bool actionEnCours = explorationEnCours || vadrouilleEnCours;
+        ENUM_EQUIPE_ACTION action = equipe != null ? equipe.actionEnCours : ENUM_EQUIPE_ACTION.Aucune;
+        bool actionActive = equipe != null && equipe.AUneActionEnCours;
 
-        string nomActionEnCours = "";
-        if (vadrouilleEnCours)
-            nomActionEnCours = "Vadrouille";
-        else if (explorationEnCours)
-            nomActionEnCours = "Exploration";
+        string nomAction = "";
+        switch (action)
+        {
+            case ENUM_EQUIPE_ACTION.Vadrouille:
+                nomAction = "Vadrouille";
+                break;
+            case ENUM_EQUIPE_ACTION.Construction:
+                nomAction = "Construction";
+                break;
+            case ENUM_EQUIPE_ACTION.Exploration:
+                nomAction = "Exploration";
+                break;
+        }
 
         string statut = "Non affectée";
-        if (vadrouilleEnCours)
-            statut = "Vadrouille en cours";
-        else if (explorationEnCours)
-            statut = "Exploration en cours";
+        if (actionActive)
+        {
+            statut = $"{nomAction} en cours";
+        }
         else if (equipe != null && equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
+        {
             statut = "Affectée";
+        }
 
         return new DATA_EQUIPE_DetailData
         {
@@ -37,17 +46,16 @@ public class SYS_GameUiRefreshService
             portraitChef = equipe != null && equipe.data != null ? equipe.data.portraitChef : null,
             niveau = equipe != null ? equipe.niveauActuel : 1,
 
-            explorationEnCours = explorationEnCours,
-            vadrouilleEnCours = vadrouilleEnCours,
-            actionEnCours = actionEnCours,
-            nomActionEnCours = nomActionEnCours,
+            actionEnCours = action,
+            aUneActionEnCours = actionActive,
+            nomActionEnCours = nomAction,
 
-            lancementActionAutomatique = equipe != null && equipe.lancementExplorationAutomatique,
+            lancementActionAutomatique = equipe != null && equipe.lancementActionAutomatique,
 
-            toursRestants = equipe != null ? equipe.toursRestants : 0,
-            toursTotaux = equipe != null ? equipe.toursTotaux : 0,
+            toursRestants = equipe != null ? equipe.actionToursRestants : 0,
+            toursTotaux = equipe != null ? equipe.actionToursTotaux : 0,
 
-            statutExploration = statut
+            statutAction = statut
         };
     }
 
@@ -89,9 +97,7 @@ public class SYS_GameUiRefreshService
 
                 DATA_EQUIPE_DetailData equipeData = BuildDATA_EQUIPE_DetailData(equipe);
                 if (equipeData != null)
-                {
                     equipesHud.Add(equipeData);
-                }
             }
         }
 

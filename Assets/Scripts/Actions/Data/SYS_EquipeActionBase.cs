@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public abstract class SYS_EquipeActionBase
 {
     protected readonly SYS_GameUiRefreshService uiSystem;
@@ -15,15 +17,12 @@ public abstract class SYS_EquipeActionBase
 
     protected abstract void Terminer(SYS_GameManager gameManager, STATE_EQUIPE equipe);
 
-    protected void InitialiserAction(
-        STATE_EQUIPE equipe,
-        ENUM_EQUIPE_ACTION typeAction,
-        int toursTotaux)
+    protected void InitialiserAction(STATE_EQUIPE equipe, ENUM_EQUIPE_ACTION typeAction, int toursTotaux)
     {
         if (equipe == null)
             return;
 
-        toursTotaux = UnityEngine.Mathf.Max(1, toursTotaux);
+        toursTotaux = Mathf.Max(1, toursTotaux);
 
         equipe.actionEnCours = typeAction;
         equipe.actionToursTotaux = toursTotaux;
