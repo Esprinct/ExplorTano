@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SYS_TurnSystem
@@ -65,7 +66,11 @@ public class SYS_TurnSystem
 
         if (securite >= securiteMax)
         {
-            Debug.LogWarning("SYS_TurnSystem : arrêt de sécurité déclenché.");
+            Debug.LogWarning(
+                "SYS_TurnSystem : arrêt de sécurité déclenché. " +
+                "Boucle de tour trop longue."
+            );
+
             RafraichirHUD(gameManager);
         }
     }
@@ -78,7 +83,9 @@ public class SYS_TurnSystem
         DATA_RecrutementResolutionResult resolutionRecrutement = null;
 
         if (gameManager.SYS_RecrutementSystem != null)
+        {
             resolutionRecrutement = gameManager.SYS_RecrutementSystem.ResoudreOffres(gameManager);
+        }
 
         gameManager.ResetRecrutementTour();
         gameManager.PartieData.tourActuel++;
@@ -126,6 +133,7 @@ public class SYS_TurnSystem
         if (gameManager.HudController != null && resolutionRecrutement != null)
         {
             gameManager.HudController.ShowNotificationRecrutement(resolutionRecrutement);
+            Debug.Log("[RECRUTEMENT RESOLUTION] résultat non null, notification envoyée au HUD");
         }
 
         RafraichirHUD(gameManager);

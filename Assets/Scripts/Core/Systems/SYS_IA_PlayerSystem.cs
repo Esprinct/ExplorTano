@@ -4,22 +4,23 @@ using UnityEngine;
 public class SYS_IA_PlayerSystem
 {
     private const int TailleMaxEquipe = 12;
-private readonly SYS_IA_ProgressionEquipementSystem progressionEquipementSystem = new();
- public void JouerTourIA(SYS_GameManager gameManager, DATA_JOUEUR joueur)
-{
-    if (gameManager == null || joueur == null || joueur.estHumain)
-        return;
+    private readonly SYS_IA_ProgressionEquipementSystem progressionEquipementSystem = new();
 
-    progressionEquipementSystem.OptimiserRosterIA(gameManager, joueur);
+    public void JouerTourIA(SYS_GameManager gameManager, DATA_JOUEUR joueur)
+    {
+        if (gameManager == null || joueur == null || joueur.estHumain)
+            return;
 
-    TenterRecrutement(gameManager, joueur);
-    TenterCreationEquipe(gameManager, joueur);
-    CompleterEquipes(gameManager, joueur);
-    AffecterEquipesAuxProvinces(gameManager, joueur);
-    LancerExplorations(gameManager, joueur);
+        progressionEquipementSystem.OptimiserRosterIA(gameManager, joueur);
 
-    Debug.Log($"[IA] Tour joué : {joueur.nomJoueur} | personnalité={joueur.personnaliteIA}");
-}
+        TenterRecrutement(gameManager, joueur);
+        TenterCreationEquipe(gameManager, joueur);
+        CompleterEquipes(gameManager, joueur);
+        AffecterEquipesAuxProvinces(gameManager, joueur);
+        LancerActions(gameManager, joueur);
+
+        Debug.Log($"[IA] Tour joué : {joueur.nomJoueur} | personnalité={joueur.personnaliteIA}");
+    }
 
     private void TenterRecrutement(SYS_GameManager gameManager, DATA_JOUEUR joueur)
     {
@@ -36,86 +37,59 @@ private readonly SYS_IA_ProgressionEquipementSystem progressionEquipementSystem 
         gameManager.MarquerRecrutementEffectue(joueur);
     }
 
-   private void TenterCreationEquipe(SYS_GameManager gameManager, DATA_JOUEUR joueur)
-{
-    if (gameManager == null || joueur == null)
-        return;
-
-    int personnagesLibres = CompterPersonnagesLibres(gameManager, joueur);
-    int nbEquipes = GetNombreEquipesValides(joueur);
-
-    bool aUneEquipeExplorable = false;
-
-    if (joueur.equipes != null)
+    private void TenterCreationEquipe(SYS_GameManager gameManager, DATA_JOUEUR joueur)
     {
-        foreach (STATE_EQUIPE equipe in joueur.equipes)
+        if (gameManager == null || joueur == null)
+            return;
+
+        int personnagesLibres = CompterPersonnagesLibres(gameManager, joueur);
+        int nbEquipes = GetNombreEquipesValides(joueur);
+
+        bool aUneEquipeActionnable = false;
+
+        if (joueur.equipes != null)
         {
-            if (equipe == null)
-                continue;
-
-            int nbMembres = equipe.membresActuels != null ? equipe.membresActuels.Count : 0;
-
-            if (!equipe.explorationEnCours && nbMembres >= 1)
+            foreach (STATE_EQUIPE equipe in joueur.equipes)
             {
-                aUneEquipeExplorable = true;
-                break;
+                if (equipe == null)
+                    continue;
+
+                int nbMembres = equipe.membresActuels != null ? equipe.membresActuels.Count : 0;
+
+                if (!equipe.AUneActionEnCours && nbMembres >= 1)
+                {
+                    aUneEquipeActionnable = true;
+                    break;
+                }
             }
         }
+
+        bool doitCreerEquipe =
+            (nbEquipes == 0 && personnagesLibres > 0) ||
+            (!aUneEquipeActionnable && personnagesLibres > 0) ||
+            personnagesLibres >= GetTailleCibleEquipe(joueur);
+
+        if (!doitCreerEquipe)
+            return;
+
+        if (!gameManager.PeutCreerEquipe(joueur))
+            return;
+
+        STATE_EQUIPE nouvelleEquipe = ConstruireNouvelleEquipe(gameManager, joueur);
+        if (nouvelleEquipe == null)
+            return;
+
+        int coutCreation = gameManager.GetCoutCreationEquipe(joueur);
+        joueur.etrinium -= coutCreation;
+
+        gameManager.EquipesRuntime.Add(nouvelleEquipe);
+
+        joueur.equipes ??= new List<STATE_EQUIPE>();
+        joueur.equipes.Add(nouvelleEquipe);
+
+        Debug.Log($"[IA] Création équipe | joueur={joueur.nomJoueur} | équipe={nouvelleEquipe.data?.nomEquipe}");
     }
 
-    bool doitCreerEquipe =
-        (nbEquipes == 0 && personnagesLibres > 0) ||
-        (!aUneEquipeExplorable && personnagesLibres > 0) ||
-        personnagesLibres >= GetTailleCibleEquipe(joueur);
-
-    if (!doitCreerEquipe)
-        return;
-
-    if (!gameManager.PeutCreerEquipe(joueur))
-        return;
-
-    STATE_EQUIPE nouvelleEquipe = ConstruireNouvelleEquipe(gameManager, joueur);
-    if (nouvelleEquipe == null)
-        return;
-
-    int coutCreation = gameManager.GetCoutCreationEquipe(joueur);
-    joueur.etrinium -= coutCreation;
-
-    gameManager.EquipesRuntime.Add(nouvelleEquipe);
-
-    joueur.equipes ??= new List<STATE_EQUIPE>();
-    joueur.equipes.Add(nouvelleEquipe);
-
-    Debug.Log($"[IA] Création équipe | joueur={joueur.nomJoueur} | équipe={nouvelleEquipe.data?.nomEquipe}");
-}
-private void GererCreationEquipesIA(SYS_GameManager gameManager, DATA_JOUEUR joueur)
-{
-    if (gameManager == null || joueur == null)
-        return;
-
-    int nbEquipes = gameManager.GetNombreEquipesJoueur(joueur);
-    int coutCreation = gameManager.GetCoutCreationEquipe(joueur);
-
-    if (coutCreation <= 0)
-        return;
-
-    if (nbEquipes < 2 && joueur.etrinium >= coutCreation)
-    {
-        gameManager.CreerEquipePourIA(joueur);
-        return;
-    }
-
-    if (nbEquipes < 3 && joueur.etrinium >= coutCreation * 1.5f)
-    {
-        gameManager.CreerEquipePourIA(joueur);
-        return;
-    }
-
-    if (nbEquipes < gameManager.MaxEquipesParJoueur && joueur.etrinium >= coutCreation * 2.5f)
-    {
-        gameManager.CreerEquipePourIA(joueur);
-    }
-}
     private void CompleterEquipes(SYS_GameManager gameManager, DATA_JOUEUR joueur)
     {
         if (gameManager == null || joueur == null || joueur.equipes == null)
@@ -132,7 +106,7 @@ private void GererCreationEquipesIA(SYS_GameManager gameManager, DATA_JOUEUR jou
             if (equipe == null)
                 continue;
 
-            if (equipe.explorationEnCours)
+            if (equipe.AUneActionEnCours)
                 continue;
 
             equipe.membresActuels ??= new List<SCOBJ_Personnage>();
@@ -157,14 +131,14 @@ private void GererCreationEquipesIA(SYS_GameManager gameManager, DATA_JOUEUR jou
         if (gameManager == null || joueur == null || joueur.equipes == null)
             return;
 
-        int tailleMinEquipe = GetTailleMinEquipePourExploration(joueur);
+        int tailleMinEquipe = GetTailleMinEquipePourAction(joueur);
 
         foreach (STATE_EQUIPE equipe in joueur.equipes)
         {
             if (equipe == null)
                 continue;
 
-            if (equipe.explorationEnCours)
+            if (equipe.AUneActionEnCours)
                 continue;
 
             if (equipe.membresActuels == null || equipe.membresActuels.Count < tailleMinEquipe)
@@ -179,7 +153,7 @@ private void GererCreationEquipesIA(SYS_GameManager gameManager, DATA_JOUEUR jou
                 continue;
 
             equipe.provinceAffectee = cible;
-            equipe.explorationTerminee = false;
+            equipe.actionTerminee = false;
 
             Debug.Log(
                 $"[IA] Affectation | joueur={joueur.nomJoueur} | personnalité={joueur.personnaliteIA} | " +
@@ -188,46 +162,59 @@ private void GererCreationEquipesIA(SYS_GameManager gameManager, DATA_JOUEUR jou
         }
     }
 
-    private void LancerExplorations(SYS_GameManager gameManager, DATA_JOUEUR joueur)
+    private void LancerActions(SYS_GameManager gameManager, DATA_JOUEUR joueur)
     {
         if (gameManager == null || joueur == null || joueur.equipes == null)
             return;
 
-        int tailleMinEquipe = GetTailleMinEquipePourExploration(joueur);
-        float ratioMinimalBudget = GetRatioMinimalBudgetPourExplorer(joueur);
+        int tailleMinEquipe = GetTailleMinEquipePourAction(joueur);
+        float ratioMinimalBudget = GetRatioMinimalBudgetPourAction(joueur);
 
         foreach (STATE_EQUIPE equipe in joueur.equipes)
         {
             if (equipe == null)
                 continue;
 
-            if (equipe.explorationEnCours)
+            if (equipe.AUneActionEnCours)
                 continue;
 
             if (equipe.provinceAffectee == null || equipe.provinceAffectee.data == null)
                 continue;
 
-            if (equipe.provinceAffectee.estClaim)
-                continue;
-
             if (equipe.membresActuels == null || equipe.membresActuels.Count < tailleMinEquipe)
                 continue;
 
-            int coutExploration = CalculerCoutExploration(gameManager, equipe);
-            if (coutExploration <= 0)
+            ENUM_EQUIPE_ACTION action = SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipe);
+            if (action == ENUM_EQUIPE_ACTION.Aucune)
                 continue;
 
-            if (joueur.etrinium < coutExploration)
+            int coutAction = CalculerCoutAction(gameManager, equipe, action);
+            if (coutAction <= 0)
                 continue;
 
-            if (joueur.etriniumParTour < 0f && joueur.etrinium < coutExploration * ratioMinimalBudget)
+            if (joueur.etrinium < coutAction)
                 continue;
 
-            gameManager.DemarrerExploration(equipe, 0);
+            if (joueur.etriniumParTour < 0f && joueur.etrinium < coutAction * ratioMinimalBudget)
+                continue;
+
+            switch (action)
+            {
+                case ENUM_EQUIPE_ACTION.Vadrouille:
+                    gameManager.DemarrerVadrouille(equipe);
+                    break;
+
+                case ENUM_EQUIPE_ACTION.Exploration:
+                    gameManager.DemarrerExploration(equipe, 0);
+                    break;
+
+                case ENUM_EQUIPE_ACTION.Construction:
+                    continue;
+            }
 
             Debug.Log(
-                $"[IA] Exploration lancée | joueur={joueur.nomJoueur} | personnalité={joueur.personnaliteIA} | " +
-                $"équipe={equipe.data?.nomEquipe} | province={equipe.provinceAffectee.data?.nom} | coût={coutExploration}"
+                $"[IA] Action lancée | joueur={joueur.nomJoueur} | personnalité={joueur.personnaliteIA} | " +
+                $"action={action} | équipe={equipe.data?.nomEquipe} | province={equipe.provinceAffectee.data?.nom} | coût={coutAction}"
             );
         }
     }
@@ -255,64 +242,42 @@ private void GererCreationEquipesIA(SYS_GameManager gameManager, DATA_JOUEUR jou
         return false;
     }
 
-  private STATE_EQUIPE ConstruireNouvelleEquipe(SYS_GameManager gameManager, DATA_JOUEUR joueur)
-{
-    if (gameManager == null || joueur == null)
-        return null;
-
-    SCOBJ_EQUIPE dataEquipe = ScriptableObject.CreateInstance<SCOBJ_EQUIPE>();
-    if (dataEquipe == null)
-        return null;
-
-    int index = GetNombreEquipesValides(joueur) + 1;
-
-    dataEquipe.name = $"Equipe_IA_{joueur.compagnie}_{index}";
-    dataEquipe.nomEquipe = $"Équipe {joueur.compagnie} {index}";
-    dataEquipe.niveauDeBase = 1;
-    dataEquipe.membres = new List<SCOBJ_Personnage>();
-
-    STATE_EQUIPE equipe = new STATE_EQUIPE
+    private STATE_EQUIPE ConstruireNouvelleEquipe(SYS_GameManager gameManager, DATA_JOUEUR joueur)
     {
-        data = dataEquipe,
-        compagnie = joueur.compagnie,
-        niveauActuel = 1,
-        provinceAffectee = null,
-        explorationEnCours = false,
-        explorationTerminee = false,
-        toursRestants = 0,
-        toursTotaux = 0,
-        membresActuels = new List<SCOBJ_Personnage>(),
-        affectationAutomatique = true,
-        lancementExplorationAutomatique = true,
-        objetsEquipes = new List<SCOBJ_OBJET_EQUIPPABLE>(),
-        consommables = new List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack>(),
+        if (gameManager == null || joueur == null)
+            return null;
 
-        // IMPORTANT
-        progression = new STATE_LevelProgression(),
-        progressionConfig = gameManager.ProgressionConfigEquipe,
+        SCOBJ_EQUIPE dataEquipe = ScriptableObject.CreateInstance<SCOBJ_EQUIPE>();
+        if (dataEquipe == null)
+            return null;
 
-        // spécialisation par défaut
-        specialisation = ENUM_EQUIPE_SPECIALISATION.Reconnaissance,
-        dataSpecialisation = null
-    };
+        int index = GetNombreEquipesValides(joueur) + 1;
 
-    if (equipe.progression != null)
-    {
-        equipe.progression.niveau = 1;
-        equipe.progression.xpActuelle = 0;
-        equipe.progression.pointsDisponibles = 0;
+        dataEquipe.name = $"Equipe_IA_{joueur.compagnie}_{index}";
+        dataEquipe.nomEquipe = $"Équipe {joueur.compagnie} {index}";
+        dataEquipe.niveauDeBase = 1;
+        dataEquipe.membres = new List<SCOBJ_Personnage>();
+
+        return new STATE_EQUIPE
+        {
+            data = dataEquipe,
+            compagnie = joueur.compagnie,
+            niveauActuel = 1,
+            provinceAffectee = null,
+            actionEnCours = ENUM_EQUIPE_ACTION.Aucune,
+            actionTerminee = false,
+            actionToursRestants = 0,
+            actionToursTotaux = 0,
+            membresActuels = new List<SCOBJ_Personnage>(),
+            affectationAutomatique = true,
+            lancementActionAutomatique = true,
+            lancementExplorationAutomatique = true,
+            objetsEquipes = new List<SCOBJ_OBJET_EQUIPPABLE>(),
+            consommables = new List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack>(),
+            progression = new STATE_LevelProgression(),
+            progressionConfig = gameManager.ProgressionConfigEquipe
+        };
     }
-
-    equipe.niveauActuel = 1;
-
-    Debug.Log(
-        $"[CREATE_EQUIPE_IA] runtime={equipe.data?.nomEquipe} | " +
-        $"progressionNull={equipe.progression == null} | " +
-        $"progressionConfigNull={equipe.progressionConfig == null}"
-    );
-
-    return equipe;
-}
 
     private int GetNombreEquipesValides(DATA_JOUEUR joueur)
     {
@@ -412,13 +377,13 @@ private void GererCreationEquipesIA(SYS_GameManager gameManager, DATA_JOUEUR jou
 
         switch (joueur.personnaliteIA)
         {
-          case ENUM_IA_Personnalite.Agressive:
-    score += force * 1.5f;
-    score += endurance * 1.2f;
-    score += dexterite * 0.9f;
-    score += intelligence * 0.5f;
-    score -= personnage.coutParTour * 0.12f;
-    break;
+            case ENUM_IA_Personnalite.Agressive:
+                score += force * 1.5f;
+                score += endurance * 1.2f;
+                score += dexterite * 0.9f;
+                score += intelligence * 0.5f;
+                score -= personnage.coutParTour * 0.12f;
+                break;
 
             case ENUM_IA_Personnalite.Prestige:
                 score += force * 1.4f;
@@ -496,172 +461,156 @@ private void GererCreationEquipesIA(SYS_GameManager gameManager, DATA_JOUEUR jou
 
         return meilleureProvince;
     }
-private float GetInfluenceAdverseDominante(STATE_PROVINCE province, ENUM_Compagnie compagnie)
-{
-    if (province == null)
-        return 0f;
 
-    float maizin = compagnie == ENUM_Compagnie.Maizin ? 0f : province.influenceMaizin;
-    float kinia = compagnie == ENUM_Compagnie.Kinia ? 0f : province.influenceKinia;
-    float joho = compagnie == ENUM_Compagnie.Joho ? 0f : province.influenceJoho;
-
-    return Mathf.Max(maizin, Mathf.Max(kinia, joho));
-}
-  private float EvaluerProvincePourCompagnie(
-    SYS_GameManager gameManager,
-    STATE_PROVINCE province,
-    DATA_JOUEUR joueur,
-    STATE_EQUIPE equipe)
-{
-    if (province == null || province.data == null || joueur == null)
-        return float.MinValue;
-
-    float score = 0f;
-
-    float etrinium = province.data.etrinium;
-    float prestige = province.data.prestige;
-    float politique = province.data.poidsPolitique;
-    float accessibilite = province.data.accesibilite;
-
-    float influenceAutre = province.influenceAutre;
-    float influenceIA = GetInfluenceCompagnie(province, joueur.compagnie);
-    float influenceAdverse = GetInfluenceAdverseDominante(province, joueur.compagnie);
-
-    bool estClaim = province.estClaim;
-    bool claimParEnnemi =
-        estClaim &&
-        province.proprietaireActuel.HasValue &&
-        province.proprietaireActuel.Value != joueur.compagnie;
-
-    bool claimParIA =
-        estClaim &&
-        province.proprietaireActuel.HasValue &&
-        province.proprietaireActuel.Value == joueur.compagnie;
-bool resteDesZonesNeutres = ExisteEncoreDesZonesNeutresInteressantes(gameManager);
-
-if (resteDesZonesNeutres && claimParEnnemi)
-{
-    return float.MinValue;
-}
-    // 1) Base économique / stratégique
-    switch (joueur.personnaliteIA)
+    private float GetInfluenceAdverseDominante(STATE_PROVINCE province, ENUM_Compagnie compagnie)
     {
-        case ENUM_IA_Personnalite.Agressive:
-            score += etrinium * 1.6f;
-            score += prestige * 1.2f;
-            score += politique * 1.8f;
-            score += accessibilite * 0.8f;
-            break;
+        if (province == null)
+            return 0f;
 
-        case ENUM_IA_Personnalite.Prestige:
-            score += etrinium * 1.0f;
-            score += prestige * 2.8f;
-            score += politique * 1.5f;
-            score += accessibilite * 0.7f;
-            break;
+        float maizin = compagnie == ENUM_Compagnie.Maizin ? 0f : province.influenceMaizin;
+        float kinia = compagnie == ENUM_Compagnie.Kinia ? 0f : province.influenceKinia;
+        float joho = compagnie == ENUM_Compagnie.Joho ? 0f : province.influenceJoho;
 
-        case ENUM_IA_Personnalite.Economique:
-            score += etrinium * 3.0f;
-            score += prestige * 0.9f;
-            score += politique * 0.9f;
-            score += accessibilite * 1.2f;
-            break;
-
-        case ENUM_IA_Personnalite.Expansionniste:
-            score += etrinium * 1.8f;
-            score += prestige * 1.3f;
-            score += politique * 1.1f;
-            score += accessibilite * 1.0f;
-            break;
-
-        case ENUM_IA_Personnalite.Opportuniste:
-            score += etrinium * 1.8f;
-            score += prestige * 1.8f;
-            score += politique * 1.4f;
-            score += accessibilite * 0.8f;
-            break;
-
-        case ENUM_IA_Personnalite.Equilibree:
-        default:
-            score += etrinium * 2.0f;
-            score += prestige * 1.8f;
-            score += politique * 1.3f;
-            score += accessibilite * 0.9f;
-            break;
+        return Mathf.Max(maizin, Mathf.Max(kinia, joho));
     }
 
-    // 2) PRIORITÉ ABSOLUE AUX ZONES NEUTRES
-    if (!estClaim)
+    private float EvaluerProvincePourCompagnie(
+        SYS_GameManager gameManager,
+        STATE_PROVINCE province,
+        DATA_JOUEUR joueur,
+        STATE_EQUIPE equipe)
     {
-        score += 250f;                  // énorme bonus de base
-        score += influenceAutre * 5.0f; // très grosse priorité aux zones encore neutres
-        score += influenceIA * 1.5f;    // finir ce qu'on a déjà commencé
-        score -= influenceAdverse * 0.8f;
-    }
+        if (province == null || province.data == null || joueur == null)
+            return float.MinValue;
 
-    // 3) Bonus spécial si la province est "facile à prendre"
-    if (!estClaim && influenceAutre > 25f)
-    {
-        score += 120f;
-    }
+        float score = 0f;
 
-    // 4) Bonus si on a déjà une petite présence, pour favoriser le snowball
-    if (!estClaim && influenceIA > 0f)
-    {
-        score += influenceIA * 2.5f;
-    }
+        float etrinium = province.data.etrinium;
+        float prestige = province.data.prestige;
+        float politique = province.data.poidsPolitique;
+        float accessibilite = province.data.accesibilite;
 
-    // 5) Attaquer l'ennemi seulement en second rideau
-    if (claimParEnnemi)
-    {
-        score -= 180f;                 // forte pénalité de base
-        score += influenceAdverse * 0.4f;
+        float influenceAutre = province.influenceAutre;
+        float influenceIA = GetInfluenceCompagnie(province, joueur.compagnie);
+        float influenceAdverse = GetInfluenceAdverseDominante(province, joueur.compagnie);
 
-        // on attaque seulement si on a déjà une présence correcte
-        if (influenceIA > 20f)
+        bool estClaim = province.estClaim;
+        bool claimParEnnemi =
+            estClaim &&
+            province.proprietaireActuel.HasValue &&
+            province.proprietaireActuel.Value != joueur.compagnie;
+
+        bool claimParIA =
+            estClaim &&
+            province.proprietaireActuel.HasValue &&
+            province.proprietaireActuel.Value == joueur.compagnie;
+
+        bool resteDesZonesNeutresInteressantes = ExisteEncoreDesZonesNeutresInteressantes(gameManager);
+
+        if (resteDesZonesNeutresInteressantes && claimParEnnemi)
+            return float.MinValue;
+
+        switch (joueur.personnaliteIA)
         {
-            score += 80f;
+            case ENUM_IA_Personnalite.Agressive:
+                score += etrinium * 1.6f;
+                score += prestige * 1.2f;
+                score += politique * 1.8f;
+                score += accessibilite * 0.8f;
+                break;
+
+            case ENUM_IA_Personnalite.Prestige:
+                score += etrinium * 1.0f;
+                score += prestige * 2.8f;
+                score += politique * 1.5f;
+                score += accessibilite * 0.7f;
+                break;
+
+            case ENUM_IA_Personnalite.Economique:
+                score += etrinium * 3.0f;
+                score += prestige * 0.9f;
+                score += politique * 0.9f;
+                score += accessibilite * 1.2f;
+                break;
+
+            case ENUM_IA_Personnalite.Expansionniste:
+                score += etrinium * 1.8f;
+                score += prestige * 1.3f;
+                score += politique * 1.1f;
+                score += accessibilite * 1.0f;
+                break;
+
+            case ENUM_IA_Personnalite.Opportuniste:
+                score += etrinium * 1.8f;
+                score += prestige * 1.8f;
+                score += politique * 1.4f;
+                score += accessibilite * 0.8f;
+                break;
+
+            case ENUM_IA_Personnalite.Equilibree:
+            default:
+                score += etrinium * 2.0f;
+                score += prestige * 1.8f;
+                score += politique * 1.3f;
+                score += accessibilite * 0.9f;
+                break;
         }
+
+        if (!estClaim)
+        {
+            score += 250f;
+            score += influenceAutre * 5.0f;
+            score += influenceIA * 1.5f;
+            score -= influenceAdverse * 0.8f;
+        }
+
+        if (!estClaim && influenceAutre > 25f)
+            score += 120f;
+
+        if (!estClaim && influenceIA > 0f)
+            score += influenceIA * 2.5f;
+
+        if (claimParEnnemi)
+        {
+            score -= 180f;
+            score += influenceAdverse * 0.4f;
+
+            if (influenceIA > 20f)
+                score += 80f;
+        }
+
+        if (claimParIA)
+            score -= 1000f;
+
+        if (equipe != null && equipe.provinceAffectee == province)
+            score -= 150f;
+
+        int nbEquipesAllieesDejaSurPlace =
+            CompterEquipesAllieesSurProvince(gameManager, joueur.compagnie, province, equipe);
+
+        score -= nbEquipesAllieesDejaSurPlace * 140f;
+        score += Random.Range(0f, 8f);
+
+        return score;
     }
 
-    // 6) Ne jamais retarget une province déjà sécurisée par soi
-    if (claimParIA)
+    private bool ExisteEncoreDesZonesNeutresInteressantes(SYS_GameManager gameManager)
     {
-        score -= 1000f;
-    }
+        if (gameManager == null)
+            return false;
 
-    // 7) Très grosse pénalité si la même équipe reste collée à sa province
-    if (equipe != null && equipe.provinceAffectee == province)
-    {
-        score -= 150f;
-    }
+        foreach (STATE_PROVINCE province in gameManager.ProvincesRuntime)
+        {
+            if (province == null || province.data == null)
+                continue;
 
-    // 8) Très grosse pénalité si plusieurs équipes alliées visent déjà la même province
-    int nbEquipesAllieesDejaSurPlace =
-        CompterEquipesAllieesSurProvince(gameManager, joueur.compagnie, province, equipe);
-    score -= nbEquipesAllieesDejaSurPlace * 140f;
+            if (!province.estClaim && province.influenceAutre > 15f)
+                return true;
+        }
 
-    // 9) Léger bruit pour casser les égalités parfaites
-    score += Random.Range(0f, 8f);
-
-    return score;
-}
-private bool ExisteEncoreDesZonesNeutresInteressantes(SYS_GameManager gameManager)
-{
-    if (gameManager == null)
         return false;
-
-    foreach (STATE_PROVINCE province in gameManager.ProvincesRuntime)
-    {
-        if (province == null || province.data == null)
-            continue;
-
-        if (!province.estClaim && province.influenceAutre > 15f)
-            return true;
     }
 
-    return false;
-}
     private int CompterEquipesAllieesSurProvince(
         SYS_GameManager gameManager,
         ENUM_Compagnie compagnie,
@@ -706,6 +655,24 @@ private bool ExisteEncoreDesZonesNeutresInteressantes(SYS_GameManager gameManage
         }
     }
 
+    private int CalculerCoutAction(SYS_GameManager gameManager, STATE_EQUIPE equipe, ENUM_EQUIPE_ACTION action)
+    {
+        if (gameManager == null || equipe == null)
+            return 0;
+
+        switch (action)
+        {
+            case ENUM_EQUIPE_ACTION.Exploration:
+                return CalculerCoutExploration(gameManager, equipe);
+
+            case ENUM_EQUIPE_ACTION.Vadrouille:
+                return CalculerCoutVadrouille(gameManager, equipe);
+
+            default:
+                return 0;
+        }
+    }
+
     private int CalculerCoutExploration(SYS_GameManager gameManager, STATE_EQUIPE equipe)
     {
         if (gameManager == null || equipe == null || gameManager.ExplorationConfig == null)
@@ -720,35 +687,54 @@ private bool ExisteEncoreDesZonesNeutresInteressantes(SYS_GameManager gameManage
             enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
         }
 
-      DATA_JOUEUR joueur = gameManager.GetDATA_JOUEURByCompagnie(equipe.compagnie);
+        ENUM_EXPLORATION_Resultat resultat = CALC_EXPLORATION_Resolver.CalculerResultat(
+            stats,
+            config.toursBase,
+            config.coutParTourBase,
+            config.prestigeBase,
+            config.chanceArtefactBase,
+            config.chanceArtefactRareBase,
+            enclavement
+        );
 
-int toursModifies = SVC_EQUIPE_ExplorationEffects.GetToursBaseModifies(
-    equipe,
-    joueur,
-    config.toursBase
-);
+        return resultat != null ? resultat.coutTotal : 0;
+    }
 
-float chanceArtefactModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactModifiee(
-    equipe,
-    joueur,
-    config.chanceArtefactBase
-);
+    private int CalculerCoutVadrouille(SYS_GameManager gameManager, STATE_EQUIPE equipe)
+    {
+        if (gameManager == null || equipe == null || gameManager.VadrouilleConfig == null)
+            return 0;
 
-float chanceArtefactRareModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactRareModifiee(
-    equipe,
-    joueur,
-    config.chanceArtefactRareBase
-);
+        VadrouilleConfig config = gameManager.VadrouilleConfig;
+        DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
+        EQUIPE_StatsSnapshot stats = CALC_EQUIPE_StatsCalculator.Calculer(equipe);
 
-ENUM_EXPLORATION_Resultat resultat = CALC_EXPLORATION_Resolver.CalculerResultat(
-    stats,
-    toursModifies,
-    config.coutParTourBase,
-    config.prestigeBase,
-    chanceArtefactModifiee,
-    chanceArtefactRareModifiee,
-    enclavement
-);
+        int toursModifies = SVC_EQUIPE_VadrouilleEffects.GetToursVadrouilleFinals(
+            equipe,
+            joueur,
+            config.toursBase
+        );
+
+        float gainOccupation = SVC_EQUIPE_VadrouilleEffects.GetGainOccupationFinal(
+            equipe,
+            joueur,
+            config.gainOccupationBase
+        );
+
+        float reductionAdverse = SVC_EQUIPE_VadrouilleEffects.GetReductionOccupationAdverseFinal(
+            equipe,
+            joueur,
+            config.reductionOccupationAdverseBase
+        );
+
+        DATA_VADROUILLE_Resultat resultat = CALC_VADROUILLE_Resolver.CalculerResultat(
+            stats,
+            toursModifies,
+            config.coutParTourBase,
+            config.prestigeBase,
+            gainOccupation,
+            reductionAdverse
+        );
 
         return resultat != null ? resultat.coutTotal : 0;
     }
@@ -762,78 +748,45 @@ ENUM_EXPLORATION_Resultat resultat = CALC_EXPLORATION_Resolver.CalculerResultat(
         {
             case ENUM_IA_Personnalite.Agressive:
                 return 5;
-
             case ENUM_IA_Personnalite.Economique:
                 return 3;
-
             case ENUM_IA_Personnalite.Expansionniste:
                 return 4;
-
             case ENUM_IA_Personnalite.Prestige:
                 return 4;
-
             case ENUM_IA_Personnalite.Opportuniste:
                 return 4;
-
             case ENUM_IA_Personnalite.Equilibree:
             default:
                 return 4;
         }
     }
 
-   private int GetTailleMinEquipePourExploration(DATA_JOUEUR joueur)
-{
-    if (joueur == null)
+    private int GetTailleMinEquipePourAction(DATA_JOUEUR joueur)
+    {
         return 1;
-
-    switch (joueur.personnaliteIA)
-    {
-        case ENUM_IA_Personnalite.Agressive:
-            return 1;
-
-        case ENUM_IA_Personnalite.Prestige:
-            return 1;
-
-        case ENUM_IA_Personnalite.Economique:
-            return 1;
-
-        case ENUM_IA_Personnalite.Expansionniste:
-            return 1;
-
-        case ENUM_IA_Personnalite.Opportuniste:
-            return 1;
-
-        case ENUM_IA_Personnalite.Equilibree:
-        default:
-            return 1;
     }
-}
 
-  private float GetRatioMinimalBudgetPourExplorer(DATA_JOUEUR joueur)
-{
-    if (joueur == null)
-        return 1f;
-
-    switch (joueur.personnaliteIA)
+    private float GetRatioMinimalBudgetPourAction(DATA_JOUEUR joueur)
     {
-        case ENUM_IA_Personnalite.Agressive:
-            return 0.9f;
+        if (joueur == null)
+            return 1f;
 
-        case ENUM_IA_Personnalite.Prestige:
-            return 1.0f;
-
-        case ENUM_IA_Personnalite.Economique:
-            return 1.15f;
-
-        case ENUM_IA_Personnalite.Expansionniste:
-            return 1.0f;
-
-        case ENUM_IA_Personnalite.Opportuniste:
-            return 1.05f;
-
-        case ENUM_IA_Personnalite.Equilibree:
-        default:
-            return 1.0f;
+        switch (joueur.personnaliteIA)
+        {
+            case ENUM_IA_Personnalite.Agressive:
+                return 0.9f;
+            case ENUM_IA_Personnalite.Prestige:
+                return 1.0f;
+            case ENUM_IA_Personnalite.Economique:
+                return 1.15f;
+            case ENUM_IA_Personnalite.Expansionniste:
+                return 1.0f;
+            case ENUM_IA_Personnalite.Opportuniste:
+                return 1.05f;
+            case ENUM_IA_Personnalite.Equilibree:
+            default:
+                return 1.0f;
+        }
     }
-}
 }

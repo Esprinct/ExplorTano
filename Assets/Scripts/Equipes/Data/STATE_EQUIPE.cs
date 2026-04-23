@@ -10,9 +10,7 @@ public class STATE_EQUIPE
     public ENUM_EQUIPE_SPECIALISATION specialisation = ENUM_EQUIPE_SPECIALISATION.Reconnaissance;
     public SCOBJ_EQUIPE_SPECIALISATION dataSpecialisation;
 
-    // =========================
-    // Nouveau noyau unifié
-    // =========================
+    // Runtime unifié
     public ENUM_EQUIPE_ACTION actionEnCours = ENUM_EQUIPE_ACTION.Aucune;
     public int actionToursRestants = 0;
     public int actionToursTotaux = 0;
@@ -28,15 +26,10 @@ public class STATE_EQUIPE
     public List<SCOBJ_OBJET_EQUIPPABLE> objetsEquipes = new();
     public List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack> consommables = new();
 
-    // =========================
-    // Progression équipe legacy
-    // =========================
+    // Progression équipe
     public STATE_LevelProgression progression;
     public CFG_LevelProgression progressionConfig;
 
-    // =========================
-    // Helpers nouveaux
-    // =========================
     public bool AUneActionEnCours =>
         actionEnCours != ENUM_EQUIPE_ACTION.Aucune &&
         actionToursRestants > 0;
@@ -53,13 +46,11 @@ public class STATE_EQUIPE
         actionEnCours == ENUM_EQUIPE_ACTION.Vadrouille &&
         AUneActionEnCours;
 
-    // =========================
-    // Compatibilité legacy
-    // =========================
+    // ---- Compatibilité temporaire ----
 
     public bool explorationEnCours
     {
-        get => actionEnCours == ENUM_EQUIPE_ACTION.Exploration && actionToursRestants > 0;
+        get => EstEnExploration;
         set
         {
             if (value)
@@ -85,7 +76,7 @@ public class STATE_EQUIPE
 
     public bool vadrouilleEnCours
     {
-        get => actionEnCours == ENUM_EQUIPE_ACTION.Vadrouille && actionToursRestants > 0;
+        get => EstEnVadrouille;
         set
         {
             if (value)

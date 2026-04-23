@@ -23,6 +23,7 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
             return;
 
         VadrouilleConfig config = gameManager.VadrouilleConfig;
+
         EQUIPE_StatsSnapshot stats = CALC_EQUIPE_StatsCalculator.Calculer(equipe);
 
         int toursModifies = SVC_EQUIPE_VadrouilleEffects.GetToursVadrouilleFinals(
@@ -52,10 +53,16 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
             reductionAdverse
         );
 
-        if (resultat == null || joueur.etrinium < resultat.coutTotal)
+        if (resultat == null)
+            return;
+
+        if (joueur.etrinium < resultat.coutTotal)
             return;
 
         joueur.etrinium -= resultat.coutTotal;
+
+        equipe.compagnie = joueur.compagnie;
+        equipe.vadrouilleTerminee = false;
         equipe.resultatVadrouille = resultat;
 
         InitialiserAction(equipe, TypeAction, resultat.toursFinaux);
@@ -63,6 +70,11 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
         gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
         gameManager.SynchroniserHudAvecJoueurHumain();
         uiSystem?.RefreshToutLeHUD(gameManager);
+
+        Debug.Log(
+            $"[VADROUILLE_ACTION_START] equipe={equipe.data?.nomEquipe} | " +
+            $"tours={equipe.actionToursRestants}/{equipe.actionToursTotaux}"
+        );
     }
 
     public override void MettreAJour(SYS_GameManager gameManager)
@@ -78,7 +90,9 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
             equipe.actionToursRestants--;
 
             if (equipe.actionToursRestants <= 0)
+            {
                 Terminer(gameManager, equipe);
+            }
         }
     }
 
@@ -113,13 +127,19 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
         }
 
         CloturerAction(equipe);
+
+        equipe.vadrouilleTerminee = true;
         equipe.resultatVadrouille = null;
 
         if (!equipe.affectationAutomatique)
+        {
             equipe.provinceAffectee = null;
+        }
 
         gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
         gameManager.SynchroniserHudAvecJoueurHumain();
         uiSystem?.RefreshToutLeHUD(gameManager);
+
+        Debug.Log($"[VADROUILLE_ACTION_END] equipe={equipe.data?.nomEquipe}");
     }
 }

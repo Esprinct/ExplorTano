@@ -70,7 +70,7 @@ public class HUD_EQUIPE_Slot : MonoBehaviour
         }
 
         if (statutExplorationText != null)
-            statutExplorationText.text = data.statutAction;
+            statutExplorationText.text = data.statutExploration;
 
         if (autoActionText != null)
         {
@@ -91,7 +91,7 @@ public class HUD_EQUIPE_Slot : MonoBehaviour
 
         bool afficherProgression =
             data != null &&
-            data.aUneActionEnCours &&
+            data.actionEnCours &&
             data.toursTotaux > 0;
 
         explorationSlider.gameObject.SetActive(afficherProgression);

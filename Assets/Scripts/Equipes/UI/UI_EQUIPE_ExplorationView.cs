@@ -40,10 +40,20 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
             return;
         }
 
+        bool explorationEnCours = equipe.explorationEnCours;
+        bool vadrouilleEnCours = equipe.vadrouilleEnCours;
+        bool actionEnCours = explorationEnCours || vadrouilleEnCours;
+
+        string nomAction = "Action";
+        if (vadrouilleEnCours)
+            nomAction = "Vadrouille";
+        else if (explorationEnCours)
+            nomAction = "Exploration";
+
         if (toursEnCoursText != null)
         {
-            toursEnCoursText.text = equipe.explorationEnCours
-                ? equipe.toursRestants.ToString()
+            toursEnCoursText.text = actionEnCours
+                ? $"{nomAction} : {equipe.toursRestants}"
                 : "-";
         }
 
@@ -158,14 +168,9 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
             prestigeFinal = result.prestigeFinal,
             chanceRelique = result.chanceRelique,
             chanceReliqueRare = result.chanceReliqueRare,
-            influenceActuellePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
-            influenceProjeteePct = CalculerPourcentageInfluenceProjeteDansProvince(equipe, config.gainInfluence),
-            gainEtriniumParTour = CalculerGainPotentielEtriniumParTour(
-                equipe,
-                gameManager,
-                etriniumProvince,
-                config.gainInfluence
-            ),
+           influenceActuellePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
+influenceProjeteePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
+gainEtriniumParTour = 0f,
             explorationActuellePct = explorationActuelle,
             explorationProjeteePct = explorationProjetee
         };
@@ -284,7 +289,7 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
         float etriniumProvince,
         float gainInfluence)
     {
-        if (equipe == null || gameManager == null)
+        if (equipe == null || gameManager == null || equipe.provinceAffectee == null)
             return 0f;
 
         DATA_JOUEUR humain = gameManager.GetHumanPlayer();
@@ -292,8 +297,6 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
             return 0f;
 
         STATE_PROVINCE province = equipe.provinceAffectee;
-        if (province == null)
-            return 0f;
 
         float totalAvant =
             province.influenceMaizin +
@@ -369,8 +372,8 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
         public float chanceReliqueRare;
         public float influenceActuellePct;
         public float influenceProjeteePct;
-        public float gainEtriniumParTour;
         public float explorationActuellePct;
         public float explorationProjeteePct;
+        public float gainEtriniumParTour;
     }
 }

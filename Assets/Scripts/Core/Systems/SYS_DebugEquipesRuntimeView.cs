@@ -26,9 +26,7 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
     private void LateUpdate()
     {
         if (refreshDebugEquipesChaqueFrame)
-        {
             RefreshDebugEquipesAdverses();
-        }
     }
 
     public void RefreshDebugEquipesAdverses()
@@ -52,6 +50,8 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
             if (equipe == null)
                 continue;
 
+            bool actionEnCours = equipe.AUneActionEnCours;
+
             DATA_DebugEquipeRuntimeView debugEquipe = new DATA_DebugEquipeRuntimeView
             {
                 nomEquipe = equipe.data != null ? equipe.data.nomEquipe : "Equipe",
@@ -59,12 +59,12 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
                 province = equipe.provinceAffectee != null && equipe.provinceAffectee.data != null
                     ? equipe.provinceAffectee.data.nom
                     : "Aucune",
-                explorationEnCours = equipe.explorationEnCours,
-                explorationTerminee = equipe.explorationTerminee,
-                toursRestants = equipe.toursRestants,
-                toursTotaux = equipe.toursTotaux,
+                explorationEnCours = actionEnCours,
+                explorationTerminee = equipe.actionTerminee,
+                toursRestants = equipe.actionToursRestants,
+                toursTotaux = equipe.actionToursTotaux,
                 affectationAutomatique = equipe.affectationAutomatique,
-                lancementExplorationAutomatique = equipe.lancementExplorationAutomatique,
+                lancementExplorationAutomatique = equipe.lancementActionAutomatique,
                 niveauEquipe = equipe.niveauActuel,
                 membres = new List<DATA_DebugPersonnageRuntimeView>()
             };
@@ -136,7 +136,7 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
             ? gameManager.CoutFixeEquipeAvecMembresParTour
             : gameManager.CoutFixeEquipeParTour;
 
-        if (equipe.explorationEnCours)
+        if (equipe.actionEnCours == ENUM_EQUIPE_ACTION.Exploration)
         {
             debugEquipe.coutFixeEquipeParTourEstime += gameManager.SurcoutEquipeEnExplorationParTour;
         }

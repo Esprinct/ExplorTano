@@ -2,30 +2,30 @@ using System.Collections.Generic;
 
 public static class SVC_EQUIPE_SpecialisationService
 {
-    
     public static bool PeutChoisirSpecialisation(
-    STATE_EQUIPE equipe,
-    SCOBJ_EQUIPE_SPECIALISATION cible)
-{
-    if (equipe == null || cible == null)
-        return false;
-
-    if (equipe.explorationEnCours || equipe.vadrouilleEnCours)
-        return false;
-
-    if (equipe.NiveauActuel < cible.niveauMinimum)
-        return false;
-
-    if (equipe.specialisation == cible.type)
-        return false;
-
-    if (equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
+        STATE_EQUIPE equipe,
+        SCOBJ_EQUIPE_SPECIALISATION cible)
     {
-        return cible.specialisationParent == ENUM_EQUIPE_SPECIALISATION.Reconnaissance;
+        if (equipe == null || cible == null)
+            return false;
+
+        if (equipe.explorationEnCours || equipe.vadrouilleEnCours)
+            return false;
+
+        if (equipe.NiveauActuel < cible.niveauMinimum)
+            return false;
+
+        if (equipe.specialisation == cible.type)
+            return false;
+
+        if (equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
+        {
+            return cible.specialisationParent == ENUM_EQUIPE_SPECIALISATION.Reconnaissance;
+        }
+
+        return cible.specialisationParent == equipe.specialisation;
     }
 
-    return cible.specialisationParent == equipe.specialisation;
-}
     public static bool AppliquerSpecialisation(
         STATE_EQUIPE equipe,
         SCOBJ_EQUIPE_SPECIALISATION cible)
@@ -77,63 +77,59 @@ public static class SVC_EQUIPE_SpecialisationService
 
         return false;
     }
-   public static bool EstSpecialisationDejaDebloquee(
-    STATE_EQUIPE equipe,
-    SCOBJ_EQUIPE_SPECIALISATION cible,
-    List<SCOBJ_EQUIPE_SPECIALISATION> toutesLesSpecialisations)
-{
-    if (equipe == null || cible == null || toutesLesSpecialisations == null)
-        return false;
 
-    // La spécialisation actuelle est évidemment débloquée
-    if (equipe.specialisation == cible.type)
-        return true;
-
-    // On remonte uniquement la chaîne des parents de la spécialisation actuelle.
-    // Donc seuls les ancêtres sont "déjà débloqués".
-    ENUM_EQUIPE_SPECIALISATION courant = equipe.specialisation;
-
-    while (true)
+    public static bool EstSpecialisationDejaDebloquee(
+        STATE_EQUIPE equipe,
+        SCOBJ_EQUIPE_SPECIALISATION cible,
+        List<SCOBJ_EQUIPE_SPECIALISATION> toutesLesSpecialisations)
     {
-        SCOBJ_EQUIPE_SPECIALISATION assetCourant =
-            GetSpecialisationByType(courant, toutesLesSpecialisations);
-
-        if (assetCourant == null)
+        if (equipe == null || cible == null || toutesLesSpecialisations == null)
             return false;
 
-        // Si le parent du courant est la cible, alors la cible est un ancêtre
-        if (assetCourant.specialisationParent == cible.type)
+        if (equipe.specialisation == cible.type)
             return true;
 
-        // Si on est arrivé à Reconnaissance, on s'arrête
-        if (assetCourant.type == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
-            break;
+        ENUM_EQUIPE_SPECIALISATION courant = equipe.specialisation;
 
-        // Sécurité : éviter une boucle infinie si un asset est mal configuré
-        if (assetCourant.specialisationParent == assetCourant.type)
-            break;
+        while (true)
+        {
+            SCOBJ_EQUIPE_SPECIALISATION assetCourant =
+                GetSpecialisationByType(courant, toutesLesSpecialisations);
 
-        courant = assetCourant.specialisationParent;
+            if (assetCourant == null)
+                return false;
+
+            if (assetCourant.specialisationParent == cible.type)
+                return true;
+
+            if (assetCourant.type == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
+                break;
+
+            if (assetCourant.specialisationParent == assetCourant.type)
+                break;
+
+            courant = assetCourant.specialisationParent;
+        }
+
+        return false;
     }
 
-    return false;
-}
-public static SCOBJ_EQUIPE_SPECIALISATION GetSpecialisationByType(
-    ENUM_EQUIPE_SPECIALISATION type,
-    List<SCOBJ_EQUIPE_SPECIALISATION> toutesLesSpecialisations)
-{
-    if (toutesLesSpecialisations == null)
-        return null;
-
-    foreach (SCOBJ_EQUIPE_SPECIALISATION specialisation in toutesLesSpecialisations)
+    public static SCOBJ_EQUIPE_SPECIALISATION GetSpecialisationByType(
+        ENUM_EQUIPE_SPECIALISATION type,
+        List<SCOBJ_EQUIPE_SPECIALISATION> toutesLesSpecialisations)
     {
-        if (specialisation == null)
-            continue;
+        if (toutesLesSpecialisations == null)
+            return null;
 
-        if (specialisation.type == type)
-            return specialisation;
+        foreach (SCOBJ_EQUIPE_SPECIALISATION specialisation in toutesLesSpecialisations)
+        {
+            if (specialisation == null)
+                continue;
+
+            if (specialisation.type == type)
+                return specialisation;
+        }
+
+        return null;
     }
-
-    return null;
-}
 }

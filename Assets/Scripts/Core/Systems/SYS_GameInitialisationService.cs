@@ -47,7 +47,7 @@ public class SYS_GameInitializationService
             DATA_JOUEUR proprietaire = joueurs[indexAttribution % joueurs.Count];
             indexAttribution++;
 
-            STATE_EQUIPE equipeRuntime = CreerEquipeRuntime(equipeSource, proprietaire);
+            STATE_EQUIPE equipeRuntime = CreerEquipeRuntime(gameManager, equipeSource, proprietaire);
             if (equipeRuntime == null)
                 continue;
 
@@ -98,7 +98,10 @@ public class SYS_GameInitializationService
         return joueurs;
     }
 
-    private STATE_EQUIPE CreerEquipeRuntime(SCOBJ_EQUIPE equipeSource, DATA_JOUEUR proprietaire)
+    private STATE_EQUIPE CreerEquipeRuntime(
+        SYS_GameManager gameManager,
+        SCOBJ_EQUIPE equipeSource,
+        DATA_JOUEUR proprietaire)
     {
         if (equipeSource == null || proprietaire == null)
             return null;
@@ -142,8 +145,15 @@ public class SYS_GameInitializationService
 
             membresActuels = new List<SCOBJ_Personnage>(membresRuntime),
             objetsEquipes = new List<SCOBJ_OBJET_EQUIPPABLE>(),
-            consommables = new List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack>()
+            consommables = new List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack>(),
+
+            progression = new STATE_LevelProgression(),
+            progressionConfig = gameManager != null ? gameManager.ProgressionConfigEquipe : null
         };
+
+        equipeRuntime.SynchroniserNiveauLegacyDepuisProgression();
+        if (equipeRuntime.niveauActuel <= 0)
+            equipeRuntime.niveauActuel = Mathf.Max(1, equipeSource.niveauDeBase);
 
         return equipeRuntime;
     }
@@ -161,14 +171,12 @@ public class SYS_GameInitializationService
                 continue;
 
             if (!joueur.personnagesRecrutes.Contains(membre))
-            {
                 joueur.personnagesRecrutes.Add(membre);
-            }
         }
     }
 
     private void InitialiserProvinces(SYS_GameManager gameManager)
     {
-        // Les provinces sont déjà placées en scène et s'enregistrent via RegisterProvince().
+        // Les provinces s'enregistrent déjà via la scène / RegisterProvince().
     }
 }

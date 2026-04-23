@@ -9,32 +9,23 @@ public class SYS_GameUiRefreshService
 
     private DATA_EQUIPE_DetailData BuildDATA_EQUIPE_DetailData(STATE_EQUIPE equipe)
     {
-        ENUM_EQUIPE_ACTION action = equipe != null ? equipe.actionEnCours : ENUM_EQUIPE_ACTION.Aucune;
-        bool actionActive = equipe != null && equipe.AUneActionEnCours;
+        bool explorationEnCours = equipe != null && equipe.explorationEnCours;
+        bool vadrouilleEnCours = equipe != null && equipe.vadrouilleEnCours;
+        bool actionEnCours = explorationEnCours || vadrouilleEnCours;
 
-        string nomAction = "";
-        switch (action)
-        {
-            case ENUM_EQUIPE_ACTION.Vadrouille:
-                nomAction = "Vadrouille";
-                break;
-            case ENUM_EQUIPE_ACTION.Construction:
-                nomAction = "Construction";
-                break;
-            case ENUM_EQUIPE_ACTION.Exploration:
-                nomAction = "Exploration";
-                break;
-        }
+        string nomActionEnCours = "";
+        if (vadrouilleEnCours)
+            nomActionEnCours = "Vadrouille";
+        else if (explorationEnCours)
+            nomActionEnCours = "Exploration";
 
         string statut = "Non affectée";
-        if (actionActive)
-        {
-            statut = $"{nomAction} en cours";
-        }
+        if (vadrouilleEnCours)
+            statut = "Vadrouille en cours";
+        else if (explorationEnCours)
+            statut = "Exploration en cours";
         else if (equipe != null && equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
-        {
             statut = "Affectée";
-        }
 
         return new DATA_EQUIPE_DetailData
         {
@@ -46,16 +37,17 @@ public class SYS_GameUiRefreshService
             portraitChef = equipe != null && equipe.data != null ? equipe.data.portraitChef : null,
             niveau = equipe != null ? equipe.niveauActuel : 1,
 
-            actionEnCours = action,
-            aUneActionEnCours = actionActive,
-            nomActionEnCours = nomAction,
+            explorationEnCours = explorationEnCours,
+            vadrouilleEnCours = vadrouilleEnCours,
+            actionEnCours = actionEnCours,
+            nomActionEnCours = nomActionEnCours,
 
-            lancementActionAutomatique = equipe != null && equipe.lancementActionAutomatique,
+            lancementActionAutomatique = equipe != null && equipe.lancementExplorationAutomatique,
 
-            toursRestants = equipe != null ? equipe.actionToursRestants : 0,
-            toursTotaux = equipe != null ? equipe.actionToursTotaux : 0,
+            toursRestants = equipe != null ? equipe.toursRestants : 0,
+            toursTotaux = equipe != null ? equipe.toursTotaux : 0,
 
-            statutAction = statut
+            statutExploration = statut
         };
     }
 
@@ -97,7 +89,9 @@ public class SYS_GameUiRefreshService
 
                 DATA_EQUIPE_DetailData equipeData = BuildDATA_EQUIPE_DetailData(equipe);
                 if (equipeData != null)
+                {
                     equipesHud.Add(equipeData);
+                }
             }
         }
 
@@ -134,7 +128,7 @@ public class SYS_GameUiRefreshService
         if (province == null)
             return;
 
-        UI_PROVINCE_View[] provinceViews = Object.FindObjectsByType<UI_PROVINCE_View>(FindObjectsSortMode.None);
+        UI_PROVINCE_View[] provinceViews = Object.FindObjectsByType<UI_PROVINCE_View>();
 
         foreach (UI_PROVINCE_View view in provinceViews)
         {

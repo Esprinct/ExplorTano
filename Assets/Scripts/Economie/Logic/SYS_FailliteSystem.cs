@@ -132,20 +132,22 @@ public class SYS_FailliteSystem
             if (!equipeVide)
                 continue;
 
-            if (equipe.explorationEnCours || equipe.explorationTerminee)
+            if (equipe.AUneActionEnCours || equipe.actionTerminee)
             {
                 Debug.Log(
-                    $"[FAILLITE] Exploration interrompue pour équipe vide | " +
+                    $"[FAILLITE] Action interrompue pour équipe vide | " +
                     $"joueur={joueur.nomJoueur} | équipe={equipe.data?.nomEquipe}"
                 );
             }
 
-            equipe.explorationEnCours = false;
-            equipe.explorationTerminee = false;
-            equipe.toursRestants = 0;
-            equipe.toursTotaux = 0;
+            equipe.actionEnCours = ENUM_EQUIPE_ACTION.Aucune;
+            equipe.actionTerminee = false;
+            equipe.actionToursRestants = 0;
+            equipe.actionToursTotaux = 0;
             equipe.resultatExploration = null;
+            equipe.resultatVadrouille = null;
             equipe.provinceAffectee = null;
+            equipe.lancementActionAutomatique = false;
             equipe.lancementExplorationAutomatique = false;
         }
     }
@@ -237,7 +239,7 @@ public class SYS_FailliteSystem
                     ? gameManager.CoutFixeEquipeAvecMembresParTour
                     : gameManager.CoutFixeEquipeParTour;
 
-                if (equipe.explorationEnCours)
+                if (equipe.actionEnCours == ENUM_EQUIPE_ACTION.Exploration)
                 {
                     coutEquipe += gameManager.SurcoutEquipeEnExplorationParTour;
                 }
@@ -259,7 +261,7 @@ public class SYS_FailliteSystem
 
         foreach (STATE_EQUIPE equipe in gameManager.EquipesRuntime)
         {
-            if (equipe == null || !equipe.explorationEnCours || equipe.compagnie != joueur.compagnie)
+            if (equipe == null || equipe.actionEnCours != ENUM_EQUIPE_ACTION.Exploration || equipe.compagnie != joueur.compagnie)
                 continue;
 
             if (equipe.membresActuels == null)

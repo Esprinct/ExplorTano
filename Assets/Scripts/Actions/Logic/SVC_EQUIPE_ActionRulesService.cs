@@ -72,10 +72,13 @@ public static class SVC_EQUIPE_ActionRulesService
         {
             case ENUM_EQUIPE_ACTION.Vadrouille:
                 return "Démarrer la vadrouille";
+
             case ENUM_EQUIPE_ACTION.Construction:
                 return "Démarrer la construction";
+
             case ENUM_EQUIPE_ACTION.Exploration:
                 return "Démarrer l'exploration";
+
             default:
                 return "Aucune action";
         }
@@ -87,10 +90,13 @@ public static class SVC_EQUIPE_ActionRulesService
         {
             case ENUM_EQUIPE_ACTION.Vadrouille:
                 return "Affecter à une province à sécuriser";
+
             case ENUM_EQUIPE_ACTION.Construction:
                 return "Affecter à une province à construire";
+
             case ENUM_EQUIPE_ACTION.Exploration:
                 return "Affecter à une province à explorer";
+
             default:
                 return "Affecter à une province";
         }
@@ -101,7 +107,8 @@ public static class SVC_EQUIPE_ActionRulesService
         if (equipe == null)
             return false;
 
-        if (equipe.AUneActionEnCours)
+        bool actionEnCours = equipe.explorationEnCours || equipe.vadrouilleEnCours;
+        if (actionEnCours)
             return false;
 
         return GetActionPrincipale(equipe) != ENUM_EQUIPE_ACTION.Aucune;

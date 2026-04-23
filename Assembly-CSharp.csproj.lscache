@@ -57,8 +57,8 @@ Assets/Scripts/Actions/Logic/
  SVC_EQUIPE_ActionRulesService.cs
  SYS_ConstructionAction.cs
  SYS_EquipeActionSystem.cs
+ SYS_ExplorationAction.cs
  SYS_VadrouilleAction.cs
- YS_ExplorationAction.cs
 Assets/Scripts/Core/Data/
  DATA_Partie_Hud_Tour.cs
  ENUM_Compagnie.cs

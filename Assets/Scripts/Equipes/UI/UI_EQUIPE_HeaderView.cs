@@ -12,18 +12,16 @@ public class UI_EQUIPE_HeaderView : MonoBehaviour
     [SerializeField] private TMP_Text statutExploration;
     [SerializeField] private TMP_Text toursRestants;
 
-    [Header("Couleurs statut exploration")]
+    [Header("Couleurs statut action")]
     [SerializeField] private Color couleurEnAttenteAffectation = new Color(1f, 0.4f, 0.7f, 1f);
     [SerializeField] private Color couleurAffectee = Color.white;
-    [SerializeField] private Color couleurExplorationEnCours = Color.yellow;
-    [SerializeField] private Color couleurExplorationTerminee = Color.green;
+    [SerializeField] private Color couleurActionEnCours = Color.yellow;
+    [SerializeField] private Color couleurActionTerminee = Color.green;
 
     public void Refresh(STATE_EQUIPE equipe)
     {
         if (equipe == null || equipe.data == null)
-        {
             return;
-        }
 
         if (portraitChef != null)
         {
@@ -48,19 +46,29 @@ public class UI_EQUIPE_HeaderView : MonoBehaviour
             niveau.text = $"Lv. : {equipe.niveauActuel}";
         }
 
+        bool explorationEnCours = equipe.explorationEnCours;
+        bool vadrouilleEnCours = equipe.vadrouilleEnCours;
+        bool actionEnCours = explorationEnCours || vadrouilleEnCours;
+
+        string labelAction = "Action";
+        if (vadrouilleEnCours)
+            labelAction = "Vadrouille";
+        else if (explorationEnCours)
+            labelAction = "Exploration";
+
         if (statutExploration != null)
         {
-            if (equipe.explorationEnCours)
+            if (actionEnCours)
             {
-                statutExploration.text = "Exploration en cours";
-                statutExploration.color = couleurExplorationEnCours;
+                statutExploration.text = $"{labelAction} en cours";
+                statutExploration.color = couleurActionEnCours;
             }
-            else if (equipe.explorationTerminee)
+            else if (equipe.actionTerminee)
             {
-                statutExploration.text = "Exploration terminée";
-                statutExploration.color = couleurExplorationTerminee;
+                statutExploration.text = "Action terminée";
+                statutExploration.color = couleurActionTerminee;
             }
-            else if (equipe.provinceAffectee != null)
+            else if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
             {
                 statutExploration.text = "Affectée";
                 statutExploration.color = couleurAffectee;
@@ -74,9 +82,14 @@ public class UI_EQUIPE_HeaderView : MonoBehaviour
 
         if (toursRestants != null)
         {
-            toursRestants.text = equipe.explorationEnCours
-                ? $"Tours restants : {equipe.toursRestants} / {equipe.toursTotaux}"
-                : "Aucune exploration en cours";
+            if (actionEnCours && equipe.toursTotaux > 0)
+            {
+                toursRestants.text = $"Tours restants : {equipe.toursRestants} / {equipe.toursTotaux}";
+            }
+            else
+            {
+                toursRestants.text = "Aucune action en cours";
+            }
         }
     }
 }
