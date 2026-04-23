@@ -23,7 +23,6 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
             return;
 
         VadrouilleConfig config = gameManager.VadrouilleConfig;
-
         EQUIPE_StatsSnapshot stats = CALC_EQUIPE_StatsCalculator.Calculer(equipe);
 
         int toursModifies = SVC_EQUIPE_VadrouilleEffects.GetToursVadrouilleFinals(
@@ -53,16 +52,13 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
             reductionAdverse
         );
 
-        if (resultat == null)
-            return;
-
-        if (joueur.etrinium < resultat.coutTotal)
+        if (resultat == null || joueur.etrinium < resultat.coutTotal)
             return;
 
         joueur.etrinium -= resultat.coutTotal;
 
         equipe.compagnie = joueur.compagnie;
-        equipe.vadrouilleTerminee = false;
+        equipe.actionTerminee = false;
         equipe.resultatVadrouille = resultat;
 
         InitialiserAction(equipe, TypeAction, resultat.toursFinaux);
@@ -90,9 +86,7 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
             equipe.actionToursRestants--;
 
             if (equipe.actionToursRestants <= 0)
-            {
                 Terminer(gameManager, equipe);
-            }
         }
     }
 
@@ -126,19 +120,26 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
             joueur.prestige += equipe.resultatVadrouille.prestigeFinal;
         }
 
-        CloturerAction(equipe);
+       CloturerAction(equipe);
+equipe.actionTerminee = true;
+equipe.resultatVadrouille = null;
 
-        equipe.vadrouilleTerminee = true;
-        equipe.resultatVadrouille = null;
+if (!equipe.affectationAutomatique)
+    equipe.provinceAffectee = null;
 
-        if (!equipe.affectationAutomatique)
-        {
-            equipe.provinceAffectee = null;
-        }
+gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
+gameManager.SynchroniserHudAvecJoueurHumain();
+uiSystem?.RefreshToutLeHUD(gameManager);
 
-        gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
-        gameManager.SynchroniserHudAvecJoueurHumain();
-        uiSystem?.RefreshToutLeHUD(gameManager);
+if (equipe.lancementActionAutomatique &&
+    equipe.provinceAffectee != null &&
+    equipe.provinceAffectee.data != null)
+{
+    Demarrer(gameManager, equipe);
+    return;
+}
+
+Debug.Log($"[VADROUILLE_ACTION_END] equipe={equipe.data?.nomEquipe}");
 
         Debug.Log($"[VADROUILLE_ACTION_END] equipe={equipe.data?.nomEquipe}");
     }

@@ -30,9 +30,7 @@ public class UI_EQUIPE_HeaderView : MonoBehaviour
         }
 
         if (nomEquipe != null)
-        {
             nomEquipe.text = equipe.data.nomEquipe;
-        }
 
         if (nomProvince != null)
         {
@@ -42,19 +40,23 @@ public class UI_EQUIPE_HeaderView : MonoBehaviour
         }
 
         if (niveau != null)
-        {
             niveau.text = $"Lv. : {equipe.niveauActuel}";
-        }
 
-        bool explorationEnCours = equipe.explorationEnCours;
-        bool vadrouilleEnCours = equipe.vadrouilleEnCours;
-        bool actionEnCours = explorationEnCours || vadrouilleEnCours;
+        bool actionEnCours = equipe.AUneActionEnCours;
 
         string labelAction = "Action";
-        if (vadrouilleEnCours)
-            labelAction = "Vadrouille";
-        else if (explorationEnCours)
-            labelAction = "Exploration";
+        switch (equipe.actionEnCours)
+        {
+            case ENUM_EQUIPE_ACTION.Vadrouille:
+                labelAction = "Vadrouille";
+                break;
+            case ENUM_EQUIPE_ACTION.Construction:
+                labelAction = "Construction";
+                break;
+            case ENUM_EQUIPE_ACTION.Exploration:
+                labelAction = "Exploration";
+                break;
+        }
 
         if (statutExploration != null)
         {
@@ -82,9 +84,9 @@ public class UI_EQUIPE_HeaderView : MonoBehaviour
 
         if (toursRestants != null)
         {
-            if (actionEnCours && equipe.toursTotaux > 0)
+            if (actionEnCours && equipe.actionToursTotaux > 0)
             {
-                toursRestants.text = $"Tours restants : {equipe.toursRestants} / {equipe.toursTotaux}";
+                toursRestants.text = $"Tours restants : {equipe.actionToursRestants} / {equipe.actionToursTotaux}";
             }
             else
             {

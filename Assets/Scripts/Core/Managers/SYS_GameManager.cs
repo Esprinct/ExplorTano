@@ -429,9 +429,8 @@ public void DemarrerVadrouille(SYS_GameManager gameManager, STATE_EQUIPE equipe,
         return;
 
     equipe.compagnie = compagnie;
-    equipe.vadrouilleEnCours = true;
-    equipe.explorationEnCours = false;
-    equipe.explorationTerminee = false;
+    equipe.actionEnCours = ENUM_EQUIPE_ACTION.Vadrouille;
+    equipe.actionTerminee = false;
 
     VadrouilleConfig config = gameManager.VadrouilleConfig;
     DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
@@ -446,12 +445,12 @@ public void DemarrerVadrouille(SYS_GameManager gameManager, STATE_EQUIPE equipe,
 
     toursFinaux = Mathf.Max(1, toursFinaux);
 
-    equipe.toursTotaux = toursFinaux;
-    equipe.toursRestants = toursFinaux;
+    equipe.actionToursTotaux = toursFinaux;
+    equipe.actionToursRestants = toursFinaux;
 
     Debug.Log(
         $"[DEMARRAGE_VADROUILLE] equipe={equipe.data?.nomEquipe} | " +
-        $"tours={equipe.toursRestants}/{equipe.toursTotaux}"
+        $"tours={equipe.actionToursRestants}/{equipe.actionToursTotaux}"
     );
 
     gameManager.UiSystem?.RefreshToutLeHUD(gameManager);

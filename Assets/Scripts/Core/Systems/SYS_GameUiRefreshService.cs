@@ -9,21 +9,30 @@ public class SYS_GameUiRefreshService
 
     private DATA_EQUIPE_DetailData BuildDATA_EQUIPE_DetailData(STATE_EQUIPE equipe)
     {
-        bool explorationEnCours = equipe != null && equipe.explorationEnCours;
-        bool vadrouilleEnCours = equipe != null && equipe.vadrouilleEnCours;
-        bool actionEnCours = explorationEnCours || vadrouilleEnCours;
+        bool actionEnCours = equipe != null && equipe.AUneActionEnCours;
 
         string nomActionEnCours = "";
-        if (vadrouilleEnCours)
-            nomActionEnCours = "Vadrouille";
-        else if (explorationEnCours)
-            nomActionEnCours = "Exploration";
+        if (equipe != null)
+        {
+            switch (equipe.actionEnCours)
+            {
+                case ENUM_EQUIPE_ACTION.Vadrouille:
+                    nomActionEnCours = "Vadrouille";
+                    break;
+                case ENUM_EQUIPE_ACTION.Construction:
+                    nomActionEnCours = "Construction";
+                    break;
+                case ENUM_EQUIPE_ACTION.Exploration:
+                    nomActionEnCours = "Exploration";
+                    break;
+            }
+        }
 
         string statut = "Non affectée";
-        if (vadrouilleEnCours)
-            statut = "Vadrouille en cours";
-        else if (explorationEnCours)
-            statut = "Exploration en cours";
+        if (actionEnCours)
+            statut = $"{nomActionEnCours} en cours";
+        else if (equipe != null && equipe.actionTerminee)
+            statut = "Action terminée";
         else if (equipe != null && equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
             statut = "Affectée";
 
@@ -37,15 +46,15 @@ public class SYS_GameUiRefreshService
             portraitChef = equipe != null && equipe.data != null ? equipe.data.portraitChef : null,
             niveau = equipe != null ? equipe.niveauActuel : 1,
 
-            explorationEnCours = explorationEnCours,
-            vadrouilleEnCours = vadrouilleEnCours,
+            explorationEnCours = equipe != null && equipe.actionEnCours == ENUM_EQUIPE_ACTION.Exploration && equipe.AUneActionEnCours,
+            vadrouilleEnCours = equipe != null && equipe.actionEnCours == ENUM_EQUIPE_ACTION.Vadrouille && equipe.AUneActionEnCours,
             actionEnCours = actionEnCours,
             nomActionEnCours = nomActionEnCours,
 
-            lancementActionAutomatique = equipe != null && equipe.lancementExplorationAutomatique,
+            lancementActionAutomatique = equipe != null && equipe.lancementActionAutomatique,
 
-            toursRestants = equipe != null ? equipe.toursRestants : 0,
-            toursTotaux = equipe != null ? equipe.toursTotaux : 0,
+            toursRestants = equipe != null ? equipe.actionToursRestants : 0,
+            toursTotaux = equipe != null ? equipe.actionToursTotaux : 0,
 
             statutExploration = statut
         };
@@ -70,14 +79,11 @@ public class SYS_GameUiRefreshService
         }
 
         if (gameManager.HudController == null || !gameManager.HudController)
-        {
             gameManager.HudController = hudControllerCache;
-        }
 
         gameManager.SynchroniserHudAvecJoueurHumain();
 
         List<DATA_EQUIPE_DetailData> equipesHud = new();
-
         DATA_JOUEUR joueurHumain = gameManager.GetHumanPlayer();
 
         if (joueurHumain != null && joueurHumain.equipes != null)
@@ -89,9 +95,7 @@ public class SYS_GameUiRefreshService
 
                 DATA_EQUIPE_DetailData equipeData = BuildDATA_EQUIPE_DetailData(equipe);
                 if (equipeData != null)
-                {
                     equipesHud.Add(equipeData);
-                }
             }
         }
 
@@ -113,14 +117,10 @@ public class SYS_GameUiRefreshService
         }
 
         if (gameManager.EquipeDetailController == null || !gameManager.EquipeDetailController)
-        {
             gameManager.EquipeDetailController = equipeDetailControllerCache;
-        }
 
         if (equipeDetailControllerCache != null && equipeDetailControllerCache.IsOpen())
-        {
             equipeDetailControllerCache.RefreshCurrentEquipe();
-        }
     }
 
     public void RefreshUI_PROVINCE_View(STATE_PROVINCE province)
@@ -149,8 +149,6 @@ public class SYS_GameUiRefreshService
         }
 
         if (provinceMenuControllerCache != null && provinceMenuControllerCache.IsOpen())
-        {
             provinceMenuControllerCache.RefreshCurrentProvince();
-        }
     }
 }

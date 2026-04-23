@@ -23,9 +23,7 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
             equipe.provinceAffectee.data != null;
 
         if (rowExplorationView != null)
-        {
             rowExplorationView.SetActive(provinceAffectee);
-        }
 
         if (!provinceAffectee || gameManager == null || gameManager.ExplorationConfig == null)
         {
@@ -40,48 +38,44 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
             return;
         }
 
-        bool explorationEnCours = equipe.explorationEnCours;
-        bool vadrouilleEnCours = equipe.vadrouilleEnCours;
-        bool actionEnCours = explorationEnCours || vadrouilleEnCours;
+        bool actionEnCours = equipe.AUneActionEnCours;
 
         string nomAction = "Action";
-        if (vadrouilleEnCours)
-            nomAction = "Vadrouille";
-        else if (explorationEnCours)
-            nomAction = "Exploration";
+        switch (equipe.actionEnCours)
+        {
+            case ENUM_EQUIPE_ACTION.Vadrouille:
+                nomAction = "Vadrouille";
+                break;
+            case ENUM_EQUIPE_ACTION.Construction:
+                nomAction = "Construction";
+                break;
+            case ENUM_EQUIPE_ACTION.Exploration:
+                nomAction = "Exploration";
+                break;
+        }
 
         if (toursEnCoursText != null)
         {
             toursEnCoursText.text = actionEnCours
-                ? $"{nomAction} : {equipe.toursRestants}"
+                ? $"{nomAction} : {equipe.actionToursRestants}"
                 : "-";
         }
 
         if (prestigeGagneText != null)
-        {
             prestigeGagneText.text = $"+{preview.prestigeFinal} Prestige";
-        }
 
         if (etriniumParTourText != null)
         {
             if (preview.gainEtriniumParTour > 0f)
-            {
                 etriniumParTourText.text = $"+{preview.gainEtriniumParTour:0.#} etrinium/tour";
-            }
             else if (preview.gainEtriniumParTour < 0f)
-            {
                 etriniumParTourText.text = $"{preview.gainEtriniumParTour:0.#} etrinium/tour";
-            }
             else
-            {
                 etriniumParTourText.text = "+0 etrinium/tour";
-            }
         }
 
         if (toursProjectionText != null)
-        {
             toursProjectionText.text = $"Durée : {preview.toursFinaux} tours";
-        }
 
         if (chanceArtefactText != null)
         {
@@ -113,13 +107,11 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
         EQUIPE_StatsSnapshot stats = CALC_EQUIPE_StatsCalculator.Calculer(equipe);
 
         int enclavement = 0;
-        float etriniumProvince = 0f;
         float explorationActuelle = 0f;
 
         if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
         {
             enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
-            etriniumProvince = equipe.provinceAffectee.data.etrinium;
             explorationActuelle = equipe.provinceAffectee.GetExploration(equipe.compagnie);
         }
 
@@ -168,9 +160,9 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
             prestigeFinal = result.prestigeFinal,
             chanceRelique = result.chanceRelique,
             chanceReliqueRare = result.chanceReliqueRare,
-           influenceActuellePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
-influenceProjeteePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
-gainEtriniumParTour = 0f,
+            influenceActuellePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
+            influenceProjeteePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
+            gainEtriniumParTour = 0f,
             explorationActuellePct = explorationActuelle,
             explorationProjeteePct = explorationProjetee
         };
@@ -221,147 +213,6 @@ gainEtriniumParTour = 0f,
         }
 
         return (influenceJoueur / totalInfluence) * 100f;
-    }
-
-    private float CalculerPourcentageInfluenceProjeteDansProvince(STATE_EQUIPE equipe, float gainInfluence)
-    {
-        if (equipe == null || equipe.provinceAffectee == null)
-            return 0f;
-
-        STATE_PROVINCE province = equipe.provinceAffectee;
-
-        float influenceMaizinApres = province.influenceMaizin;
-        float influenceKiniaApres = province.influenceKinia;
-        float influenceJohoApres = province.influenceJoho;
-        float influenceAutreApres = province.influenceAutre;
-
-        float reduction = Mathf.Min(influenceAutreApres, gainInfluence);
-
-        switch (equipe.compagnie)
-        {
-            case ENUM_Compagnie.Maizin:
-                influenceMaizinApres += reduction;
-                break;
-
-            case ENUM_Compagnie.Kinia:
-                influenceKiniaApres += reduction;
-                break;
-
-            case ENUM_Compagnie.Joho:
-                influenceJohoApres += reduction;
-                break;
-        }
-
-        influenceAutreApres -= reduction;
-
-        float totalApres =
-            influenceMaizinApres +
-            influenceKiniaApres +
-            influenceJohoApres +
-            influenceAutreApres;
-
-        if (totalApres <= 0f)
-            return 0f;
-
-        float influenceJoueurApres = 0f;
-
-        switch (equipe.compagnie)
-        {
-            case ENUM_Compagnie.Maizin:
-                influenceJoueurApres = influenceMaizinApres;
-                break;
-
-            case ENUM_Compagnie.Kinia:
-                influenceJoueurApres = influenceKiniaApres;
-                break;
-
-            case ENUM_Compagnie.Joho:
-                influenceJoueurApres = influenceJohoApres;
-                break;
-        }
-
-        return (influenceJoueurApres / totalApres) * 100f;
-    }
-
-    private float CalculerGainPotentielEtriniumParTour(
-        STATE_EQUIPE equipe,
-        SYS_GameManager gameManager,
-        float etriniumProvince,
-        float gainInfluence)
-    {
-        if (equipe == null || gameManager == null || equipe.provinceAffectee == null)
-            return 0f;
-
-        DATA_JOUEUR humain = gameManager.GetHumanPlayer();
-        if (humain == null)
-            return 0f;
-
-        STATE_PROVINCE province = equipe.provinceAffectee;
-
-        float totalAvant =
-            province.influenceMaizin +
-            province.influenceKinia +
-            province.influenceJoho +
-            province.influenceAutre;
-
-        if (totalAvant <= 0f)
-            return 0f;
-
-        float influenceMaizinApres = province.influenceMaizin;
-        float influenceKiniaApres = province.influenceKinia;
-        float influenceJohoApres = province.influenceJoho;
-        float influenceAutreApres = province.influenceAutre;
-
-        float reduction = Mathf.Min(influenceAutreApres, gainInfluence);
-
-        switch (equipe.compagnie)
-        {
-            case ENUM_Compagnie.Maizin:
-                influenceMaizinApres += reduction;
-                break;
-
-            case ENUM_Compagnie.Kinia:
-                influenceKiniaApres += reduction;
-                break;
-
-            case ENUM_Compagnie.Joho:
-                influenceJohoApres += reduction;
-                break;
-        }
-
-        influenceAutreApres -= reduction;
-
-        float totalApres =
-            influenceMaizinApres +
-            influenceKiniaApres +
-            influenceJohoApres +
-            influenceAutreApres;
-
-        if (totalApres <= 0f)
-            return 0f;
-
-        float revenuProvinceAvant = 0f;
-        float revenuProvinceApres = 0f;
-
-        switch (humain.compagnie)
-        {
-            case ENUM_Compagnie.Maizin:
-                revenuProvinceAvant = etriniumProvince * (province.influenceMaizin / totalAvant);
-                revenuProvinceApres = etriniumProvince * (influenceMaizinApres / totalApres);
-                break;
-
-            case ENUM_Compagnie.Kinia:
-                revenuProvinceAvant = etriniumProvince * (province.influenceKinia / totalAvant);
-                revenuProvinceApres = etriniumProvince * (influenceKiniaApres / totalApres);
-                break;
-
-            case ENUM_Compagnie.Joho:
-                revenuProvinceAvant = etriniumProvince * (province.influenceJoho / totalAvant);
-                revenuProvinceApres = etriniumProvince * (influenceJohoApres / totalApres);
-                break;
-        }
-
-        return revenuProvinceApres - revenuProvinceAvant;
     }
 
     private class ExplorationPreviewData

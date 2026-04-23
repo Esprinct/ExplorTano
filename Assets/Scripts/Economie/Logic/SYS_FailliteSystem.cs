@@ -25,11 +25,6 @@ public class SYS_FailliteSystem
         if (joueur.etrinium >= 0f)
             return;
 
-        Debug.Log(
-            $"[FAILLITE] Début résolution | joueur={joueur.nomJoueur} | " +
-            $"etrinium={joueur.etrinium} | revenu/tour={joueur.etriniumParTour}"
-        );
-
         int securite = 0;
         const int maxIterations = 100;
 
@@ -44,17 +39,10 @@ public class SYS_FailliteSystem
             SupprimerPersonnageDuJoueur(joueur, personnageASupprimer);
             InterrompreEquipesVides(joueur);
             RecalculerRevenuParTourPourJoueur(gameManager, joueur);
-
             securite++;
         }
 
         InterrompreEquipesVides(joueur);
-
-        Debug.Log(
-            $"[FAILLITE] Fin résolution | joueur={joueur.nomJoueur} | " +
-            $"etrinium={joueur.etrinium} | revenu/tour={joueur.etriniumParTour} | " +
-            $"persos restants={(joueur.personnagesRecrutes != null ? joueur.personnagesRecrutes.Count : 0)}"
-        );
     }
 
     private SCOBJ_Personnage ChoisirPersonnageASupprimer(DATA_JOUEUR joueur)
@@ -108,11 +96,6 @@ public class SYS_FailliteSystem
         }
 
         joueur.personnagesRecrutes.Remove(personnage);
-
-        Debug.Log(
-            $"[FAILLITE] Personnage supprimé | joueur={joueur.nomJoueur} | " +
-            $"personnage={personnage.nom} {personnage.prenom}"
-        );
     }
 
     private void InterrompreEquipesVides(DATA_JOUEUR joueur)
@@ -132,14 +115,6 @@ public class SYS_FailliteSystem
             if (!equipeVide)
                 continue;
 
-            if (equipe.AUneActionEnCours || equipe.actionTerminee)
-            {
-                Debug.Log(
-                    $"[FAILLITE] Action interrompue pour équipe vide | " +
-                    $"joueur={joueur.nomJoueur} | équipe={equipe.data?.nomEquipe}"
-                );
-            }
-
             equipe.actionEnCours = ENUM_EQUIPE_ACTION.Aucune;
             equipe.actionTerminee = false;
             equipe.actionToursRestants = 0;
@@ -148,7 +123,6 @@ public class SYS_FailliteSystem
             equipe.resultatVadrouille = null;
             equipe.provinceAffectee = null;
             equipe.lancementActionAutomatique = false;
-            equipe.lancementExplorationAutomatique = false;
         }
     }
 
@@ -240,9 +214,7 @@ public class SYS_FailliteSystem
                     : gameManager.CoutFixeEquipeParTour;
 
                 if (equipe.actionEnCours == ENUM_EQUIPE_ACTION.Exploration)
-                {
                     coutEquipe += gameManager.SurcoutEquipeEnExplorationParTour;
-                }
 
                 depenses += coutEquipe;
             }

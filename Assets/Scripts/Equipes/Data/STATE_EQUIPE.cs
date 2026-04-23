@@ -10,7 +10,6 @@ public class STATE_EQUIPE
     public ENUM_EQUIPE_SPECIALISATION specialisation = ENUM_EQUIPE_SPECIALISATION.Reconnaissance;
     public SCOBJ_EQUIPE_SPECIALISATION dataSpecialisation;
 
-    // Runtime unifié
     public ENUM_EQUIPE_ACTION actionEnCours = ENUM_EQUIPE_ACTION.Aucune;
     public int actionToursRestants = 0;
     public int actionToursTotaux = 0;
@@ -26,7 +25,6 @@ public class STATE_EQUIPE
     public List<SCOBJ_OBJET_EQUIPPABLE> objetsEquipes = new();
     public List<DATA_OBJET_CONSOMMABLE_EQUIPE_Stack> consommables = new();
 
-    // Progression équipe
     public STATE_LevelProgression progression;
     public CFG_LevelProgression progressionConfig;
 
@@ -46,130 +44,6 @@ public class STATE_EQUIPE
         actionEnCours == ENUM_EQUIPE_ACTION.Vadrouille &&
         AUneActionEnCours;
 
-    // ---- Compatibilité temporaire ----
-
-    public bool explorationEnCours
-    {
-        get => EstEnExploration;
-        set
-        {
-            if (value)
-            {
-                actionEnCours = ENUM_EQUIPE_ACTION.Exploration;
-
-                if (actionToursTotaux <= 0)
-                    actionToursTotaux = 1;
-
-                if (actionToursRestants <= 0)
-                    actionToursRestants = actionToursTotaux;
-
-                actionTerminee = false;
-            }
-            else if (actionEnCours == ENUM_EQUIPE_ACTION.Exploration)
-            {
-                actionEnCours = ENUM_EQUIPE_ACTION.Aucune;
-                actionToursRestants = 0;
-                actionToursTotaux = 0;
-            }
-        }
-    }
-
-    public bool vadrouilleEnCours
-    {
-        get => EstEnVadrouille;
-        set
-        {
-            if (value)
-            {
-                actionEnCours = ENUM_EQUIPE_ACTION.Vadrouille;
-
-                if (actionToursTotaux <= 0)
-                    actionToursTotaux = 1;
-
-                if (actionToursRestants <= 0)
-                    actionToursRestants = actionToursTotaux;
-
-                actionTerminee = false;
-            }
-            else if (actionEnCours == ENUM_EQUIPE_ACTION.Vadrouille)
-            {
-                actionEnCours = ENUM_EQUIPE_ACTION.Aucune;
-                actionToursRestants = 0;
-                actionToursTotaux = 0;
-            }
-        }
-    }
-
-    public bool explorationTerminee
-    {
-        get => actionTerminee && actionEnCours == ENUM_EQUIPE_ACTION.Aucune;
-        set
-        {
-            if (value)
-                actionTerminee = true;
-        }
-    }
-
-    public bool vadrouilleTerminee
-    {
-        get => actionTerminee && actionEnCours == ENUM_EQUIPE_ACTION.Aucune;
-        set
-        {
-            if (value)
-                actionTerminee = true;
-        }
-    }
-
-    public int toursRestants
-    {
-        get => actionToursRestants;
-        set => actionToursRestants = value;
-    }
-
-    public int toursTotaux
-    {
-        get => actionToursTotaux;
-        set => actionToursTotaux = value;
-    }
-
-    public int toursVadrouilleRestants
-    {
-        get => actionEnCours == ENUM_EQUIPE_ACTION.Vadrouille ? actionToursRestants : 0;
-        set
-        {
-            actionEnCours = ENUM_EQUIPE_ACTION.Vadrouille;
-            actionToursRestants = value;
-
-            if (actionToursTotaux < value)
-                actionToursTotaux = value;
-
-            if (value > 0)
-                actionTerminee = false;
-        }
-    }
-
-    public int toursVadrouilleTotaux
-    {
-        get => actionEnCours == ENUM_EQUIPE_ACTION.Vadrouille ? actionToursTotaux : 0;
-        set
-        {
-            actionEnCours = ENUM_EQUIPE_ACTION.Vadrouille;
-            actionToursTotaux = value;
-
-            if (actionToursRestants <= 0 && value > 0)
-                actionToursRestants = value;
-
-            if (value > 0)
-                actionTerminee = false;
-        }
-    }
-
-    public bool lancementExplorationAutomatique
-    {
-        get => lancementActionAutomatique;
-        set => lancementActionAutomatique = value;
-    }
-
     public int NiveauActuel
     {
         get => niveauActuel;
@@ -180,5 +54,15 @@ public class STATE_EQUIPE
     {
         if (progression != null)
             niveauActuel = progression.niveau;
+    }
+
+    public void ResetAction()
+    {
+        actionEnCours = ENUM_EQUIPE_ACTION.Aucune;
+        actionToursRestants = 0;
+        actionToursTotaux = 0;
+        actionTerminee = false;
+        resultatExploration = null;
+        resultatVadrouille = null;
     }
 }

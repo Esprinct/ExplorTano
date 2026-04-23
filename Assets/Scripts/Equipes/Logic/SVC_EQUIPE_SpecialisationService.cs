@@ -9,7 +9,7 @@ public static class SVC_EQUIPE_SpecialisationService
         if (equipe == null || cible == null)
             return false;
 
-        if (equipe.explorationEnCours || equipe.vadrouilleEnCours)
+        if (equipe.AUneActionEnCours)
             return false;
 
         if (equipe.NiveauActuel < cible.niveauMinimum)

@@ -24,7 +24,7 @@ public class SYS_ExplorationAction : SYS_EquipeActionBase
             return;
 
         equipe.compagnie = joueur.compagnie;
-        equipe.explorationTerminee = false;
+        equipe.actionTerminee = false;
 
         ExplorationConfig config = gameManager.ExplorationConfig;
         int toursBase = config != null ? config.toursBase : 3;
@@ -190,7 +190,7 @@ if (config != null)
         influenceSystem.MettreAJourClaimProvince(gameManager, province);
 
         CloturerAction(equipe);
-        equipe.explorationTerminee = true;
+       equipe.actionTerminee = true;
         equipe.resultatExploration = null;
 
         if (!equipe.affectationAutomatique)
@@ -202,9 +202,9 @@ if (config != null)
         gameManager.SynchroniserHudAvecJoueurHumain();
         uiSystem?.RefreshToutLeHUD(gameManager);
 
-        if (equipe.lancementExplorationAutomatique &&
-            equipe.provinceAffectee != null &&
-            equipe.provinceAffectee.data != null)
+        if (equipe.lancementActionAutomatique &&
+    equipe.provinceAffectee != null &&
+    equipe.provinceAffectee.data != null)
         {
             Demarrer(gameManager, equipe);
             return;

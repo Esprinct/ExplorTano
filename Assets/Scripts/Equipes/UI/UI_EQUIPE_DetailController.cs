@@ -91,13 +91,9 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         {
             PanelRootTag panelTag = GetComponentInChildren<PanelRootTag>(true);
             if (panelTag != null)
-            {
                 panelRoot = panelTag.gameObject;
-            }
             else
-            {
                 Debug.LogWarning($"PanelRootTag introuvable dans {name}");
-            }
         }
     }
 
@@ -110,14 +106,10 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         }
 
         if (mapController == null)
-        {
             mapController = FindAnyObjectByType<MapController>();
-        }
 
         if (gameManager == null)
-        {
             gameManager = FindAnyObjectByType<SYS_GameManager>();
-        }
     }
 
     private void OnToggleAffectationAutomatiqueChanged(bool value)
@@ -133,16 +125,14 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         if (equipeActuelle == null)
             return;
 
-        equipeActuelle.lancementExplorationAutomatique = value;
+        equipeActuelle.lancementActionAutomatique = value;
 
         if (value)
         {
             equipeActuelle.affectationAutomatique = true;
 
             if (toggleAffectationAutomatique != null)
-            {
                 toggleAffectationAutomatique.SetIsOnWithoutNotify(true);
-            }
         }
 
         RefreshEtatBoutons();
@@ -218,167 +208,155 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         if (toggleLancementExplorationAutomatique != null)
         {
             toggleLancementExplorationAutomatique.SetIsOnWithoutNotify(
-                equipeActuelle.lancementExplorationAutomatique
+                equipeActuelle.lancementActionAutomatique
             );
         }
     }
 
-   private void RefreshEtatBoutons()
-{
-    bool equipeValide = equipeActuelle != null && equipeActuelle.data != null;
-
-    bool aDesMembres =
-        equipeValide &&
-        equipeActuelle.membresActuels != null &&
-        equipeActuelle.membresActuels.Exists(p => p != null);
-
-    bool actionEnCours =
-        equipeValide &&
-        equipeActuelle.AUneActionEnCours;
-
-    bool provinceAffectee =
-        equipeValide &&
-        equipeActuelle.provinceAffectee != null &&
-        equipeActuelle.provinceAffectee.data != null;
-
-    ENUM_EQUIPE_ACTION actionPrincipale =
-        SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipeActuelle);
-
-    bool peutFaireAction = actionPrincipale != ENUM_EQUIPE_ACTION.Aucune;
-
-    string labelAction = SVC_EQUIPE_ActionRulesService.GetNomActionPrincipale(equipeActuelle);
-
-    int coutLancement = 0;
-    switch (actionPrincipale)
+    private void RefreshEtatBoutons()
     {
-        case ENUM_EQUIPE_ACTION.Vadrouille:
-            coutLancement = CalculerCoutLancementVadrouille();
-            break;
+        bool equipeValide = equipeActuelle != null && equipeActuelle.data != null;
 
-        case ENUM_EQUIPE_ACTION.Exploration:
-            coutLancement = CalculerCoutLancementExploration();
-            break;
+        bool aDesMembres =
+            equipeValide &&
+            equipeActuelle.membresActuels != null &&
+            equipeActuelle.membresActuels.Exists(p => p != null);
 
-        case ENUM_EQUIPE_ACTION.Construction:
-            coutLancement = 0;
-            break;
-    }
+        bool actionEnCours =
+            equipeValide &&
+            equipeActuelle.AUneActionEnCours;
 
-    bool aLesFonds = !JoueurHumainAPasAssezFonds(coutLancement);
+        bool provinceAffectee =
+            equipeValide &&
+            equipeActuelle.provinceAffectee != null &&
+            equipeActuelle.provinceAffectee.data != null;
 
-    bool boutonAffecterInteractable =
-        equipeValide &&
-        aDesMembres &&
-        !enAttenteSelectionProvince &&
-        !actionEnCours;
+        ENUM_EQUIPE_ACTION actionPrincipale =
+            SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipeActuelle);
 
-    bool boutonDemarrerInteractable =
-        equipeValide &&
-        aDesMembres &&
-        provinceAffectee &&
-        !enAttenteSelectionProvince &&
-        !actionEnCours &&
-        peutFaireAction &&
-        aLesFonds;
+        bool peutFaireAction = actionPrincipale != ENUM_EQUIPE_ACTION.Aucune;
 
-    Debug.Log(
-        $"[BTN_START] " +
-        $"equipeValide={equipeValide} | " +
-        $"aDesMembres={aDesMembres} | " +
-        $"provinceAffectee={provinceAffectee} | " +
-        $"enAttenteSelectionProvince={enAttenteSelectionProvince} | " +
-        $"actionEnCours={actionEnCours} | " +
-        $"aLesFonds={aLesFonds} | " +
-        $"peutFaireAction={peutFaireAction} | " +
-        $"actionPrincipale={actionPrincipale}"
-    );
+        string labelAction = SVC_EQUIPE_ActionRulesService.GetNomActionPrincipale(equipeActuelle);
 
-    if (boutonAffecterProvince != null)
-        boutonAffecterProvince.interactable = boutonAffecterInteractable;
-
-    if (boutonDemarrerExploration != null)
-        boutonDemarrerExploration.interactable = boutonDemarrerInteractable;
-
-    if (boutonAffecterProvinceText != null)
-    {
-        boutonAffecterProvinceText.text = SVC_EQUIPE_ActionRulesService.GetNomAffectation(equipeActuelle);
-        boutonAffecterProvinceText.color = boutonAffecterInteractable
-            ? couleurTexteBoutonActif
-            : couleurTexteBoutonInactif;
-    }
-
-    if (boutonDemarrerExplorationText != null)
-    {
-        if (actionEnCours)
+        int coutLancement = 0;
+        switch (actionPrincipale)
         {
-            switch (equipeActuelle.actionEnCours)
+            case ENUM_EQUIPE_ACTION.Vadrouille:
+                coutLancement = CalculerCoutLancementVadrouille();
+                break;
+
+            case ENUM_EQUIPE_ACTION.Exploration:
+                coutLancement = CalculerCoutLancementExploration();
+                break;
+
+            case ENUM_EQUIPE_ACTION.Construction:
+                coutLancement = 0;
+                break;
+        }
+
+        bool aLesFonds = !JoueurHumainAPasAssezFonds(coutLancement);
+
+        bool boutonAffecterInteractable =
+            equipeValide &&
+            aDesMembres &&
+            !enAttenteSelectionProvince &&
+            !actionEnCours;
+
+        bool boutonDemarrerInteractable =
+            equipeValide &&
+            aDesMembres &&
+            provinceAffectee &&
+            !enAttenteSelectionProvince &&
+            !actionEnCours &&
+            peutFaireAction &&
+            aLesFonds;
+
+        if (boutonAffecterProvince != null)
+            boutonAffecterProvince.interactable = boutonAffecterInteractable;
+
+        if (boutonDemarrerExploration != null)
+            boutonDemarrerExploration.interactable = boutonDemarrerInteractable;
+
+        if (boutonAffecterProvinceText != null)
+        {
+            boutonAffecterProvinceText.text = SVC_EQUIPE_ActionRulesService.GetNomAffectation(equipeActuelle);
+            boutonAffecterProvinceText.color = boutonAffecterInteractable
+                ? couleurTexteBoutonActif
+                : couleurTexteBoutonInactif;
+        }
+
+        if (boutonDemarrerExplorationText != null)
+        {
+            if (actionEnCours)
             {
-                case ENUM_EQUIPE_ACTION.Vadrouille:
-                    boutonDemarrerExplorationText.text = "Vadrouille en cours";
-                    break;
+                switch (equipeActuelle.actionEnCours)
+                {
+                    case ENUM_EQUIPE_ACTION.Vadrouille:
+                        boutonDemarrerExplorationText.text = "Vadrouille en cours";
+                        break;
 
-                case ENUM_EQUIPE_ACTION.Construction:
-                    boutonDemarrerExplorationText.text = "Construction en cours";
-                    break;
+                    case ENUM_EQUIPE_ACTION.Construction:
+                        boutonDemarrerExplorationText.text = "Construction en cours";
+                        break;
 
-                case ENUM_EQUIPE_ACTION.Exploration:
-                    boutonDemarrerExplorationText.text = "Exploration en cours";
-                    break;
+                    case ENUM_EQUIPE_ACTION.Exploration:
+                        boutonDemarrerExplorationText.text = "Exploration en cours";
+                        break;
 
-                default:
-                    boutonDemarrerExplorationText.text = "Action en cours";
-                    break;
+                    default:
+                        boutonDemarrerExplorationText.text = "Action en cours";
+                        break;
+                }
+            }
+            else
+            {
+                boutonDemarrerExplorationText.text = $"{labelAction} ({coutLancement})";
+            }
+
+            boutonDemarrerExplorationText.color = boutonDemarrerInteractable
+                ? couleurTexteBoutonActif
+                : couleurTexteBoutonInactif;
+        }
+
+        if (boutonAjouterPersonnage != null)
+            boutonAjouterPersonnage.interactable = equipeValide && !actionEnCours;
+
+        if (toggleAffectationAutomatique != null)
+            toggleAffectationAutomatique.interactable = equipeValide;
+
+        if (toggleLancementExplorationAutomatique != null)
+            toggleLancementExplorationAutomatique.interactable = equipeValide;
+
+        if (modificationsVerrouilleesText != null)
+        {
+            bool afficherMessage =
+                actionEnCours ||
+                enAttenteSelectionProvince ||
+                (aDesMembres && !provinceAffectee) ||
+                (provinceAffectee && !aLesFonds);
+
+            modificationsVerrouilleesText.gameObject.SetActive(afficherMessage);
+
+            if (actionEnCours)
+            {
+                modificationsVerrouilleesText.text = "Action en cours : modifications verrouillées";
+            }
+            else if (enAttenteSelectionProvince)
+            {
+                modificationsVerrouilleesText.text = "Sélectionnez une province à affecter";
+            }
+            else if (aDesMembres && !provinceAffectee)
+            {
+                modificationsVerrouilleesText.text = "Affectez une province pour lancer l'action";
+            }
+            else if (provinceAffectee && !aLesFonds)
+            {
+                modificationsVerrouilleesText.text = $"Fonds insuffisants : {coutLancement} Etrinium requis";
             }
         }
-        else
-        {
-            boutonDemarrerExplorationText.text = $"{labelAction} ({coutLancement})";
-        }
 
-        boutonDemarrerExplorationText.color = boutonDemarrerInteractable
-            ? couleurTexteBoutonActif
-            : couleurTexteBoutonInactif;
+        RefreshBoutonSpecialisation();
     }
-
-    if (boutonAjouterPersonnage != null)
-        boutonAjouterPersonnage.interactable = equipeValide && !actionEnCours;
-
-    if (toggleAffectationAutomatique != null)
-        toggleAffectationAutomatique.interactable = equipeValide;
-
-    if (toggleLancementExplorationAutomatique != null)
-        toggleLancementExplorationAutomatique.interactable = equipeValide;
-
-    if (modificationsVerrouilleesText != null)
-    {
-        bool afficherMessage =
-            actionEnCours ||
-            enAttenteSelectionProvince ||
-            (aDesMembres && !provinceAffectee) ||
-            (provinceAffectee && !aLesFonds);
-
-        modificationsVerrouilleesText.gameObject.SetActive(afficherMessage);
-
-        if (actionEnCours)
-        {
-            modificationsVerrouilleesText.text = "Action en cours : modifications verrouillées";
-        }
-        else if (enAttenteSelectionProvince)
-        {
-            modificationsVerrouilleesText.text = "Sélectionnez une province à affecter";
-        }
-        else if (aDesMembres && !provinceAffectee)
-        {
-            modificationsVerrouilleesText.text = "Affectez une province pour lancer l'action";
-        }
-        else if (provinceAffectee && !aLesFonds)
-        {
-            modificationsVerrouilleesText.text = $"Fonds insuffisants : {coutLancement} Etrinium requis";
-        }
-    }
-
-    RefreshBoutonSpecialisation();
-}
 
     private void RefreshBoutonSpecialisation()
     {
@@ -395,9 +373,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
             return;
         }
 
-        bool actionEnCours =
-            equipeActuelle.explorationEnCours ||
-            equipeActuelle.vadrouilleEnCours;
+        bool actionEnCours = equipeActuelle.AUneActionEnCours;
 
         bool aChoixDisponible =
             specialisationTreeController != null &&
@@ -451,7 +427,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
             return;
         }
 
-        if (equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours)
+        if (equipeActuelle.AUneActionEnCours)
         {
             if (modificationsVerrouilleesText != null)
                 modificationsVerrouilleesText.text = "Action en cours : modifications verrouillées";
@@ -483,7 +459,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         }
 
         equipeActuelle.provinceAffectee = province;
-        equipeActuelle.explorationTerminee = false;
+        equipeActuelle.actionTerminee = false;
         enAttenteSelectionProvince = false;
 
         OpenPanel();
@@ -529,7 +505,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
             return;
         }
 
-        if (equipeActuelle.explorationEnCours)
+        if (equipeActuelle.actionEnCours == ENUM_EQUIPE_ACTION.Exploration && equipeActuelle.AUneActionEnCours)
         {
             Debug.LogWarning("Une exploration est déjà en cours.");
             return;
@@ -560,9 +536,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         }
 
         if (panelConfirmationExploration != null)
-        {
             panelConfirmationExploration.SetActive(true);
-        }
     }
 
     private void DemanderConfirmationVadrouille()
@@ -573,7 +547,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
             return;
         }
 
-        if (equipeActuelle.vadrouilleEnCours)
+        if (equipeActuelle.actionEnCours == ENUM_EQUIPE_ACTION.Vadrouille && equipeActuelle.AUneActionEnCours)
         {
             Debug.LogWarning("Une vadrouille est déjà en cours.");
             return;
@@ -610,17 +584,13 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         }
 
         if (panelConfirmationExploration != null)
-        {
             panelConfirmationExploration.SetActive(true);
-        }
     }
 
     private void ConfirmerDemarrageExploration()
     {
         if (panelConfirmationExploration != null)
-        {
             panelConfirmationExploration.SetActive(false);
-        }
 
         if (equipeActuelle == null || equipeActuelle.data == null)
         {
@@ -689,9 +659,10 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         }
         else
         {
-            equipeActuelle.explorationEnCours = true;
-            equipeActuelle.toursTotaux = dureeExplorationParDefaut;
-            equipeActuelle.toursRestants = dureeExplorationParDefaut;
+            equipeActuelle.actionEnCours = ENUM_EQUIPE_ACTION.Exploration;
+            equipeActuelle.actionToursTotaux = dureeExplorationParDefaut;
+            equipeActuelle.actionToursRestants = dureeExplorationParDefaut;
+            equipeActuelle.actionTerminee = false;
         }
 
         RefreshVueComplete();
@@ -737,9 +708,10 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         }
         else
         {
-            equipeActuelle.vadrouilleEnCours = true;
-            equipeActuelle.toursTotaux = 1;
-            equipeActuelle.toursRestants = 1;
+            equipeActuelle.actionEnCours = ENUM_EQUIPE_ACTION.Vadrouille;
+            equipeActuelle.actionToursTotaux = 1;
+            equipeActuelle.actionToursRestants = 1;
+            equipeActuelle.actionTerminee = false;
         }
 
         RefreshVueComplete();
@@ -748,9 +720,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
     private void AnnulerDemarrageExploration()
     {
         if (panelConfirmationExploration != null)
-        {
             panelConfirmationExploration.SetActive(false);
-        }
     }
 
     private void OuvrirInventairePourAjout()
@@ -761,7 +731,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
             return;
         }
 
-        if (equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours)
+        if (equipeActuelle.AUneActionEnCours)
         {
             Debug.LogWarning("Impossible d'ajouter un personnage pendant une action en cours.");
             return;
@@ -807,7 +777,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
             return false;
         }
 
-        if (equipeActuelle.explorationEnCours || equipeActuelle.vadrouilleEnCours)
+        if (equipeActuelle.AUneActionEnCours)
         {
             Debug.LogWarning("Impossible d'ajouter un personnage pendant une action en cours.");
             return false;
@@ -828,9 +798,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         }
 
         if (equipeActuelle.membresActuels == null)
-        {
             equipeActuelle.membresActuels = new List<SCOBJ_Personnage>();
-        }
 
         equipeActuelle.membresActuels.RemoveAll(p => p == null);
 
@@ -851,9 +819,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
         RefreshVueComplete();
 
         if (gameManager != null)
-        {
             gameManager.RefreshToutLeHUD();
-        }
 
         return true;
     }
@@ -880,9 +846,7 @@ public class UI_EQUIPE_DetailController : UTIL_UiPanelControllerBase
 
         int enclavement = 0;
         if (equipeActuelle.provinceAffectee != null && equipeActuelle.provinceAffectee.data != null)
-        {
             enclavement = Mathf.RoundToInt(equipeActuelle.provinceAffectee.data.accesibilite);
-        }
 
         DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipeActuelle);
 

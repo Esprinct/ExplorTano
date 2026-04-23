@@ -107,8 +107,7 @@ public static class SVC_EQUIPE_ActionRulesService
         if (equipe == null)
             return false;
 
-        bool actionEnCours = equipe.explorationEnCours || equipe.vadrouilleEnCours;
-        if (actionEnCours)
+        if (equipe.AUneActionEnCours)
             return false;
 
         return GetActionPrincipale(equipe) != ENUM_EQUIPE_ACTION.Aucune;
