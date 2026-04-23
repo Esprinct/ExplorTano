@@ -77,9 +77,10 @@ public class UI_EQUIPE_SpecialisationTreeController : UTIL_UiPanelControllerBase
         equipeActuelle = equipe;
         specialisationSelectionnee = GetCurrentSpecialisationAsset(equipe);
 
-        RefreshTree();
-        RefreshSelectionPanel();
+        
         OpenPanel();
+        RefreshSelectionPanel();
+        RefreshTree();
     }
 
     public void Close()
@@ -103,7 +104,22 @@ public class UI_EQUIPE_SpecialisationTreeController : UTIL_UiPanelControllerBase
 
         return false;
     }
+private SCOBJ_EQUIPE_SPECIALISATION TrouverSpecialisationActuelle()
+{
+    if (equipeActuelle == null || specialisations == null)
+        return null;
 
+    foreach (SCOBJ_EQUIPE_SPECIALISATION spec in specialisations)
+    {
+        if (spec == null)
+            continue;
+
+        if (spec.type == equipeActuelle.specialisation)
+            return spec;
+    }
+
+    return null;
+}
     public void RefreshTree()
     {
         if (equipeActuelle == null)
@@ -298,41 +314,37 @@ public class UI_EQUIPE_SpecialisationTreeController : UTIL_UiPanelControllerBase
         }
     }
 
-    private void ConfirmerChoix()
+   public void ConfirmerChoix()
+{
+    if (equipeActuelle == null)
+        return;
+
+    if (specialisationSelectionnee == null)
     {
-        if (equipeActuelle == null || specialisationSelectionnee == null)
-            return;
-
-        bool success = SVC_EQUIPE_SpecialisationService.AppliquerSpecialisation(
-            equipeActuelle,
-            specialisationSelectionnee
-        );
-
-        if (!success)
-        {
-            Debug.LogWarning("Impossible d'appliquer la spécialisation.");
-            return;
-        }
-
-        Debug.Log(
-            $"[SPECIALISATION] {equipeActuelle.data?.nomEquipe} -> {specialisationSelectionnee.nomAffiche}"
-        );
-
-        if (gameManager != null)
-            gameManager.RefreshToutLeHUD();
-
-        UI_EQUIPE_DetailController detail =
-            FindAnyObjectByType<UI_EQUIPE_DetailController>(FindObjectsInactive.Include);
-
-        if (detail != null)
-            detail.RefreshVueComplete();
-
-        // Recalage sur la spécialisation actuelle nouvellement choisie
-        specialisationSelectionnee = GetCurrentSpecialisationAsset(equipeActuelle);
-
-        RefreshTree();
-        RefreshSelectionPanel();
+        Debug.LogWarning("Aucune spécialisation sélectionnée.");
+        return;
     }
+
+    SCOBJ_EQUIPE_SPECIALISATION cible = specialisationSelectionnee;
+
+    bool success = SVC_EQUIPE_SpecialisationService.AppliquerSpecialisation(equipeActuelle, cible);
+
+    if (!success)
+    {
+        Debug.LogWarning($"Choix refusé : {cible.nomAffiche}");
+        return;
+    }
+
+    Debug.Log(
+        $"[SPECIALISATION_APPLIQUEE] equipe={equipeActuelle.data?.nomEquipe} | " +
+        $"cible={cible.nomAffiche} | type={cible.type}"
+    );
+
+    Close();
+
+    if (gameManager != null)
+        gameManager.RefreshToutLeHUD();
+}
 
     private string BuildConditionText(
         STATE_EQUIPE equipe,

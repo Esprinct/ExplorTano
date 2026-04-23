@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81e028b4c5f690049858f99bb6a7e392, type: 3}
   m_Name: Miliciens
   m_EditorClassIdentifier: Assembly-CSharp::SCOBJ_EQUIPE_SPECIALISATION
-  type: 10
+  type: 30
   tier: 2
   nomAffiche: Equipe de Miliciens
   description: 

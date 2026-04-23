@@ -37,5 +37,6 @@ public enum EffetENUM_Stats
     GainPrestigeFinConstruction = 42,
 
     OccupationGainVadrouille = 50,
-    OccupationReductionAdverseVadrouille = 51
+    OccupationReductionAdverseVadrouille = 51,
+    GainExplorationPct = 60
 }

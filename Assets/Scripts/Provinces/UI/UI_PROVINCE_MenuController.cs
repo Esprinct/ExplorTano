@@ -27,6 +27,15 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
     [SerializeField] private TMP_Text populationFrisienText;
     [SerializeField] private TMP_Text populationAutreText;
 
+    [Header("Exploration par compagnie")]
+    [SerializeField] private Slider explorationMaizinSlider;
+    [SerializeField] private Slider explorationKiniaSlider;
+    [SerializeField] private Slider explorationJohoSlider;
+
+    [SerializeField] private TMP_Text explorationMaizinText;
+    [SerializeField] private TMP_Text explorationKiniaText;
+    [SerializeField] private TMP_Text explorationJohoText;
+
     [Header("Camemberts")]
     [SerializeField] private PieChartUI influencePieChart;
     [SerializeField] private PieChartUI populationPieChart;
@@ -39,7 +48,7 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
 
     [Header("Couleurs Influence")]
     [SerializeField] private Color couleurMaizin = Color.blue;
-    [SerializeField] private Color couleurKinia = Color.purple;
+    [SerializeField] private Color couleurKinia = new Color(0.6f, 0f, 1f, 1f);
     [SerializeField] private Color couleurJoho = Color.green;
     [SerializeField] private Color couleurAutre = Color.gray;
 
@@ -115,7 +124,7 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
 
         if (explorationText != null)
         {
-            explorationText.text = $"Exploration : {(provinceActuelle.explorationEnCours ? "En cours" : "Aucune")}";
+            explorationText.text = "Exploration par compagnie";
         }
 
         if (toursRestantsText != null)
@@ -135,6 +144,7 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
 
         RefreshInfluenceChart();
         RefreshPopulationChart();
+        RefreshExplorationSliders();
         RefreshStatsFixes();
     }
 
@@ -223,6 +233,49 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
         }
     }
 
+    private void RefreshExplorationSliders()
+    {
+        float maizin = provinceActuelle.GetExploration(ENUM_Compagnie.Maizin);
+        float kinia = provinceActuelle.GetExploration(ENUM_Compagnie.Kinia);
+        float joho = provinceActuelle.GetExploration(ENUM_Compagnie.Joho);
+
+        if (explorationMaizinSlider != null)
+        {
+            explorationMaizinSlider.minValue = 0f;
+            explorationMaizinSlider.maxValue = 100f;
+            explorationMaizinSlider.value = maizin;
+        }
+
+        if (explorationKiniaSlider != null)
+        {
+            explorationKiniaSlider.minValue = 0f;
+            explorationKiniaSlider.maxValue = 100f;
+            explorationKiniaSlider.value = kinia;
+        }
+
+        if (explorationJohoSlider != null)
+        {
+            explorationJohoSlider.minValue = 0f;
+            explorationJohoSlider.maxValue = 100f;
+            explorationJohoSlider.value = joho;
+        }
+
+        if (explorationMaizinText != null)
+        {
+            explorationMaizinText.text = $" Maizin : {maizin:0.#}%";
+        }
+
+        if (explorationKiniaText != null)
+        {
+            explorationKiniaText.text = $" Kinia : {kinia:0.#}%";
+        }
+
+        if (explorationJohoText != null)
+        {
+            explorationJohoText.text = $" Joho : {joho:0.#}%";
+        }
+    }
+
     private void RefreshStatsFixes()
     {
         SCOBJ_PROVINCE data = provinceActuelle.data;
@@ -260,10 +313,13 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
         {
             case ENUM_Compagnie.Maizin:
                 return "Maizin";
+
             case ENUM_Compagnie.Kinia:
                 return "Kinia";
+
             case ENUM_Compagnie.Joho:
                 return "Joho";
+
             default:
                 return "Aucun";
         }

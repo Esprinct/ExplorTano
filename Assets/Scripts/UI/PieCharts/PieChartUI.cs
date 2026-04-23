@@ -11,15 +11,16 @@ public class PieChartUI : MonoBehaviour
         public Image image;
     }
 
-    [SerializeField] private List<PieSlice> slices = new List<PieSlice>();
+    [SerializeField] private List<PieSlice> slices = new();
 
     public void SetChart(List<PieChartEntry> entries)
     {
-        
-for (int i = 0; i < slices.Count; i++)
-{
-   
-}
+        if (entries == null || entries.Count == 0)
+        {
+            ClearChart();
+            return;
+        }
+
         float total = 0f;
 
         foreach (PieChartEntry entry in entries)
@@ -31,35 +32,26 @@ for (int i = 0; i < slices.Count; i++)
 
         for (int i = 0; i < slices.Count; i++)
         {
-            if (i >= entries.Count)
-            {
-                if (slices[i].image != null)
-                {
-                    slices[i].image.fillAmount = 0f;
-                    slices[i].image.gameObject.SetActive(false);
-                }
+            if (slices[i] == null || slices[i].image == null)
+                continue;
 
+            if (i >= entries.Count || total <= 0f)
+            {
+                slices[i].image.fillAmount = 0f;
+                slices[i].image.gameObject.SetActive(false);
                 continue;
             }
 
             Image image = slices[i].image;
             PieChartEntry entry = entries[i];
 
-            if (image == null)
-            {
-                continue;
-            }
+            float ratio = Mathf.Max(0f, entry.value) / total;
 
             image.gameObject.SetActive(true);
-       
             image.color = entry.color;
-
-            float ratio = total > 0f ? Mathf.Max(0f, entry.value) / total : 0f;
-
             image.type = Image.Type.Filled;
             image.fillMethod = Image.FillMethod.Radial360;
             image.fillAmount = ratio;
-
             image.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -currentRotation * 360f);
 
             currentRotation += ratio;
@@ -70,11 +62,11 @@ for (int i = 0; i < slices.Count; i++)
     {
         foreach (PieSlice slice in slices)
         {
-            if (slice.image != null)
-            {
-                slice.image.fillAmount = 0f;
-                slice.image.gameObject.SetActive(false);
-            }
+            if (slice == null || slice.image == null)
+                continue;
+
+            slice.image.fillAmount = 0f;
+            slice.image.gameObject.SetActive(false);
         }
     }
 }

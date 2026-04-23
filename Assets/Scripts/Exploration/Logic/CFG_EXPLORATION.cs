@@ -10,7 +10,8 @@ public class ExplorationConfig : ScriptableObject
     public int prestigeBase = 1;
     public float chanceArtefactBase = 10f;
     public float chanceArtefactRareBase = 2f;
-
+[Header("Progression province")]
+public float gainExplorationBase = 20f;
     [Header("Influence")]
     public float gainInfluence = 10f;
     public float influenceIATourKinia = 10f;

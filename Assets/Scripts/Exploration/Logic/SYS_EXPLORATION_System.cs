@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ExplorationSystem
 {
-    private SYS_InfluenceSystem influenceSystem;
-    private SYS_GameUiRefreshService uiSystem;
+    private readonly SYS_InfluenceSystem influenceSystem;
+    private readonly SYS_GameUiRefreshService uiSystem;
 
     public ExplorationSystem(SYS_InfluenceSystem influenceSystem, SYS_GameUiRefreshService uiSystem)
     {
@@ -68,6 +68,9 @@ public class ExplorationSystem
             enclavement
         );
 
+        if (result == null)
+            return;
+
         int coutLancement = result.coutTotal;
 
         if (joueur.etrinium < coutLancement)
@@ -103,6 +106,9 @@ public class ExplorationSystem
 
     public void MettreAJourExplorations(SYS_GameManager gameManager)
     {
+        if (gameManager == null || gameManager.EquipesRuntime == null)
+            return;
+
         foreach (STATE_EQUIPE equipe in gameManager.EquipesRuntime)
         {
             if (equipe == null || !equipe.explorationEnCours)
@@ -153,14 +159,27 @@ public class ExplorationSystem
         if (equipe == null)
             return;
 
+        if (equipe.progression == null)
+            equipe.progression = new STATE_LevelProgression();
+
+        if (equipe.progressionConfig == null)
+        {
+            SYS_GameManager gm = Object.FindAnyObjectByType<SYS_GameManager>();
+            if (gm != null)
+                equipe.progressionConfig = gm.ProgressionConfigEquipe;
+        }
+
         if (equipe.progression == null || equipe.progressionConfig == null)
         {
-            Debug.LogWarning($"[XP_EQUIPE] Progression manquante pour {equipe.data?.nomEquipe}");
+            Debug.LogWarning(
+                $"[XP_EQUIPE] Progression manquante pour {equipe.data?.nomEquipe} | " +
+                $"progressionNull={equipe.progression == null} | " +
+                $"progressionConfigNull={equipe.progressionConfig == null}"
+            );
             return;
         }
 
         int xpEquipe = 50;
-
         int ancienNiveau = equipe.progression.niveau;
 
         int niveauxGagnes = SVC_LevelProgression.AddXp(
@@ -176,13 +195,15 @@ public class ExplorationSystem
             $"Niveau={equipe.progression.niveau} | +{niveauxGagnes} niveaux"
         );
 
-        if (ancienNiveau < 3 && equipe.NiveauActuel >= 3 &&
+        if (ancienNiveau < 3 &&
+            equipe.NiveauActuel >= 3 &&
             equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
         {
             Debug.Log($"[SPECIALISATION] {equipe.data?.nomEquipe} a débloqué le choix Tier 2.");
         }
 
-        if (ancienNiveau < 6 && equipe.NiveauActuel >= 6 &&
+        if (ancienNiveau < 6 &&
+            equipe.NiveauActuel >= 6 &&
             (equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Exploration ||
              equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Construction ||
              equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Miliciens))
@@ -347,8 +368,6 @@ public class ExplorationSystem
             return;
         }
 
-        Debug.Log($"[POPUP] Popup trouvée : {popup.name}");
-
         ExplorationConfig config = gameManager.ExplorationConfig;
 
         DATA_EXPLORATION_RecompensePopup data = new DATA_EXPLORATION_RecompensePopup
@@ -364,36 +383,46 @@ public class ExplorationSystem
             rareteArtefact = artefactGagne != null ? artefactGagne.rareteEtoiles : 0
         };
 
-        Debug.Log("[POPUP] OpenMenu appelé");
         popup.OpenMenu(data, true);
     }
 
     private void TerminerExploration(SYS_GameManager gameManager, STATE_EQUIPE equipe)
     {
-        if (equipe == null)
+        if (equipe == null || gameManager == null)
             return;
 
         STATE_PROVINCE province = equipe.provinceAffectee;
         DATA_JOUEUR joueur = gameManager.GetDATA_JOUEURByCompagnie(equipe.compagnie);
 
         int gainPrestige = 1;
-        float gainInfluence = 1f;
-
-        if (gameManager != null && gameManager.ExplorationConfig != null)
-        {
-            gainInfluence = gameManager.ExplorationConfig.gainInfluence;
-        }
 
         if (equipe.resultatExploration != null)
         {
             gainPrestige = equipe.resultatExploration.prestigeFinal;
         }
 
-        if (province != null)
+        // V2 : l'exploration augmente uniquement le % d'exploration
+        if (province != null && joueur != null)
         {
-            influenceSystem.AppliquerInfluence(province, equipe.compagnie, gainInfluence);
-            influenceSystem.MettreAJourClaimProvince(gameManager, province);
-        }
+            float gainExploration = CalculerGainExploration(gameManager, equipe, joueur);
+           float avant = province.GetExploration(equipe.compagnie);
+province.AjouterExploration(equipe.compagnie, gainExploration);
+float apres = province.GetExploration(equipe.compagnie);
+
+Debug.Log(
+    $"[EXPLORATION_PCT] province={province.data?.nom} | " +
+    $"compagnie={equipe.compagnie} | " +
+    $"equipe={equipe.data?.nomEquipe} | " +
+    $"gain=+{gainExploration:0.##}% | " +
+    $"avant={avant:0.##}% | après={apres:0.##}%"
+);
+
+if (province.EstEntierementExploreePar(equipe.compagnie))
+{
+    Debug.Log(
+        $"[EXPLORATION_PCT] Province entièrement explorée par {equipe.compagnie} : {province.data?.nom}"
+    );
+}
 
         SCOBJ_OBJET_EQUIPPABLE artefactGagne = null;
 
@@ -437,11 +466,6 @@ public class ExplorationSystem
             );
         }
 
-        if (artefactGagne != null)
-        {
-            Debug.Log($"Exploration terminée : artefact trouvé = {artefactGagne.nom}");
-        }
-
         if (equipe.lancementExplorationAutomatique &&
             equipe.provinceAffectee != null &&
             equipe.provinceAffectee.data != null)
@@ -450,6 +474,22 @@ public class ExplorationSystem
             return;
         }
 
-        Debug.Log($"Exploration terminée pour {equipe.data.nomEquipe}");
+        Debug.Log($"Exploration terminée pour {equipe.data?.nomEquipe}");
+    }}
+
+    private float CalculerGainExploration(SYS_GameManager gameManager, STATE_EQUIPE equipe, DATA_JOUEUR joueur)
+    {
+        if (gameManager == null || gameManager.ExplorationConfig == null)
+            return 0f;
+
+        float baseGain = gameManager.ExplorationConfig.gainExplorationBase;
+
+        float gainFinal = SVC_EQUIPE_ExplorationEffects.GetGainExplorationFinal(
+            equipe,
+            joueur,
+            baseGain
+        );
+
+        return Mathf.Max(0f, gainFinal);
     }
 }

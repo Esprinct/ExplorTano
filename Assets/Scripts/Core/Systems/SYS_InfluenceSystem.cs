@@ -25,7 +25,91 @@ public class SYS_InfluenceSystem
         // 2) Puis on prend sur les compagnies adverses
         RetirerInfluenceAuxAdversaires(province, compagnie, restant);
     }
+public void AppliquerOccupation(STATE_PROVINCE province, ENUM_Compagnie compagnie, float montant)
+{
+    if (province == null || montant <= 0f)
+        return;
 
+    AppliquerInfluence(province, compagnie, montant);
+}
+
+public void ReduireOccupationAdverse(STATE_PROVINCE province, ENUM_Compagnie compagnieSource, float montant)
+{
+    if (province == null || montant <= 0f)
+        return;
+
+    float restant = montant;
+
+    float reductionAutre = Mathf.Min(province.influenceAutre, restant);
+    province.influenceAutre -= reductionAutre;
+    restant -= reductionAutre;
+
+    if (restant <= 0f)
+        return;
+
+    switch (compagnieSource)
+    {
+        case ENUM_Compagnie.Maizin:
+            ReducerSurDominante(ref province.influenceKinia, ref province.influenceJoho, ref restant);
+            break;
+
+        case ENUM_Compagnie.Kinia:
+            ReducerSurDominante(ref province.influenceMaizin, ref province.influenceJoho, ref restant);
+            break;
+
+        case ENUM_Compagnie.Joho:
+            ReducerSurDominante(ref province.influenceMaizin, ref province.influenceKinia, ref restant);
+            break;
+    }
+}
+
+private void ReducerSurDominante(ref float a, ref float b, ref float restant)
+{
+    if (restant <= 0f)
+        return;
+
+    if (a >= b)
+    {
+        float reduc = Mathf.Min(a, restant);
+        a -= reduc;
+        restant -= reduc;
+    }
+    else
+    {
+        float reduc = Mathf.Min(b, restant);
+        b -= reduc;
+        restant -= reduc;
+    }
+}
+
+public float GetOccupationCompagnie(STATE_PROVINCE province, ENUM_Compagnie compagnie)
+{
+    if (province == null)
+        return 0f;
+
+    switch (compagnie)
+    {
+        case ENUM_Compagnie.Maizin:
+            return province.influenceMaizin;
+
+        case ENUM_Compagnie.Kinia:
+            return province.influenceKinia;
+
+        case ENUM_Compagnie.Joho:
+            return province.influenceJoho;
+
+        default:
+            return 0f;
+    }
+}
+
+public float GetOccupationAutre(STATE_PROVINCE province)
+{
+    if (province == null)
+        return 0f;
+
+    return province.influenceAutre;
+}
     private void RetirerInfluenceAuxAdversaires(STATE_PROVINCE province, ENUM_Compagnie compagnieActive, float montant)
     {
         if (province == null || montant <= 0f)

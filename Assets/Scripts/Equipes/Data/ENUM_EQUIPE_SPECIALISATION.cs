@@ -12,7 +12,7 @@ public enum ENUM_EQUIPE_SPECIALISATION
     Colons = 21,
     GenieCivil = 22,
 
-    GardiensDeLaPaix = 31,
+    GardienDeLaPaix = 31,
     Intervention = 32
 }
 public enum ENUM_EQUIPE_TIER

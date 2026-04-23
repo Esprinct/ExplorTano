@@ -9,7 +9,17 @@ public class STATE_EQUIPE
 
     // Legacy conservé pour compatibilité immédiate
     public int niveauActuel;
+public ENUM_EQUIPE_ACTION actionCourante = ENUM_EQUIPE_ACTION.Aucune;
 
+public bool actionEnCours;
+public bool actionTerminee;
+public int toursActionRestants;
+public int toursActionTotaux;
+public bool vadrouilleEnCours;
+public bool vadrouilleTerminee;
+public int toursVadrouilleRestants;
+public int toursVadrouilleTotaux;
+public DATA_VADROUILLE_Resultat resultatVadrouille;
     public STATE_PROVINCE provinceAffectee;
     public ENUM_Compagnie compagnie;
 

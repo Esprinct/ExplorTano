@@ -88,75 +88,88 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
         if (changementInfluenceText != null)
         {
             changementInfluenceText.text =
-                $"Influence : {preview.influenceActuellePct:0.#}% → {preview.influenceProjeteePct:0.#}%";
+                $"Occupation : {preview.influenceActuellePct:0.#}% → {preview.influenceProjeteePct:0.#}%\n" +
+                $"Exploration : {preview.explorationActuellePct:0.#}% → {preview.explorationProjeteePct:0.#}%";
         }
     }
 
-  private ExplorationPreviewData BuildPreview(STATE_EQUIPE equipe, SYS_GameManager gameManager)
-{
-    if (equipe == null || gameManager == null || gameManager.ExplorationConfig == null)
-        return null;
-
-    ExplorationConfig config = gameManager.ExplorationConfig;
-    EQUIPE_StatsSnapshot stats = CALC_EQUIPE_StatsCalculator.Calculer(equipe);
-    DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
-
-    int enclavement = 0;
-    float etriniumProvince = 0f;
-
-    if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
+    private ExplorationPreviewData BuildPreview(STATE_EQUIPE equipe, SYS_GameManager gameManager)
     {
-        enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
-        etriniumProvince = equipe.provinceAffectee.data.etrinium;
-    }
+        if (equipe == null || gameManager == null || gameManager.ExplorationConfig == null)
+            return null;
 
-    int toursModifies = SVC_EQUIPE_ExplorationEffects.GetToursBaseModifies(
-        equipe,
-        joueur,
-        config.toursBase
-    );
+        ExplorationConfig config = gameManager.ExplorationConfig;
+        DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
+        EQUIPE_StatsSnapshot stats = CALC_EQUIPE_StatsCalculator.Calculer(equipe);
 
-    float chanceArtefactModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactModifiee(
-        equipe,
-        joueur,
-        config.chanceArtefactBase
-    );
+        int enclavement = 0;
+        float etriniumProvince = 0f;
+        float explorationActuelle = 0f;
 
-    float chanceArtefactRareModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactRareModifiee(
-        equipe,
-        joueur,
-        config.chanceArtefactRareBase
-    );
+        if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
+        {
+            enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
+            etriniumProvince = equipe.provinceAffectee.data.etrinium;
+            explorationActuelle = equipe.provinceAffectee.GetExploration(equipe.compagnie);
+        }
 
-    ENUM_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
-        stats,
-        toursModifies,
-        config.coutParTourBase,
-        config.prestigeBase,
-        chanceArtefactModifiee,
-        chanceArtefactRareModifiee,
-        enclavement
-    );
-
-    if (result == null)
-        return null;
-
-    return new ExplorationPreviewData
-    {
-        toursFinaux = result.toursFinaux,
-        prestigeFinal = result.prestigeFinal,
-        chanceRelique = result.chanceRelique,
-        chanceReliqueRare = result.chanceReliqueRare,
-        influenceActuellePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
-        influenceProjeteePct = CalculerPourcentageInfluenceProjeteDansProvince(equipe, config.gainInfluence),
-        gainEtriniumParTour = CalculerGainPotentielEtriniumParTour(
+        int toursModifies = SVC_EQUIPE_ExplorationEffects.GetToursBaseModifies(
             equipe,
-            gameManager,
-            etriniumProvince,
-            config.gainInfluence
-        )
-    };
-}
+            joueur,
+            config.toursBase
+        );
+
+        float chanceArtefactModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactModifiee(
+            equipe,
+            joueur,
+            config.chanceArtefactBase
+        );
+
+        float chanceArtefactRareModifiee = SVC_EQUIPE_ExplorationEffects.GetChanceArtefactRareModifiee(
+            equipe,
+            joueur,
+            config.chanceArtefactRareBase
+        );
+
+        float gainExploration = SVC_EQUIPE_ExplorationEffects.GetGainExplorationFinal(
+            equipe,
+            joueur,
+            config.gainExplorationBase
+        );
+
+        float explorationProjetee = Mathf.Clamp(explorationActuelle + gainExploration, 0f, 100f);
+
+        ENUM_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
+            stats,
+            toursModifies,
+            config.coutParTourBase,
+            config.prestigeBase,
+            chanceArtefactModifiee,
+            chanceArtefactRareModifiee,
+            enclavement
+        );
+
+        if (result == null)
+            return null;
+
+        return new ExplorationPreviewData
+        {
+            toursFinaux = result.toursFinaux,
+            prestigeFinal = result.prestigeFinal,
+            chanceRelique = result.chanceRelique,
+            chanceReliqueRare = result.chanceReliqueRare,
+            influenceActuellePct = CalculerPourcentageInfluenceJoueurDansProvince(equipe),
+            influenceProjeteePct = CalculerPourcentageInfluenceProjeteDansProvince(equipe, config.gainInfluence),
+            gainEtriniumParTour = CalculerGainPotentielEtriniumParTour(
+                equipe,
+                gameManager,
+                etriniumProvince,
+                config.gainInfluence
+            ),
+            explorationActuellePct = explorationActuelle,
+            explorationProjeteePct = explorationProjetee
+        };
+    }
 
     private void Clear()
     {
@@ -189,7 +202,7 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
 
         switch (equipe.compagnie)
         {
-            case  ENUM_Compagnie.Maizin:
+            case ENUM_Compagnie.Maizin:
                 influenceJoueur = province.influenceMaizin;
                 break;
 
@@ -357,5 +370,7 @@ public class UI_EQUIPE_ExplorationView : MonoBehaviour
         public float influenceActuellePct;
         public float influenceProjeteePct;
         public float gainEtriniumParTour;
+        public float explorationActuellePct;
+        public float explorationProjeteePct;
     }
 }

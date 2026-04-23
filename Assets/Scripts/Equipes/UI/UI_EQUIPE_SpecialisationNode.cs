@@ -80,30 +80,37 @@ public class UI_EQUIPE_SpecialisationNode : MonoBehaviour
             bouton.interactable = data != null;
     }
 
-    private void RefreshBadges(bool estActuelle, bool estDebloquee, bool estDisponibleMaintenant)
+   private void RefreshBadges(bool estActuelle, bool estDebloquee, bool estDisponibleMaintenant)
+{
+    ClearBadgeState();
+
+    if (estActuelle)
     {
-        ClearBadgeState();
-
-        if (estActuelle)
-        {
-            if (badgeActuel != null)
-                badgeActuel.SetActive(true);
-            return;
-        }
-
-        if (estDebloquee || estDisponibleMaintenant)
-        {
-            if (badgeDisponible != null)
-                badgeDisponible.SetActive(true);
-            return;
-        }
-
-        if (badgeVerrouille != null)
-            badgeVerrouille.SetActive(true);
-
-        if (overlayVerrouille != null)
-            overlayVerrouille.SetActive(true);
+        if (badgeActuel != null)
+            badgeActuel.SetActive(true);
+        return;
     }
+
+    if (estDisponibleMaintenant)
+    {
+        if (badgeDisponible != null)
+            badgeDisponible.SetActive(true);
+        return;
+    }
+
+    if (estDebloquee)
+    {
+        // soit un nouveau badgeDebloque
+        // soit aucun check du tout, juste un style plus discret
+        return;
+    }
+
+    if (badgeVerrouille != null)
+        badgeVerrouille.SetActive(true);
+
+    if (overlayVerrouille != null)
+        overlayVerrouille.SetActive(true);
+}
 
     private void ClearBadgeState()
     {

@@ -12,7 +12,8 @@ public class SYS_GameManager : MonoBehaviour
     [SerializeField] private SYS_DebugEquipesRuntimeView debugEquipesRuntimeView;
     [SerializeField] private SYS_AutoPlayController autoPlayController;
 [SerializeField] private CFG_LevelProgression progressionConfigEquipe;
-
+[SerializeField] private VadrouilleConfig vadrouilleConfig;
+public VadrouilleConfig VadrouilleConfig => vadrouilleConfig;
 
     [Header("Références UI")]
     [SerializeField] private HudController hudController;
@@ -61,7 +62,7 @@ public class SYS_GameManager : MonoBehaviour
 
     public DATA_JOUEUR_HUD JoueurData => joueurData;
     public DATA_Partie_Hud_Tour PartieData => partieData;
-
+public SYS_VadrouilleSystem VadrouilleSystem { get; private set; }
     public IReadOnlyList<ENUM_Compagnie> OrdreTourCourant => ordreTourCourant;
     public int IndexJoueurActifTour => indexJoueurActifTour;
     public int MaxEquipesParJoueur => maxEquipesParJoueur;
@@ -196,11 +197,14 @@ public CFG_LevelProgression ProgressionConfigEquipe => progressionConfigEquipe;
         RevenusSystem = new SYS_RevenusSystem();
         VictoireSystem = new SYS_VictoireSystem();
 
-        InfluenceSystem = new SYS_InfluenceSystem();
-        UiSystem = new SYS_GameUiRefreshService();
-        ExplorationSystem = new ExplorationSystem(InfluenceSystem, UiSystem);
-        InitializationService = new SYS_GameInitializationService();
-        TurnSystem = new SYS_TurnSystem(ExplorationSystem, InfluenceSystem, UiSystem);
+       InfluenceSystem = new SYS_InfluenceSystem();
+UiSystem = new SYS_GameUiRefreshService();
+
+ExplorationSystem = new ExplorationSystem(InfluenceSystem, UiSystem);
+VadrouilleSystem = new SYS_VadrouilleSystem(InfluenceSystem, UiSystem);
+
+InitializationService = new SYS_GameInitializationService();
+TurnSystem = new SYS_TurnSystem(ExplorationSystem, VadrouilleSystem, InfluenceSystem, UiSystem);
     }
 
     private void InitialiserJoueurs()
@@ -373,7 +377,24 @@ public CFG_LevelProgression ProgressionConfigEquipe => progressionConfigEquipe;
         SynchroniserHudAvecJoueurHumain();
         RefreshToutLeHUD();
     }
+public void DemarrerVadrouille(STATE_EQUIPE equipe)
+{
+    if (VadrouilleSystem == null)
+    {
+        Debug.LogWarning("VadrouilleSystem introuvable.");
+        return;
+    }
 
+    if (equipe == null)
+    {
+        Debug.LogWarning("DemarrerVadrouille : équipe null.");
+        return;
+    }
+
+    VadrouilleSystem.DemarrerVadrouille(this, equipe, equipe.compagnie);
+    SynchroniserHudAvecJoueurHumain();
+    RefreshToutLeHUD();
+}
     public void RefreshToutLeHUD()
     {
         if (UiSystem == null)

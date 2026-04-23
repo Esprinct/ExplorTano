@@ -79,8 +79,11 @@ public static class FMT_EFFET
             case EffetENUM_Stats.Revenus: return "REV";
             case EffetENUM_Stats.CoutExploration: return "C.EXP";
             default: return "?";
+            case EffetENUM_Stats.GainExplorationPct:
+    return "EXPLO%";
         }
     }
+    
     public static string BuildValeurAfficheeLongue(SCOBJ_EFFET effet)
 {
     if (effet == null || effet.modificateurs == null || effet.modificateurs.Count == 0)
@@ -134,7 +137,8 @@ public static string GetNomLongStat(EffetENUM_Stats stat)
         case EffetENUM_Stats.Influence: return "Influence";
         case EffetENUM_Stats.Revenus: return "Revenus";
         case EffetENUM_Stats.CoutExploration: return "Coût d'exploration";
-
+case EffetENUM_Stats.GainExplorationPct:
+    return "Exploration gagnée";
         default: return stat.ToString();
     }
 }

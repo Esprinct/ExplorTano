@@ -91,36 +91,38 @@ public class HUD_EQUIPE_Slot : MonoBehaviour
         }
     }
 
-    private void RefreshExplorationProgress(DATA_EQUIPE_DetailData data)
+   private void RefreshExplorationProgress(DATA_EQUIPE_DetailData data)
+{
+    if (explorationSlider == null)
+        return;
+
+    bool actionEnCours =
+        data != null &&
+        (data.explorationEnCours || data.vadrouilleEnCours) &&
+        data.toursTotaux > 0;
+
+    explorationSlider.gameObject.SetActive(actionEnCours);
+
+    if (!actionEnCours)
     {
-        if (explorationSlider == null)
-            return;
-
-        bool afficherProgression = data.explorationEnCours && data.toursTotaux > 0;
-
-        explorationSlider.gameObject.SetActive(afficherProgression);
-
-        if (!afficherProgression)
-        {
-            if (progressionExplorationText != null)
-            {
-                progressionExplorationText.text = "";
-            }
-
-            return;
-        }
-
-        int toursEffectues = data.toursTotaux - data.toursRestants;
-
-        explorationSlider.minValue = 0f;
-        explorationSlider.maxValue = data.toursTotaux;
-        explorationSlider.value = Mathf.Clamp(toursEffectues, 0, data.toursTotaux);
-
         if (progressionExplorationText != null)
-        {
-            progressionExplorationText.text = $"{toursEffectues} / {data.toursTotaux}";
-        }
+            progressionExplorationText.text = "";
+
+        return;
     }
+
+    int toursEffectues = data.toursTotaux - data.toursRestants;
+
+    explorationSlider.minValue = 0f;
+    explorationSlider.maxValue = data.toursTotaux;
+    explorationSlider.value = Mathf.Clamp(toursEffectues, 0, data.toursTotaux);
+
+    if (progressionExplorationText != null)
+    {
+        string prefixe = data.vadrouilleEnCours ? "Vadrouille" : "Exploration";
+        progressionExplorationText.text = $"{prefixe} {toursEffectues} / {data.toursTotaux}";
+    }
+}
 
     public void Hide()
     {

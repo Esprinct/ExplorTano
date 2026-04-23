@@ -2,32 +2,30 @@ using System.Collections.Generic;
 
 public static class SVC_EQUIPE_SpecialisationService
 {
+    
     public static bool PeutChoisirSpecialisation(
-        STATE_EQUIPE equipe,
-        SCOBJ_EQUIPE_SPECIALISATION cible)
+    STATE_EQUIPE equipe,
+    SCOBJ_EQUIPE_SPECIALISATION cible)
+{
+    if (equipe == null || cible == null)
+        return false;
+
+    if (equipe.explorationEnCours || equipe.vadrouilleEnCours)
+        return false;
+
+    if (equipe.NiveauActuel < cible.niveauMinimum)
+        return false;
+
+    if (equipe.specialisation == cible.type)
+        return false;
+
+    if (equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
     {
-        if (equipe == null || cible == null)
-            return false;
-
-        if (equipe.NiveauActuel < cible.niveauMinimum)
-            return false;
-
-        // Déjà cette spécialisation
-        if (equipe.specialisation == cible.type)
-            return false;
-
-        // Depuis reconnaissance : on ne peut choisir qu'une spécialisation
-        // dont le parent est reconnaissance
-        if (equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
-        {
-            return cible.specialisationParent == ENUM_EQUIPE_SPECIALISATION.Reconnaissance;
-        }
-
-        // Sinon il faut que la spécialisation ciblée ait comme parent
-        // la spécialisation actuelle de l'équipe
-        return cible.specialisationParent == equipe.specialisation;
+        return cible.specialisationParent == ENUM_EQUIPE_SPECIALISATION.Reconnaissance;
     }
 
+    return cible.specialisationParent == equipe.specialisation;
+}
     public static bool AppliquerSpecialisation(
         STATE_EQUIPE equipe,
         SCOBJ_EQUIPE_SPECIALISATION cible)

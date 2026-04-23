@@ -16,7 +16,23 @@ public static class SVC_EQUIPE_ExplorationEffects
             )
         );
     }
+public static float GetGainExplorationFinal(
+    STATE_EQUIPE equipe,
+    DATA_JOUEUR joueur,
+    float gainBase)
+{
+    if (equipe == null)
+        return Mathf.Max(0f, gainBase);
 
+    int delta = SVC_EQUIPE_EffetService.GetDelta(
+        equipe,
+        joueur,
+        EffetENUM_Stats.GainExplorationPct,
+        Mathf.RoundToInt(gainBase)
+    );
+
+    return Mathf.Max(0f, gainBase + delta);
+}
     public static float GetChanceArtefactModifiee(
         STATE_EQUIPE equipe,
         DATA_JOUEUR joueur,

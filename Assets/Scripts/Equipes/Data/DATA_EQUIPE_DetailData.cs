@@ -1,5 +1,5 @@
+using System.Collections;
 using UnityEngine;
-
 [System.Serializable]
 public class DATA_EQUIPE_DetailData
 {
@@ -13,13 +13,15 @@ public class DATA_EQUIPE_DetailData
     public int niveau;
 
     public bool explorationEnCours;
+    public bool vadrouilleEnCours;
+
     public int toursRestants;
     public int toursTotaux;
 
     public string statutExploration;
     public int coutParTour;
     public string forceTooltipDetail;
-public string intelligenceTooltipDetail;
-public string dexteriteTooltipDetail;
-public string enduranceTooltipDetail;
+    public string intelligenceTooltipDetail;
+    public string dexteriteTooltipDetail;
+    public string enduranceTooltipDetail;
 }
