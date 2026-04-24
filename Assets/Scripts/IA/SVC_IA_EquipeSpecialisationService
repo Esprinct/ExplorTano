@@ -11,19 +11,12 @@ public static class SVC_IA_EquipeSpecialisationService
             return;
 
         List<SCOBJ_EQUIPE_SPECIALISATION> specialisations = ChargerSpecialisationsDisponibles();
-
         if (specialisations == null || specialisations.Count == 0)
-        {
-            Debug.LogWarning("[IA_SPECIALISATION] Aucune spécialisation trouvée dans le projet.");
             return;
-        }
 
         foreach (STATE_EQUIPE equipe in joueur.equipes)
         {
-            if (equipe == null)
-                continue;
-
-            if (equipe.AUneActionEnCours)
+            if (equipe == null || equipe.AUneActionEnCours)
                 continue;
 
             SCOBJ_EQUIPE_SPECIALISATION cible = ChoisirSpecialisationPourIA(
@@ -36,12 +29,11 @@ public static class SVC_IA_EquipeSpecialisationService
             if (cible == null)
                 continue;
 
-            ENUM_EQUIPE_SPECIALISATION avant = equipe.specialisation;
             bool succes = SVC_EQUIPE_SpecialisationService.AppliquerSpecialisation(equipe, cible);
 
             Debug.Log(
-                $"[IA_SPECIALISATION_APPLY] joueur={joueur.nomJoueur} | " +
-                $"equipe={equipe.data?.nomEquipe} | avant={avant} | cible={cible.type} | succes={succes}"
+                $"[IA_SPECIALISATION] joueur={joueur.nomJoueur} | " +
+                $"equipe={equipe.data?.nomEquipe} | specialisation={cible.nomAffiche} | succes={succes}"
             );
         }
     }
@@ -91,6 +83,9 @@ public static class SVC_IA_EquipeSpecialisationService
         if (choixDisponibles == null || choixDisponibles.Count == 0)
             return null;
 
+        if (equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
+            return ChoisirSpecialisationPalier1(gameManager, joueur, choixDisponibles);
+
         SCOBJ_EQUIPE_SPECIALISATION meilleurChoix = null;
         float meilleurScore = float.MinValue;
 
@@ -101,6 +96,11 @@ public static class SVC_IA_EquipeSpecialisationService
 
             float score = EvaluerSpecialisationPourIA(gameManager, joueur, equipe, specialisation);
 
+            Debug.Log(
+                $"[IA_SPECIALISATION_SCORE] joueur={joueur.nomJoueur} | " +
+                $"equipe={equipe.data?.nomEquipe} | candidat={specialisation.type} | score={score:0.##}"
+            );
+
             if (score > meilleurScore)
             {
                 meilleurScore = score;
@@ -109,6 +109,88 @@ public static class SVC_IA_EquipeSpecialisationService
         }
 
         return meilleurChoix;
+    }
+
+    private static SCOBJ_EQUIPE_SPECIALISATION ChoisirSpecialisationPalier1(
+        SYS_GameManager gameManager,
+        DATA_JOUEUR joueur,
+        List<SCOBJ_EQUIPE_SPECIALISATION> choixDisponibles)
+    {
+        if (joueur == null || choixDisponibles == null || choixDisponibles.Count == 0)
+            return null;
+
+        SCOBJ_EQUIPE_SPECIALISATION choixExploration = null;
+        SCOBJ_EQUIPE_SPECIALISATION choixMiliciens = null;
+        SCOBJ_EQUIPE_SPECIALISATION choixConstruction = null;
+
+        foreach (SCOBJ_EQUIPE_SPECIALISATION choix in choixDisponibles)
+        {
+            if (choix == null)
+                continue;
+
+            switch (choix.type)
+            {
+                case ENUM_EQUIPE_SPECIALISATION.Exploration:
+                    choixExploration = choix;
+                    break;
+                case ENUM_EQUIPE_SPECIALISATION.Miliciens:
+                    choixMiliciens = choix;
+                    break;
+                case ENUM_EQUIPE_SPECIALISATION.Construction:
+                    choixConstruction = choix;
+                    break;
+            }
+        }
+
+        int nbExploration = SVC_IA_EquipeCompositionService.CompterEquipesExploration(joueur);
+        int nbMiliciens = SVC_IA_EquipeCompositionService.CompterEquipesMiliciennes(joueur);
+        int nbConstruction = SVC_IA_EquipeCompositionService.CompterEquipesConstruction(joueur);
+
+        float pressionVadrouille = EvaluerPressionVadrouille(gameManager, joueur);
+        float pressionExploration = EvaluerPressionExploration(gameManager, joueur);
+
+        // On veut toujours au moins 1 explo pour ouvrir la carte.
+        if (nbExploration == 0 && choixExploration != null)
+            return choixExploration;
+
+        // Très important :
+        // si l'IA a des provinces prêtes à être occupées et aucune branche milicienne,
+        // on force Miliciens.
+        if (choixMiliciens != null && nbMiliciens == 0 && pressionVadrouille >= 80f)
+            return choixMiliciens;
+
+        // Si l'IA a déjà assez d'exploration mais manque de miliciens, on pousse Miliciens.
+        if (choixMiliciens != null && nbMiliciens < nbExploration && pressionVadrouille > pressionExploration * 0.6f)
+            return choixMiliciens;
+
+        ENUM_EQUIPE_SPECIALISATION branchePrioritaire =
+            SVC_IA_EquipeCompositionService.GetBrancheLaPlusManquante(joueur);
+
+        switch (branchePrioritaire)
+        {
+            case ENUM_EQUIPE_SPECIALISATION.Miliciens:
+                if (choixMiliciens != null) return choixMiliciens;
+                break;
+
+            case ENUM_EQUIPE_SPECIALISATION.Construction:
+                if (choixConstruction != null) return choixConstruction;
+                break;
+
+            case ENUM_EQUIPE_SPECIALISATION.Exploration:
+            default:
+                if (choixExploration != null) return choixExploration;
+                break;
+        }
+
+        // Dernier filet : si la pression de conquête est déjà forte, privilégier miliciens.
+        if (choixMiliciens != null && pressionVadrouille > pressionExploration)
+            return choixMiliciens;
+
+        if (choixExploration != null) return choixExploration;
+        if (choixMiliciens != null) return choixMiliciens;
+        if (choixConstruction != null) return choixConstruction;
+
+        return null;
     }
 
     private static float EvaluerSpecialisationPourIA(
@@ -121,83 +203,51 @@ public static class SVC_IA_EquipeSpecialisationService
             return float.MinValue;
 
         float score = 0f;
-        STATE_PROVINCE province = equipe.provinceAffectee;
 
-        float explorationLocale = 0f;
-        float influenceAdverseLocale = 0f;
-        float etriniumLocal = 0f;
-        float prestigeLocal = 0f;
+        float pressionExploration = EvaluerPressionExploration(gameManager, joueur);
+        float pressionVadrouille = EvaluerPressionVadrouille(gameManager, joueur);
 
-        if (province != null && province.data != null)
-        {
-            explorationLocale = province.GetExploration(joueur.compagnie);
-            etriniumLocal = province.data.etrinium;
-            prestigeLocal = province.data.prestige;
-            influenceAdverseLocale = GetInfluenceAdverseDominante(province, joueur.compagnie);
-        }
-
-        bool aCibleExploration = ExisteCibleExploration(gameManager, joueur);
-        bool aCibleVadrouille = ExisteCibleVadrouille(gameManager, joueur);
-
-        float scoreExplorationGlobal = EvaluerBesoinExplorationGlobal(gameManager, joueur);
-        float scoreVadrouilleGlobal = EvaluerBesoinVadrouilleGlobal(gameManager, joueur);
+        int nbExploration = SVC_IA_EquipeCompositionService.CompterEquipesExploration(joueur);
+        int nbMiliciens = SVC_IA_EquipeCompositionService.CompterEquipesMiliciennes(joueur);
+        int nbConstruction = SVC_IA_EquipeCompositionService.CompterEquipesConstruction(joueur);
 
         switch (specialisation.type)
         {
-            case ENUM_EQUIPE_SPECIALISATION.Exploration:
-                score += scoreExplorationGlobal * 1.2f;
-                score += (100f - explorationLocale) * 2.0f;
-                score += etriniumLocal * 1.0f;
-                score += prestigeLocal * 0.9f;
-                if (!aCibleExploration)
-                    score -= 120f;
-                break;
-
             case ENUM_EQUIPE_SPECIALISATION.Archeologues:
-                score += scoreExplorationGlobal * 0.8f;
-                score += prestigeLocal * 2.5f;
-                score += etriniumLocal * 0.6f;
-                if (!aCibleExploration)
-                    score -= 100f;
+                score += 35f;
+                score += pressionExploration * 0.25f;
                 break;
 
             case ENUM_EQUIPE_SPECIALISATION.Arpenteurs:
-                score += scoreExplorationGlobal * 1.5f;
-                score += (100f - explorationLocale) * 3.0f;
-                score += etriniumLocal * 0.8f;
-                if (!aCibleExploration)
-                    score -= 140f;
-                break;
+                score += 45f;
+                score += pressionExploration * 0.35f;
 
-            case ENUM_EQUIPE_SPECIALISATION.Miliciens:
-                score += scoreVadrouilleGlobal * 1.8f;
-                score += influenceAdverseLocale * 2.0f;
-                if (aCibleVadrouille)
-                    score += 220f;
+                // Si on a déjà trop d'exploration par rapport aux miliciens, on pénalise.
+                if (nbExploration > nbMiliciens + 1)
+                    score -= 80f;
                 break;
 
             case ENUM_EQUIPE_SPECIALISATION.GardienDeLaPaix:
-                score += scoreVadrouilleGlobal * 1.5f;
-                score += influenceAdverseLocale * 1.6f;
-                if (aCibleVadrouille)
-                    score += 180f;
-                score += 20f;
+                score += 50f;
+                score += pressionVadrouille * 0.45f;
                 break;
 
             case ENUM_EQUIPE_SPECIALISATION.Intervention:
-                score += scoreVadrouilleGlobal * 2.0f;
-                score += influenceAdverseLocale * 2.4f;
-                if (aCibleVadrouille)
-                    score += 200f;
-                break;
+                score += 60f;
+                score += pressionVadrouille * 0.55f;
 
-            case ENUM_EQUIPE_SPECIALISATION.Construction:
-                score += 20f;
+                if (joueur.profilIA != null &&
+                    joueur.profilIA.type == ENUM_IA_Personnalite.Agressive)
+                {
+                    score += 40f;
+                }
                 break;
 
             case ENUM_EQUIPE_SPECIALISATION.Colons:
             case ENUM_EQUIPE_SPECIALISATION.GenieCivil:
-                score += 10f;
+                score += 25f;
+                if (nbConstruction == 0)
+                    score += 20f;
                 break;
         }
 
@@ -207,62 +257,7 @@ public static class SVC_IA_EquipeSpecialisationService
         return score;
     }
 
-    private static bool ExisteCibleExploration(SYS_GameManager gameManager, DATA_JOUEUR joueur)
-    {
-        if (gameManager == null || joueur == null || gameManager.ProvincesRuntime == null)
-            return false;
-
-        foreach (STATE_PROVINCE province in gameManager.ProvincesRuntime)
-        {
-            if (province == null || province.data == null)
-                continue;
-
-            float exploration = province.GetExploration(joueur.compagnie);
-            bool claimParIA =
-                province.estClaim &&
-                province.proprietaireActuel.HasValue &&
-                province.proprietaireActuel.Value == joueur.compagnie;
-
-            if (exploration < 100f && !claimParIA)
-                return true;
-        }
-
-        return false;
-    }
-
-    private static bool ExisteCibleVadrouille(SYS_GameManager gameManager, DATA_JOUEUR joueur)
-    {
-        if (gameManager == null || joueur == null || gameManager.ProvincesRuntime == null)
-            return false;
-
-        foreach (STATE_PROVINCE province in gameManager.ProvincesRuntime)
-        {
-            if (province == null || province.data == null)
-                continue;
-
-            float exploration = province.GetExploration(joueur.compagnie);
-            if (exploration < 100f)
-                continue;
-
-            bool claimParIA =
-                province.estClaim &&
-                province.proprietaireActuel.HasValue &&
-                province.proprietaireActuel.Value == joueur.compagnie;
-
-            if (claimParIA)
-                continue;
-
-            float influenceAdverse = GetInfluenceAdverseDominante(province, joueur.compagnie);
-            float influenceIA = GetInfluenceCompagnie(province, joueur.compagnie);
-
-            if (influenceAdverse > 0.01f || (influenceIA > 0f && influenceIA < 60f) || !province.estClaim)
-                return true;
-        }
-
-        return false;
-    }
-
-    private static float EvaluerBesoinExplorationGlobal(SYS_GameManager gameManager, DATA_JOUEUR joueur)
+    private static float EvaluerPressionExploration(SYS_GameManager gameManager, DATA_JOUEUR joueur)
     {
         if (gameManager == null || joueur == null || gameManager.ProvincesRuntime == null)
             return 0f;
@@ -275,6 +270,7 @@ public static class SVC_IA_EquipeSpecialisationService
                 continue;
 
             float exploration = province.GetExploration(joueur.compagnie);
+
             bool claimParIA =
                 province.estClaim &&
                 province.proprietaireActuel.HasValue &&
@@ -284,13 +280,17 @@ public static class SVC_IA_EquipeSpecialisationService
                 continue;
 
             if (exploration < 100f)
-                score += 100f - exploration;
+            {
+                score += (100f - exploration) * 1.2f;
+                score += province.data.prestige * 0.8f;
+                score += province.data.poidsPolitique * 0.6f;
+            }
         }
 
         return score;
     }
 
-    private static float EvaluerBesoinVadrouilleGlobal(SYS_GameManager gameManager, DATA_JOUEUR joueur)
+    private static float EvaluerPressionVadrouille(SYS_GameManager gameManager, DATA_JOUEUR joueur)
     {
         if (gameManager == null || joueur == null || gameManager.ProvincesRuntime == null)
             return 0f;
@@ -317,13 +317,24 @@ public static class SVC_IA_EquipeSpecialisationService
             float influenceAdverse = GetInfluenceAdverseDominante(province, joueur.compagnie);
             float influenceIA = GetInfluenceCompagnie(province, joueur.compagnie);
 
-            score += influenceAdverse * 2f;
+            // Vadrouille = moyen direct de convertir l’exploration en contrôle réel.
+            score += influenceAdverse * 3.5f;
 
             if (!province.estClaim)
-                score += 40f;
+                score += 60f;
+
+            if (province.estClaim &&
+                province.proprietaireActuel.HasValue &&
+                province.proprietaireActuel.Value != joueur.compagnie)
+            {
+                score += 90f;
+            }
 
             if (influenceIA > 0f && influenceIA < 60f)
-                score += 20f;
+                score += 35f;
+
+            score += province.data.prestige * 0.5f;
+            score += province.data.poidsPolitique * 0.8f;
         }
 
         return score;

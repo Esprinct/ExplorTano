@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public static class SVC_EQUIPE_SpecialisationService
 {
@@ -19,9 +20,7 @@ public static class SVC_EQUIPE_SpecialisationService
             return false;
 
         if (equipe.specialisation == ENUM_EQUIPE_SPECIALISATION.Reconnaissance)
-        {
             return cible.specialisationParent == ENUM_EQUIPE_SPECIALISATION.Reconnaissance;
-        }
 
         return cible.specialisationParent == equipe.specialisation;
     }
@@ -55,6 +54,13 @@ public static class SVC_EQUIPE_SpecialisationService
             if (PeutChoisirSpecialisation(equipe, specialisation))
                 result.Add(specialisation);
         }
+
+        Debug.Log(
+            $"[SPEC_CHOIX] equipe={equipe.data?.nomEquipe} | " +
+            $"niveau={equipe.NiveauActuel} | " +
+            $"specialisationActuelle={equipe.specialisation} | " +
+            $"choix={string.Join(", ", result.ConvertAll(c => c != null ? c.type.ToString() : "null"))}"
+        );
 
         return result;
     }

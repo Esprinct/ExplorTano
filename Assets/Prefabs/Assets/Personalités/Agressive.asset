@@ -17,6 +17,11 @@ MonoBehaviour:
   tailleCibleEquipe: 5
   tailleMinEquipePourAction: 1
   ratioMinimalBudgetPourAction: 0.9
+  nombreEquipesCible: 3
+  nombreEquipesMaximumSouhaite: 5
+  ratioExploration: 0.4
+  ratioMiliciens: 0.4
+  ratioConstruction: 0.2
   poidsForce: 1
   poidsIntelligence: 1
   poidsDexterite: 1
@@ -24,12 +29,12 @@ MonoBehaviour:
   poidsRarete: 100
   poidsCoutParTour: 0
   bonusPreferenceCompagnie: 150
-  bonusExploration: 0
+  bonusExploration: 0.25
   bonusArcheologues: 0
   bonusArpenteurs: 0
-  bonusMiliciens: 1000
+  bonusMiliciens: 80
   bonusGardienPaix: 0
-  bonusIntervention: 0
-  bonusConstruction: 0
+  bonusIntervention: 120
+  bonusConstruction: 0.1
   bonusColons: 0
   bonusGenieCivil: 0

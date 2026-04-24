@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceData
   nom: Tano
   prestige: 452
-  etrinium: 3500
+  etrinium: 50000
   populationShiki: 82
   populationFrisien: 17
   populationAutre: 1

@@ -11926,11 +11926,11 @@ MonoBehaviour:
   surcoutEquipeEnExplorationParTour: 100
   Joueur1:
     nomJoueur: Esprint
-    estHumain: 1
+    estHumain: 0
     compagnie: 2
     dirigeant: {fileID: 11400000, guid: bade0822614084a498d53e54558610ff, type: 2}
     personnaliteIA: 1
-    profilIA: {fileID: 0}
+    profilIA: {fileID: 11400000, guid: 7cea87b61532b9248a7968f270da776e, type: 2}
     etrinium: 100000
     prestige: 0
     etriniumParTour: 0
@@ -12045,8 +12045,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SYS_AutoPlayController
   gameManager: {fileID: 325955579}
-  autoPlayEnabled: 0
-  autoStartIfNoHumanPlayer: 0
+  autoPlayEnabled: 1
+  autoStartIfNoHumanPlayer: 1
   delayBetweenTurns: 0.25
   maxTurnsPerSession: 1000
 --- !u!1 &326077032
@@ -29967,7 +29967,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 64, y: -36.15}
-  m_SizeDelta: {x: 256, y: 62.3}
+  m_SizeDelta: {x: 0, y: 62.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &974318168
 MonoBehaviour:

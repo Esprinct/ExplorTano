@@ -178,6 +178,7 @@ Assets/Scripts/HUD/
 Assets/Scripts/IA/
  SCOBJ_IA_Personnalite.cs
  SVC_IA_ActionExecutionService.cs
+ SVC_IA_EquipeCompositionService.cs
  SVC_IA_EquipeRosterService.cs
  SVC_IA_PersonnaliteResolver.cs
  SVC_IA_ProvinceStrategyService.cs

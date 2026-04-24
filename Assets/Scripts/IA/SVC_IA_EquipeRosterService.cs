@@ -5,56 +5,55 @@ public static class SVC_IA_EquipeRosterService
 {
     private const int TailleMaxEquipe = 12;
 
-    public static void TenterCreationEquipe(SYS_GameManager gameManager, DATA_JOUEUR joueur)
-    {
-        if (gameManager == null || joueur == null)
-            return;
+ public static void TenterCreationEquipe(SYS_GameManager gameManager, DATA_JOUEUR joueur)
+{
+    if (gameManager == null || joueur == null)
+        return;
 
-        int personnagesLibres = CompterPersonnagesLibres(gameManager, joueur);
-        int nbEquipes = GetNombreEquipesValides(joueur);
+    int personnagesLibres = CompterPersonnagesLibres(gameManager, joueur);
+    int nbEquipes = GetNombreEquipesValides(joueur);
 
-        bool aUneEquipeActionnable = false;
+    int nombreEquipesMaximumSouhaite = SVC_IA_EquipeCompositionService.GetNombreEquipesMaximumSouhaite(joueur);
+    bool besoinStructurel = SVC_IA_EquipeCompositionService.IADevraitCreerNouvelleEquipe(joueur);
 
-        if (joueur.equipes != null)
-        {
-            foreach (STATE_EQUIPE equipe in joueur.equipes)
-            {
-                if (equipe == null)
-                    continue;
+    if (nbEquipes >= nombreEquipesMaximumSouhaite)
+        return;
 
-                int nbMembres = equipe.membresActuels != null ? equipe.membresActuels.Count : 0;
+    if (nbEquipes >= gameManager.MaxEquipesParJoueur)
+        return;
 
-                if (!equipe.AUneActionEnCours && nbMembres >= 1)
-                {
-                    aUneEquipeActionnable = true;
-                    break;
-                }
-            }
-        }
+    if (personnagesLibres <= 0)
+        return;
 
-        bool doitCreerEquipe =
-            (nbEquipes == 0 && personnagesLibres > 0) ||
-            (!aUneEquipeActionnable && personnagesLibres > 0) ||
-            personnagesLibres >= GetTailleCibleEquipe(joueur);
+    // Plus agressif : si l'IA veut encore des équipes, elle en crée dès qu'elle a au moins 1 perso libre.
+    bool doitCreerEquipe =
+        nbEquipes == 0 ||
+        besoinStructurel ||
+        personnagesLibres >= GetTailleCibleEquipe(joueur);
 
-        if (!doitCreerEquipe)
-            return;
+    if (!doitCreerEquipe)
+        return;
 
-        if (!gameManager.PeutCreerEquipe(joueur))
-            return;
+    if (!gameManager.PeutCreerEquipe(joueur))
+        return;
 
-        STATE_EQUIPE nouvelleEquipe = ConstruireNouvelleEquipe(gameManager, joueur);
-        if (nouvelleEquipe == null)
-            return;
+    STATE_EQUIPE nouvelleEquipe = ConstruireNouvelleEquipe(gameManager, joueur);
+    if (nouvelleEquipe == null)
+        return;
 
-        int coutCreation = gameManager.GetCoutCreationEquipe(joueur);
-        joueur.etrinium -= coutCreation;
+    int coutCreation = gameManager.GetCoutCreationEquipe(joueur);
+    joueur.etrinium -= coutCreation;
 
-        gameManager.EquipesRuntime.Add(nouvelleEquipe);
+    gameManager.EquipesRuntime.Add(nouvelleEquipe);
 
-        joueur.equipes ??= new List<STATE_EQUIPE>();
-        joueur.equipes.Add(nouvelleEquipe);
-    }
+    joueur.equipes ??= new List<STATE_EQUIPE>();
+    joueur.equipes.Add(nouvelleEquipe);
+
+    Debug.Log(
+        $"[IA_EQUIPE_CREATE] joueur={joueur.nomJoueur} | nbEquipes={joueur.equipes.Count} | " +
+        $"persosLibresRestantsAvantAssignation={personnagesLibres} | cout={coutCreation}"
+    );
+}
 
     public static void CompleterEquipes(SYS_GameManager gameManager, DATA_JOUEUR joueur)
     {

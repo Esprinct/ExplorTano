@@ -17,38 +17,19 @@ public static class SVC_IA_ProvinceStrategyService
             if (equipe.membresActuels == null || equipe.membresActuels.Count < tailleMinEquipe)
                 continue;
 
-            ENUM_EQUIPE_ACTION action = SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipe);
-
-            Debug.Log(
-                $"[IA_ASSIGN] joueur={joueur.nomJoueur} | equipe={equipe.data?.nomEquipe} | " +
-                $"spec={equipe.specialisation} | action={action} | niveau={equipe.NiveauActuel}"
-            );
-
             if (PeutGarderProvinceActuelle(gameManager, joueur, equipe))
-            {
-                Debug.Log(
-                    $"[IA_ASSIGN_KEEP] joueur={joueur.nomJoueur} | equipe={equipe.data?.nomEquipe} | " +
-                    $"province={equipe.provinceAffectee?.data?.nom}"
-                );
                 continue;
-            }
 
             STATE_PROVINCE cible = ChoisirProvincePourEquipe(gameManager, joueur, equipe);
+
             if (cible == null)
             {
-                Debug.Log(
-                    $"[IA_ASSIGN_NONE] joueur={joueur.nomJoueur} | equipe={equipe.data?.nomEquipe} | action={action}"
-                );
+                equipe.provinceAffectee = null;
                 continue;
             }
 
             equipe.provinceAffectee = cible;
             equipe.actionTerminee = false;
-
-            Debug.Log(
-                $"[IA_ASSIGN_SET] joueur={joueur.nomJoueur} | equipe={equipe.data?.nomEquipe} | " +
-                $"action={action} | province={cible.data?.nom}"
-            );
         }
     }
 
@@ -71,7 +52,7 @@ public static class SVC_IA_ProvinceStrategyService
             case ENUM_EQUIPE_ACTION.Exploration:
             {
                 float exploration = province.GetExploration(equipe.compagnie);
-                return exploration < 100f && !province.estClaim;
+                return exploration < 100f;
             }
 
             case ENUM_EQUIPE_ACTION.Vadrouille:
@@ -80,17 +61,24 @@ public static class SVC_IA_ProvinceStrategyService
                 if (exploration < 100f)
                     return false;
 
+                bool claimParIA =
+                    province.estClaim &&
+                    province.proprietaireActuel.HasValue &&
+                    province.proprietaireActuel.Value == joueur.compagnie;
+
+                if (claimParIA)
+                    return false;
+
                 float influenceIA = GetInfluenceCompagnie(province, joueur.compagnie);
                 float influenceAdverse = GetInfluenceAdverseDominante(province, joueur.compagnie);
 
-                if (province.estClaim && province.proprietaireActuel == joueur.compagnie)
-                    return false;
-
-                return influenceAdverse > 0.01f || (influenceIA > 0f && influenceIA < 60f);
+                return influenceAdverse > 0.01f || (influenceIA > 0f && influenceIA < 60f) || !province.estClaim;
             }
 
             case ENUM_EQUIPE_ACTION.Construction:
-                return province.estClaim && province.proprietaireActuel == joueur.compagnie;
+                return province.estClaim &&
+                       province.proprietaireActuel.HasValue &&
+                       province.proprietaireActuel.Value == joueur.compagnie;
 
             default:
                 return false;
@@ -136,12 +124,10 @@ public static class SVC_IA_ProvinceStrategyService
 
         ENUM_EQUIPE_ACTION action = SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipe);
 
-        float etrinium = province.data.etrinium;
         float prestige = province.data.prestige;
         float politique = province.data.poidsPolitique;
         float accessibilite = province.data.accesibilite;
 
-        float influenceAutre = province.influenceAutre;
         float influenceIA = GetInfluenceCompagnie(province, joueur.compagnie);
         float influenceAdverse = GetInfluenceAdverseDominante(province, joueur.compagnie);
         float exploration = province.GetExploration(joueur.compagnie);
@@ -169,16 +155,12 @@ public static class SVC_IA_ProvinceStrategyService
                 if (exploration >= 100f)
                     return float.MinValue;
 
-                if (claimParIA)
-                    return float.MinValue;
-
-                score += (100f - exploration) * 4f;
-                score += etrinium * 2.2f;
-                score += prestige * 1.8f;
-                score += politique * 1.4f;
-                score += accessibilite * 0.8f;
-                score += influenceAutre * 2.5f;
-                score -= influenceAdverse * 0.4f;
+                // L’exploration ne sert plus à générer directement de l’étrinium par tour.
+                // On priorise donc la complétion + prestige + positionnement.
+                score += (100f - exploration) * 5f;
+                score += prestige * 1.5f;
+                score += politique * 1.2f;
+                score += accessibilite * 0.5f;
                 score -= nbEquipesAllieesDejaSurPlace * 120f;
                 break;
             }
@@ -186,20 +168,10 @@ public static class SVC_IA_ProvinceStrategyService
             case ENUM_EQUIPE_ACTION.Vadrouille:
             {
                 if (exploration < 100f)
-                {
-                    Debug.Log(
-                        $"[IA_VADROUILLE_REJECT] province={province.data?.nom} | exploration={exploration:0.#}% < 100"
-                    );
                     return float.MinValue;
-                }
 
                 if (claimParIA)
-                {
-                    Debug.Log(
-                        $"[IA_VADROUILLE_REJECT] province={province.data?.nom} | dejaClaimIA=true"
-                    );
                     return float.MinValue;
-                }
 
                 score += influenceAdverse * 4.5f;
                 score += influenceIA * 1.2f;
@@ -213,11 +185,6 @@ public static class SVC_IA_ProvinceStrategyService
                     score += 80f;
 
                 score -= nbEquipesAllieesDejaSurPlace * 150f;
-
-                Debug.Log(
-                    $"[IA_VADROUILLE_SCORE] province={province.data?.nom} | exploration={exploration:0.#}% | " +
-                    $"influenceIA={influenceIA:0.#} | influenceAdverse={influenceAdverse:0.#} | score={score:0.##}"
-                );
                 break;
             }
 
@@ -226,7 +193,6 @@ public static class SVC_IA_ProvinceStrategyService
                 if (!claimParIA)
                     return float.MinValue;
 
-                score += etrinium * 1.5f;
                 score += prestige * 1.0f;
                 score += politique * 1.0f;
                 score -= nbEquipesAllieesDejaSurPlace * 100f;
