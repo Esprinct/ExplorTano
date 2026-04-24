@@ -1311,8 +1311,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1893140577534650056}
   - component: {fileID: 3716194166806771589}
+  - component: {fileID: 5762173887307811027}
   m_Layer: 0
-  m_Name: RowExplorationView
+  m_Name: RowActonView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1369,6 +1370,27 @@ MonoBehaviour:
   m_Spacing: {x: 5, y: 15.1}
   m_Constraint: 1
   m_ConstraintCount: 1
+--- !u!114 &5762173887307811027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127852037266651759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec3ce5de1d6097f45afc453dc7b71b36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_EQUIPE_ActionView
+  rowActionView: {fileID: 1127852037266651759}
+  titreActionText: {fileID: 8120963697212468273}
+  toursEnCoursText: {fileID: 0}
+  prestigeGagneText: {fileID: 4441336341377355046}
+  etriniumParTourText: {fileID: 6288755942802034866}
+  dureeText: {fileID: 0}
+  infoPrincipaleText: {fileID: 8467912214466642947}
+  infoSecondaireText: {fileID: 6653926299184268046}
+  impactText: {fileID: 391386484367056906}
 --- !u!1 &1141373345470513625
 GameObject:
   m_ObjectHideFlags: 0
@@ -10459,7 +10481,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2324856132108291411}
   - component: {fileID: -4062630218503989844}
-  - component: {fileID: 2147807053784026579}
   - component: {fileID: 926819174272380737}
   - component: {fileID: 8944869573271125421}
   - component: {fileID: 4506714902113435819}
@@ -10506,47 +10527,27 @@ MonoBehaviour:
   panelRoot: {fileID: 3641566419381645592}
   boutonAffecterProvince: {fileID: 2559075245353446124}
   boutonAffecterProvinceText: {fileID: 6001103590553685435}
-  boutonDemarrerExploration: {fileID: 934264870643429779}
-  boutonDemarrerExplorationText: {fileID: 1646089672098273082}
+  boutonDemarrerAction: {fileID: 934264870643429779}
+  boutonDemarrerActionText: {fileID: 1646089672098273082}
   boutonAjouterPersonnage: {fileID: 6096225905946632336}
   UI_INVENTAIRE_Controller: {fileID: 0}
   dureeExplorationParDefaut: 10
   toggleAffectationAutomatique: {fileID: 4482729844634050441}
-  toggleLancementExplorationAutomatique: {fileID: 4510652800151662487}
+  toggleLancementActionAutomatique: {fileID: 4510652800151662487}
   boutonSpecialisation: {fileID: 7251128195561537341}
   boutonSpecialisationText: {fileID: 6419831511680293487}
   specialisationTreeController: {fileID: 2352635328446645984}
   couleurTexteBoutonActif: {r: 1, g: 1, b: 1, a: 1}
   couleurTexteBoutonInactif: {r: 1, g: 1, b: 1, a: 1}
-  panelConfirmationExploration: {fileID: 8285367597276130418}
-  confirmationExplorationText: {fileID: 2672307893721131684}
-  boutonConfirmerExploration: {fileID: 2887975643865963178}
-  boutonAnnulerExploration: {fileID: 5105574135760983586}
+  panelConfirmationAction: {fileID: 0}
+  confirmationActionText: {fileID: 0}
+  boutonConfirmerAction: {fileID: 0}
+  boutonAnnulerAction: {fileID: 0}
   modificationsVerrouilleesText: {fileID: 0}
   headerView: {fileID: 926819174272380737}
   statsView: {fileID: 4506714902113435819}
   personnagesView: {fileID: 8944869573271125421}
-  explorationView: {fileID: 2147807053784026579}
---- !u!114 &2147807053784026579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8543731685469003741}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f7acf78b58961841a7d022e99c763ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EquipeExplorationView
-  rowExplorationView: {fileID: 1127852037266651759}
-  toursEnCoursText: {fileID: 1075975161378589820}
-  prestigeGagneText: {fileID: 4441336341377355046}
-  etriniumParTourText: {fileID: 6288755942802034866}
-  toursProjectionText: {fileID: 588005363791409989}
-  chanceArtefactText: {fileID: 8467912214466642947}
-  chanceArtefactRareText: {fileID: 6653926299184268046}
-  changementInfluenceText: {fileID: 391386484367056906}
+  actionView: {fileID: 5762173887307811027}
 --- !u!114 &926819174272380737
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10567,8 +10568,8 @@ MonoBehaviour:
   toursRestants: {fileID: 0}
   couleurEnAttenteAffectation: {r: 1, g: 0.4, b: 0.7, a: 1}
   couleurAffectee: {r: 1, g: 1, b: 1, a: 1}
-  couleurExplorationEnCours: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  couleurExplorationTerminee: {r: 0, g: 1, b: 0, a: 1}
+  couleurActionEnCours: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  couleurActionTerminee: {r: 0, g: 1, b: 0, a: 1}
 --- !u!114 &8944869573271125421
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -51,111 +51,126 @@ TemporaryDependencyNodeTargetIdentifier=netstandard2.1
 
 [sourceFiles]
 Assets/Scripts/Actions/Data/
+ DATA_EQUIPE_ActionPreview.cs
  ENUM_EQUIPE_ACTION.cs
  SYS_EquipeActionBase.cs
 Assets/Scripts/Actions/Logic/
+ SVC_EQUIPE_ActionCostService.cs
+ SVC_EQUIPE_ActionPreviewService.cs
  SVC_EQUIPE_ActionRulesService.cs
  SYS_ConstructionAction.cs
  SYS_EquipeActionSystem.cs
  SYS_ExplorationAction.cs
  SYS_VadrouilleAction.cs
-Assets/Scripts/Core/Data/
- DATA_Partie_Hud_Tour.cs
- ENUM_Compagnie.cs
- ENUM_RolePersonnage.cs
-Assets/Scripts/Core/Managers/
- SVC_GameRulesService.cs
- SYS_GameManager.cs
- SYS_HudSyncService.cs
- SYS_TurnOrderService.cs
-Assets/Scripts/Core/Systems/
- DATA_DebugEquipeRuntimeView.cs
- ENUM_IA_Personnalite.cs
- SYS_AutoPlayController.cs
- SYS_DebugEquipesRuntimeView.cs
- SYS_GameInitialisationService.cs
- SYS_GameUiRefreshService.cs
- SYS_IA_PlayerSystem.cs
- SYS_IA_ProgressionEquipementSystem.cs
- SYS_InfluenceSystem.cs
- SYS_TurnSystem.cs
- SYS_VictoireSystem.cs
-Assets/Scripts/Core/Utilities/Formatting/
- FMT_PERSONNAGE_UiFormatter.cs
- FMT_STATS_ValueFormatter.cs
-Assets/Scripts/Core/Utilities/
- SVC_EQUIPEMENT_Service.cs
- SVC_RECRUTEMENT_IA_ScoringService.cs
-Assets/Scripts/Dirigrant/Data/Enums/
- ENUM_DirigeantConcerne.cs
- TAG_DirigeantHudSlotTag.cs
-Assets/Scripts/Dirigrant/Data/
- SCOBJ_DIRIGEANT.cs
- SCOBJ_DIRIGEANT_EFFET.cs
-Assets/Scripts/Dirigrant/UI/
- UI_DirigeantXpView.cs
- UI_DIRIGEANT_HudSlot.cs
- UI_DIRIGEANT_MenuController.cs
-Assets/Scripts/Economie/Logic/
- SYS_FailliteSystem.cs
- SYS_RevenusSystem.cs
-Assets/Scripts/Effets/Data/
- DATA_StatModifier.cs
- EFFET_Contexte.cs
- enums/
-  ENUM_EFFET_Conditions.cs
-  ENUM_EFFET_PorteeType.cs
-  ENUM_EFFET_Receiver.cs
-  ENUM_EFFET_SpecialType.cs
-  ENUM_EFFET_Stats.cs
-  ENUM_EFFET_Type.cs
-  ENUM_EFFET_Valeur.cs
- SCOBJ_EFFET.cs
- SCOBJ_EQUIPE_EFFET.cs
- SCOBJ_PERSONNAGE_EFFET.cs
- SVC_EFFET_DIRIGEANT.cs
-Assets/Scripts/Effets/Logic/
- EFFET_AggregationResult.cs
- EFFET_Aggregator.cs
- EFFET_ApplicationService.cs
- EFFET_Resolver.cs
- PERSONNAGE_EFFET_AutoAssigner.cs
-Assets/Scripts/Effets/UI/
- FMT_EFFET.cs
- UI_EFFET_Slot.cs
-Assets/Scripts/Equipes/Data/
- DATA_EQUIPE_DetailData.cs
- ENUM_EQUIPE_SPECIALISATION.cs
- EQUIPE_StatsSnapshot.cs
- SCOBJ_EQUIPE.cs
- SCOBJ_EQUIPE_SPECIALISATION.cs
- STATE_EQUIPE.cs
-Assets/Scripts/Equipes/Logic/
- CALC_EQUIPE_StatsCalculator.cs
- EFFET_ContexteFactory.cs
- EFFET_EQUIPE_Aggregator.cs
- SVC_EQUIPE_EffetService.cs
- SVC_EQUIPE_ExplorationEffects.cs
- SVC_EQUIPE_SpecialisationRules.cs
- SVC_EQUIPE_SpecialisationService.cs
-Assets/Scripts/Equipes/UI/
- HUD_EQUIPE_Slot.cs
- UI_EQUIPE_DetailController.cs
- UI_EQUIPE_ExplorationView.cs
- UI_EQUIPE_HeaderView.cs
- UI_EQUIPE_PersonnagesView.cs
- UI_EQUIPE_SpecialisationNode.cs
- UI_EQUIPE_SpecialisationTreeController.cs
- UI_EQUIPE_StatsView.cs
-Assets/Scripts/Exploration/Data/
- DATA_EXPLORATION_RecompensePopup.cs
- ENUM_EXPLORATION_Resultat.cs
-Assets/Scripts/Exploration/Logic/
- CALC_EXPLORATION_Resolver.cs
- CFG_EXPLORATION.cs
- SVC_EQUIPE_ManagementService.cs
- SYS_EXPLORATION_System.cs
 Assets/Scripts/
+ Actions/UI/UI_EQUIPE_ActionView.cs
+ Core/Data/
+  DATA_Partie_Hud_Tour.cs
+  ENUM_Compagnie.cs
+  ENUM_RolePersonnage.cs
+ Core/Managers/
+  SVC_GameRulesService.cs
+  SYS_GameManager.cs
+  SYS_HudSyncService.cs
+  SYS_TurnOrderService.cs
+ Core/Systems/
+  DATA_DebugEquipeRuntimeView.cs
+  ENUM_IA_Personnalite.cs
+  SYS_AutoPlayController.cs
+  SYS_DebugEquipesRuntimeView.cs
+  SYS_GameInitialisationService.cs
+  SYS_GameUiRefreshService.cs
+  SYS_IA_PlayerSystem.cs
+  SYS_IA_ProgressionEquipementSystem.cs
+  SYS_InfluenceSystem.cs
+  SYS_TurnSystem.cs
+  SYS_VictoireSystem.cs
+ Core/Utilities/Formatting/
+  FMT_PERSONNAGE_UiFormatter.cs
+  FMT_STATS_ValueFormatter.cs
+ Core/Utilities/
+  SVC_EQUIPEMENT_Service.cs
+  SVC_RECRUTEMENT_IA_ScoringService.cs
+ Dirigrant/Data/Enums/
+  ENUM_DirigeantConcerne.cs
+  TAG_DirigeantHudSlotTag.cs
+ Dirigrant/Data/
+  SCOBJ_DIRIGEANT.cs
+  SCOBJ_DIRIGEANT_EFFET.cs
+ Dirigrant/UI/
+  UI_DirigeantXpView.cs
+  UI_DIRIGEANT_HudSlot.cs
+  UI_DIRIGEANT_MenuController.cs
+ Economie/Logic/
+  SYS_FailliteSystem.cs
+  SYS_RevenusSystem.cs
+ Effets/Data/
+  DATA_StatModifier.cs
+  EFFET_Contexte.cs
+  enums/
+   ENUM_EFFET_Conditions.cs
+   ENUM_EFFET_PorteeType.cs
+   ENUM_EFFET_Receiver.cs
+   ENUM_EFFET_SpecialType.cs
+   ENUM_EFFET_Stats.cs
+   ENUM_EFFET_Type.cs
+   ENUM_EFFET_Valeur.cs
+  SCOBJ_EFFET.cs
+  SCOBJ_EQUIPE_EFFET.cs
+  SCOBJ_PERSONNAGE_EFFET.cs
+  SVC_EFFET_DIRIGEANT.cs
+ Effets/Logic/
+  EFFET_AggregationResult.cs
+  EFFET_Aggregator.cs
+  EFFET_ApplicationService.cs
+  EFFET_Resolver.cs
+  PERSONNAGE_EFFET_AutoAssigner.cs
+ Effets/UI/
+  FMT_EFFET.cs
+  UI_EFFET_Slot.cs
+ Equipes/Data/
+  DATA_EQUIPE_DetailButtonState.cs
+  DATA_EQUIPE_DetailData.cs
+  DATA_EQUIPE_ProvinceAssignmentResult.cs
+  ENUM_EQUIPE_SPECIALISATION.cs
+  EQUIPE_StatsSnapshot.cs
+  SCOBJ_EQUIPE.cs
+  SCOBJ_EQUIPE_SPECIALISATION.cs
+  STATE_EQUIPE.cs
+ Equipes/Logic/
+  CALC_EQUIPE_StatsCalculator.cs
+  EFFET_ContexteFactory.cs
+  EFFET_EQUIPE_Aggregator.cs
+  SVC_EQUIPE_ActionLaunchService.cs
+  SVC_EQUIPE_DetailButtonStateService.cs
+  SVC_EQUIPE_DetailRefreshService.cs
+  SVC_EQUIPE_EffetService.cs
+  SVC_EQUIPE_ExplorationEffects.cs
+  SVC_EQUIPE_ProvinceAssignmentUiService.cs
+  SVC_EQUIPE_RecruitmentUiService.cs
+  SVC_EQUIPE_SpecialisationRules.cs
+  SVC_EQUIPE_SpecialisationService.cs
+  SVC_EQUIPE_SpecialisationUiService.cs
+  SVC_EQUIPE_ToggleUiService.cs
+ Equipes/UI/Base/
+  UI_EQUIPE_DetailController.cs
+  UI_EQUIPE_ExplorationView.cs
+  UI_EQUIPE_HeaderView.cs
+  UI_EQUIPE_PersonnagesView.cs
+  UI_EQUIPE_StatsView.cs
+ Equipes/UI/
+  HUD/HUD_EQUIPE_Slot.cs
+  Spécialisation/
+   UI_EQUIPE_SpecialisationNode.cs
+   UI_EQUIPE_SpecialisationTreeController.cs
+ Exploration/Data/
+  DATA_EXPLORATION_RecompensePopup.cs
+  ENUM_EXPLORATION_Resultat.cs
+ Exploration/Logic/
+  CALC_EXPLORATION_Resolver.cs
+  CFG_EXPLORATION.cs
+  SVC_EQUIPE_ManagementService.cs
+  SYS_EXPLORATION_System.cs
  Exploration/UI/UI_EXPLORATION_RecompensePopup.cs
  HUD/
   CameraZoomController.cs
@@ -689,7 +704,7 @@ Library/ScriptAssemblies/
  Unity.Properties.SourceGenerator.dll
  Unity.SourceGenerators.dll
  Unity.UIToolkit.SourceGenerator.dll
-../../../../.vscode/extensions/visualstudiotoolsforunity.vstuc-1.2.1/Analyzers/Microsoft.Unity.Analyzers.dll
+../../../../.vscode/extensions/visualstudiotoolsforunity.vstuc-1.2.2/Analyzers/Microsoft.Unity.Analyzers.dll
 
 [analyzerConfigFiles]
 Temp/obj/Assembly-CSharp/Assembly-CSharp.GeneratedMSBuildEditorConfig.editorconfig
