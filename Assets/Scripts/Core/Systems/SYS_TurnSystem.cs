@@ -1,25 +1,17 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SYS_TurnSystem
 {
-    private readonly ExplorationSystem explorationSystem;
-    private readonly SYS_VadrouilleSystem vadrouilleSystem;
-    private readonly SYS_InfluenceSystem influenceSystem;
+    private readonly SYS_EquipeActionSystem equipeActionSystem;
     private readonly SYS_GameUiRefreshService uiSystem;
     private readonly SYS_IA_PlayerSystem iaPlayerSystem;
 
     public SYS_TurnSystem(
-        ExplorationSystem explorationSystem,
-        SYS_VadrouilleSystem vadrouilleSystem,
-        SYS_InfluenceSystem influenceSystem,
+        SYS_EquipeActionSystem equipeActionSystem,
         SYS_GameUiRefreshService uiSystem)
     {
-        this.explorationSystem = explorationSystem;
-        this.vadrouilleSystem = vadrouilleSystem;
-        this.influenceSystem = influenceSystem;
+        this.equipeActionSystem = equipeActionSystem;
         this.uiSystem = uiSystem;
-
         iaPlayerSystem = new SYS_IA_PlayerSystem();
     }
 
@@ -91,10 +83,7 @@ public class SYS_TurnSystem
         gameManager.PartieData.tourActuel++;
 
         gameManager.RevenusSystem?.AjouterRevenusDuTour(gameManager);
-
-        explorationSystem?.MettreAJourExplorations(gameManager);
-        vadrouilleSystem?.MettreAJourVadrouilles(gameManager);
-
+        equipeActionSystem?.MettreAJourActions(gameManager);
         gameManager.FailliteSystem?.ResoudreFaillites(gameManager);
         gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
 

@@ -148,7 +148,6 @@ Assets/Scripts/
   SVC_EQUIPE_ExplorationEffects.cs
   SVC_EQUIPE_ProvinceAssignmentUiService.cs
   SVC_EQUIPE_RecruitmentUiService.cs
-  SVC_EQUIPE_SpecialisationRules.cs
   SVC_EQUIPE_SpecialisationService.cs
   SVC_EQUIPE_SpecialisationUiService.cs
   SVC_EQUIPE_ToggleUiService.cs
@@ -170,7 +169,6 @@ Assets/Scripts/
   CALC_EXPLORATION_Resolver.cs
   CFG_EXPLORATION.cs
   SVC_EQUIPE_ManagementService.cs
-  SYS_EXPLORATION_System.cs
  Exploration/UI/UI_EXPLORATION_RecompensePopup.cs
  HUD/
   CameraZoomController.cs
@@ -314,7 +312,6 @@ Assets/Scripts/
  Vadrouille/Logic/
   CALC_VADROUILLE_Resolver.cs
   SVC_EQUIPE_VadrouilleEffects.cs
-  SYS_VadrouilleSystem.cs
  Xp/Data/
   CFG_LevelBonus.cs
   CFG_LevelProgression.cs

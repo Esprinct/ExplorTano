@@ -176,7 +176,7 @@ public class SYS_IA_PlayerSystem
             switch (action)
             {
                 case ENUM_EQUIPE_ACTION.Vadrouille:
-                    gameManager.DemarrerVadrouille(equipe);
+                   
                     break;
 
                 case ENUM_EQUIPE_ACTION.Exploration:

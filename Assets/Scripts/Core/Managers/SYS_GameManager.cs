@@ -62,7 +62,6 @@ public VadrouilleConfig VadrouilleConfig => vadrouilleConfig;
 
     public DATA_JOUEUR_HUD JoueurData => joueurData;
     public DATA_Partie_Hud_Tour PartieData => partieData;
-public SYS_VadrouilleSystem VadrouilleSystem { get; private set; }
     public IReadOnlyList<ENUM_Compagnie> OrdreTourCourant => ordreTourCourant;
     public int IndexJoueurActifTour => indexJoueurActifTour;
     public int MaxEquipesParJoueur => maxEquipesParJoueur;
@@ -96,7 +95,6 @@ public SYS_ConstructionAction ConstructionAction { get; private set; }
 public SYS_VadrouilleAction VadrouilleAction { get; private set; }
     public SYS_GameInitializationService InitializationService { get; private set; }
     public SYS_TurnSystem TurnSystem { get; private set; }
-    public ExplorationSystem ExplorationSystem { get; private set; }
     public SYS_InfluenceSystem InfluenceSystem { get; private set; }
     public SYS_GameUiRefreshService UiSystem { get; private set; }
     public SYS_FailliteSystem FailliteSystem { get; private set; }
@@ -187,9 +185,9 @@ public SYS_VadrouilleAction VadrouilleAction { get; private set; }
     }
 public void DemarrerExploration(STATE_EQUIPE equipe, int dureeTours)
 {
-    if (ExplorationSystem == null)
+    if (EquipeActionSystem == null)
     {
-        Debug.LogWarning("ExplorationSystem introuvable.");
+        Debug.LogWarning("EquipeActionSystem introuvable.");
         return;
     }
 
@@ -199,15 +197,15 @@ public void DemarrerExploration(STATE_EQUIPE equipe, int dureeTours)
         return;
     }
 
-    ExplorationSystem.DemarrerExploration(this, equipe, equipe.compagnie, dureeTours);
+    EquipeActionSystem.DemarrerAction(this, equipe, ENUM_EQUIPE_ACTION.Exploration);
     SynchroniserHudAvecJoueurHumain();
     RefreshToutLeHUD();
 }
 public void DemarrerVadrouille(STATE_EQUIPE equipe)
 {
-    if (VadrouilleSystem == null)
+    if (EquipeActionSystem == null)
     {
-        Debug.LogWarning("VadrouilleSystem introuvable.");
+        Debug.LogWarning("EquipeActionSystem introuvable.");
         return;
     }
 
@@ -217,7 +215,7 @@ public void DemarrerVadrouille(STATE_EQUIPE equipe)
         return;
     }
 
-    VadrouilleSystem.DemarrerVadrouille(this, equipe, equipe.compagnie);
+    EquipeActionSystem.DemarrerAction(this, equipe, ENUM_EQUIPE_ACTION.Vadrouille);
     SynchroniserHudAvecJoueurHumain();
     RefreshToutLeHUD();
 }
@@ -234,15 +232,23 @@ public void DemarrerVadrouille(STATE_EQUIPE equipe)
 
     RevenusSystem = new SYS_RevenusSystem();
     VictoireSystem = new SYS_VictoireSystem();
+    FailliteSystem = new SYS_FailliteSystem();
 
     InfluenceSystem = new SYS_InfluenceSystem();
     UiSystem = new SYS_GameUiRefreshService();
 
-    ExplorationSystem = new ExplorationSystem(InfluenceSystem, UiSystem);
-    VadrouilleSystem = new SYS_VadrouilleSystem(InfluenceSystem, UiSystem);
+    ExplorationAction = new SYS_ExplorationAction(InfluenceSystem, UiSystem);
+    ConstructionAction = new SYS_ConstructionAction(UiSystem);
+    VadrouilleAction = new SYS_VadrouilleAction(InfluenceSystem, UiSystem);
+
+    EquipeActionSystem = new SYS_EquipeActionSystem(
+        ExplorationAction,
+        ConstructionAction,
+        VadrouilleAction
+    );
 
     InitializationService = new SYS_GameInitializationService();
-    TurnSystem = new SYS_TurnSystem(ExplorationSystem, VadrouilleSystem, InfluenceSystem, UiSystem);
+    TurnSystem = new SYS_TurnSystem(EquipeActionSystem, UiSystem);
 }
 
 public DATA_JOUEUR GetJoueurProprietaireEquipe(STATE_EQUIPE equipe)
