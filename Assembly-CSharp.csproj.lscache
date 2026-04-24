@@ -58,6 +58,7 @@ Assets/Scripts/Actions/Data/
  ENUM_EQUIPE_ACTION.cs
 Assets/Scripts/Actions/Logic/
  SVC_EQUIPE_ActionCostService.cs
+ SVC_EQUIPE_ActionLaunchService.cs
  SVC_EQUIPE_ActionPreviewService.cs
  SVC_EQUIPE_ActionRulesService.cs
  SYS_ConstructionAction.cs
@@ -80,12 +81,11 @@ Assets/Scripts/Core/Managers/
 Assets/Scripts/Core/Systems/
  DATA_DebugEquipeRuntimeView.cs
  ENUM_IA_Personnalite.cs
+ SVC_IA_EquipeSpecialisationService.cs
  SYS_AutoPlayController.cs
  SYS_DebugEquipesRuntimeView.cs
  SYS_GameInitialisationService.cs
  SYS_GameUiRefreshService.cs
- SYS_IA_PlayerSystem.cs
- SYS_IA_ProgressionEquipementSystem.cs
  SYS_InfluenceSystem.cs
  SYS_TurnSystem.cs
  SYS_VictoireSystem.cs
@@ -145,7 +145,6 @@ Assets/Scripts/Equipes/Logic/
  CALC_EQUIPE_StatsCalculator.cs
  EFFET_ContexteFactory.cs
  EFFET_EQUIPE_Aggregator.cs
- SVC_EQUIPE_ActionLaunchService.cs
  SVC_EQUIPE_DetailButtonStateService.cs
  SVC_EQUIPE_DetailRefreshService.cs
  SVC_EQUIPE_EffetService.cs
@@ -166,122 +165,125 @@ Assets/Scripts/Equipes/UI/
  Spécialisation/
   UI_EQUIPE_SpecialisationNode.cs
   UI_EQUIPE_SpecialisationTreeController.cs
-Assets/Scripts/Exploration/Data/
- DATA_EXPLORATION_RecompensePopup.cs
- ENUM_EXPLORATION_Resultat.cs
 Assets/Scripts/Exploration/Logic/
  CALC_EXPLORATION_Resolver.cs
  CFG_EXPLORATION.cs
  SVC_EQUIPE_ManagementService.cs
+Assets/Scripts/HUD/
+ CameraZoomController.cs
+ DATA_RecrutementNotificationItem.cs
+ HUD_Controller.cs
+ HUD_NotificationController.cs
+Assets/Scripts/IA/
+ SVC_IA_ActionExecutionService.cs
+ SVC_IA_EquipeRosterService.cs
+ SVC_IA_ProvinceStrategyService.cs
+ SVC_IA_RecruitmentService.cs
+ SYS_IA_PlayerSystem.cs
+ SYS_IA_ProgressionEquipementSystem.cs
+Assets/Scripts/INVENTAIRE/
+ Data/ENUM_INVENTAIRE_Onglet.cs
+ Tags/
+  TAG_INVENTAIRE.cs
+  TAG_INVENTAIRE_Content.cs
+ UI/
+  UI_INVENTAIRE_Controller.cs
+  UI_INVENTAIRE_ONGLET_BASE.cs
+  UI_INVENTAIRE_ONGLET_OBJET.cs
+  UI_INVENTAIRE_ONGLET_PERSONNAGE.cs
+Assets/Scripts/Joueur/Data/
+ DATA_JOUEUR.cs
+ DATA_JOUEUR_HUD.cs
+Assets/Scripts/Joueur/Logic/
+ SVC_JOUEUR_AccessService.cs
+ SVC_JOUEUR_InitialisationService.cs
+ UTIL_JOUEUR_EQUIPPEMENT.cs
+ UTIL_JOUEUR_INVENTAIRE.cs
+Assets/Scripts/Objets/Data/Consommable/
+ DATA_OBJET_CONSOMMABLE_EQUIPE_Stack.cs
+ SCOBJ_OBJET_CONSOMMABLE.cs
+Assets/Scripts/Objets/Data/
+ DATA_OBJET_Detail.cs
+ ENUM_OBJET_Categorie.cs
+ ENUM_OBJET_Rarete.cs
+ Equippable/
+  DATA_OBJET_EQUIPPABLE_ConditionEquipement.cs
+  ENUM_OBJET_EQUIPPABLE.cs
+  ENUM_OBJET_EQUIPPABLE_ConditionEquipement.cs
+  SCOBJ_ARTEFACT.cs
+  SCOBJ_OBJET_EQUIPPABLE.cs
+ MAP_OBJET_DetailMapper.cs
+ SCOBJ_OBJET.cs
+Assets/Scripts/Objets/Logic/
+ SVC_OBJET_ConditionEquipementService.cs
+ SVC_OBJET_CONSOMMABLE_EQUIPE_Service.cs
+ SVC_OBJET_EquipementRequeteService.cs
+ UTIL_ObjetSlotClickHandlerUI.cs
+Assets/Scripts/Objets/UI/
+ UI_OBJET_CONSOMMABLE_Slot.cs
+ UI_OBJET_DetailController.cs
+ UI_OBJET_Slot.cs
+Assets/Scripts/Personnages/Data/
+ DATA_PERSONNAGE.cs
+ DATA_PERSONNAGE_Detail.cs
+ DATA_PERSONNAGE_DisplayContext.cs
+ ENUM_PERSONNAGE_Genre.cs
+ SCOBJ_Personnage.cs
+ STATE_PERSONNAGE.cs
+ STATE_PERSONNAGE_EQUIPEMENT.cs
+ UTIL_PERSONNAGE_EQUIPEMENT.cs
+Assets/Scripts/Personnages/Logic/
+ CALC_PERSONNAGE_Generator.cs
+ EQUIPEMENT_DragContext.cs
+ Stats/
+  CALC_PERSONNAGE_STATS_ComputedStats.cs
+  CALS_PERSONNAGE_STATS_Calculator.cs
+  DATA_STATS_ComputationResult.cs
+  DATA_STATS_Result.cs
+  SVC_PERSONNAGE_STATS.cs
+ SVC_PERSONNAGE_CostService.cs
+ SVC_PERSONNAGE_DismissService.cs
+ UI_PERSONNAGE_SelectionMenuController.cs
+ UTIL_PERSONNNAGE_EQUIPEMENT_EFFET.cs
+Assets/Scripts/Personnages/Tags/
+ TAG_PERSONNAGE_CONTENT.cs
+ TAG_PERSONNAGE_SlotPrefab.cs
+Assets/Scripts/Personnages/UI/
+ MAP_PERSONNAGE_DetailMapper.cs
+ UI_PERSONNAGE_Detail_Controller.cs
+ UI_PERSONNAGE_Detail_Header.cs
+ UI_PERSONNAGE_EQUIPEMENT_Draggable.cs
+ UI_PERSONNAGE_EQUIPPEMENT_DropSlotUI.cs
+ UI_PERSONNAGE_EQUIPPEMENT_DropZone.cs
+ UI_PERSONNAGE_EQUIPPEMENT_PanelController.cs
+ UI_PERSONNAGE_EQUIPPEMENT_Stats.cs
+ UI_PERSONNAGE_Slot.cs
+ UI_PERSONNAGE_STATS.cs
+ UTIL_PERSONNAGE_Resolver.cs
+Assets/Scripts/Provinces/Data/
+ SCOBJ_PROVINCE.cs
+ STATE_PROVINCE.cs
+Assets/Scripts/Provinces/UI/
+ UI_CarteController.cs
+ UI_EquipeProvinceMarker.cs
+ UI_PROVINCE_MenuController.cs
+ UI_PROVINCE_View.cs
+Assets/Scripts/Recrutement/Data/
+ DATA_OffreRecrutement.cs
+ DATA_RecrutementResolutionResult.cs
+Assets/Scripts/Recrutement/Logic/
+ DATA_RareteDistribution.cs
+ SVC_RECRUTEMENT_TurnStateService.cs
+ SYS_RecrutementSystem.cs
+Assets/Scripts/Recrutement/Tags/
+ TAG_Recrutement_Content.cs
+ TAG_Recrutement_SlotPrefab.cs
+Assets/Scripts/Recrutement/UI/
+ UI_RareteStarsView.cs
+ UI_Recrutement_MenuController.cs
+ UI_Recrutement_NotificationItem.cs
+ UI_Recrutement_Slot.cs
 Assets/Scripts/
- Exploration/UI/UI_EXPLORATION_RecompensePopup.cs
- HUD/
-  CameraZoomController.cs
-  DATA_RecrutementNotificationItem.cs
-  HUD_Controller.cs
-  HUD_NotificationController.cs
- INVENTAIRE/
-  Data/ENUM_INVENTAIRE_Onglet.cs
-  Tags/
-   TAG_INVENTAIRE.cs
-   TAG_INVENTAIRE_Content.cs
-  UI/
-   UI_INVENTAIRE_Controller.cs
-   UI_INVENTAIRE_ONGLET_BASE.cs
-   UI_INVENTAIRE_ONGLET_OBJET.cs
-   UI_INVENTAIRE_ONGLET_PERSONNAGE.cs
- Joueur/Data/
-  DATA_JOUEUR.cs
-  DATA_JOUEUR_HUD.cs
- Joueur/Logic/
-  SVC_JOUEUR_AccessService.cs
-  SVC_JOUEUR_InitialisationService.cs
-  UTIL_JOUEUR_EQUIPPEMENT.cs
-  UTIL_JOUEUR_INVENTAIRE.cs
- Objets/Data/Consommable/
-  DATA_OBJET_CONSOMMABLE_EQUIPE_Stack.cs
-  SCOBJ_OBJET_CONSOMMABLE.cs
- Objets/Data/
-  DATA_OBJET_Detail.cs
-  ENUM_OBJET_Categorie.cs
-  ENUM_OBJET_Rarete.cs
-  Equippable/
-   DATA_OBJET_EQUIPPABLE_ConditionEquipement.cs
-   ENUM_OBJET_EQUIPPABLE.cs
-   ENUM_OBJET_EQUIPPABLE_ConditionEquipement.cs
-   SCOBJ_ARTEFACT.cs
-   SCOBJ_OBJET_EQUIPPABLE.cs
-  MAP_OBJET_DetailMapper.cs
-  SCOBJ_OBJET.cs
- Objets/Logic/
-  SVC_OBJET_ConditionEquipementService.cs
-  SVC_OBJET_CONSOMMABLE_EQUIPE_Service.cs
-  SVC_OBJET_EquipementRequeteService.cs
-  UTIL_ObjetSlotClickHandlerUI.cs
- Objets/UI/
-  UI_OBJET_CONSOMMABLE_Slot.cs
-  UI_OBJET_DetailController.cs
-  UI_OBJET_Slot.cs
- Personnages/Data/
-  DATA_PERSONNAGE.cs
-  DATA_PERSONNAGE_Detail.cs
-  DATA_PERSONNAGE_DisplayContext.cs
-  ENUM_PERSONNAGE_Genre.cs
-  SCOBJ_Personnage.cs
-  STATE_PERSONNAGE.cs
-  STATE_PERSONNAGE_EQUIPEMENT.cs
-  UTIL_PERSONNAGE_EQUIPEMENT.cs
- Personnages/Logic/
-  CALC_PERSONNAGE_Generator.cs
-  EQUIPEMENT_DragContext.cs
-  Stats/
-   CALC_PERSONNAGE_STATS_ComputedStats.cs
-   CALS_PERSONNAGE_STATS_Calculator.cs
-   DATA_STATS_ComputationResult.cs
-   DATA_STATS_Result.cs
-   SVC_PERSONNAGE_STATS.cs
-  SVC_PERSONNAGE_CostService.cs
-  SVC_PERSONNAGE_DismissService.cs
-  UI_PERSONNAGE_SelectionMenuController.cs
-  UTIL_PERSONNNAGE_EQUIPEMENT_EFFET.cs
- Personnages/Tags/
-  TAG_PERSONNAGE_CONTENT.cs
-  TAG_PERSONNAGE_SlotPrefab.cs
- Personnages/UI/
-  MAP_PERSONNAGE_DetailMapper.cs
-  UI_PERSONNAGE_Detail_Controller.cs
-  UI_PERSONNAGE_Detail_Header.cs
-  UI_PERSONNAGE_EQUIPEMENT_Draggable.cs
-  UI_PERSONNAGE_EQUIPPEMENT_DropSlotUI.cs
-  UI_PERSONNAGE_EQUIPPEMENT_DropZone.cs
-  UI_PERSONNAGE_EQUIPPEMENT_PanelController.cs
-  UI_PERSONNAGE_EQUIPPEMENT_Stats.cs
-  UI_PERSONNAGE_Slot.cs
-  UI_PERSONNAGE_STATS.cs
-  UTIL_PERSONNAGE_Resolver.cs
- Provinces/Data/
-  SCOBJ_PROVINCE.cs
-  STATE_PROVINCE.cs
- Provinces/UI/
-  UI_CarteController.cs
-  UI_EquipeProvinceMarker.cs
-  UI_PROVINCE_MenuController.cs
-  UI_PROVINCE_View.cs
- Recrutement/Data/
-  DATA_OffreRecrutement.cs
-  DATA_RecrutementResolutionResult.cs
- Recrutement/Logic/
-  DATA_RareteDistribution.cs
-  SVC_RECRUTEMENT_TurnStateService.cs
-  SYS_RecrutementSystem.cs
- Recrutement/Tags/
-  TAG_Recrutement_Content.cs
-  TAG_Recrutement_SlotPrefab.cs
- Recrutement/UI/
-  UI_RareteStarsView.cs
-  UI_Recrutement_MenuController.cs
-  UI_Recrutement_NotificationItem.cs
-  UI_Recrutement_Slot.cs
  Shared/Tags/PanelRootTag.cs
  Tags/CloseButtonTag.cs
  Tooltip/Etrinium/

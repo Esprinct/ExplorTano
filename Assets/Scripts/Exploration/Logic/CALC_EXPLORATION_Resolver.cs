@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class CALC_EXPLORATION_Resolver
 {
-    public static ENUM_EXPLORATION_Resultat CalculerResultat(
+    public static DATA_EXPLORATION_Resultat CalculerResultat(
         EQUIPE_StatsSnapshot stats,
         int toursBase,
         int coutParTourBase,
@@ -11,7 +11,7 @@ public static class CALC_EXPLORATION_Resolver
         float chanceReliqueRareBase,
         int enclavementComte)
     {
-        ENUM_EXPLORATION_Resultat result = new ENUM_EXPLORATION_Resultat();
+        DATA_EXPLORATION_Resultat result = new DATA_EXPLORATION_Resultat();
 
         int nombreMembres = Mathf.Max(0, stats.nombreMembres);
 
@@ -78,13 +78,15 @@ public static class CALC_EXPLORATION_Resolver
     private static int GetSurcoutSousEffectif(int nombreMembres)
     {
         if (nombreMembres <= 1) return 250;
-        if (nombreMembres == 2) return 100;
+        if (nombreMembres == 2) return 120;
+        if (nombreMembres == 3) return 40;
         return 0;
     }
 
     private static int GetMalusPrestigeSousEffectif(int nombreMembres)
     {
-        if (nombreMembres <= 1) return 1;
+        if (nombreMembres <= 1) return 2;
+        if (nombreMembres == 2) return 1;
         return 0;
     }
 }

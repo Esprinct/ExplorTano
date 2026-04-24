@@ -92,7 +92,7 @@ public static class SVC_EQUIPE_ActionPreviewService
 
         float explorationProjetee = Mathf.Clamp(explorationActuelle + gainExploration, 0f, 100f);
 
-        ENUM_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
+        DATA_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
             stats,
             toursModifies,
             config.coutParTourBase,
@@ -105,14 +105,16 @@ public static class SVC_EQUIPE_ActionPreviewService
         if (result == null)
             return preview;
 
-        bool actionEnCours = equipe.AUneActionEnCours && equipe.actionEnCours == ENUM_EQUIPE_ACTION.Exploration;
+        bool actionEnCours =
+            equipe.AUneActionEnCours &&
+            equipe.actionEnCours == ENUM_EQUIPE_ACTION.Exploration;
 
         preview.toursEnCoursText = actionEnCours
             ? $"Exploration : {equipe.actionToursRestants}"
             : "-";
 
         preview.prestigeText = $"+{result.prestigeFinal} Prestige";
-        preview.etriniumText = "+0 etrinium/tour";
+        preview.etriniumText = $"-{result.coutTotal} coût total";
         preview.dureeText = $"Durée : {result.toursFinaux} tours";
         preview.chancePrincipaleText = $"Artefact : {result.chanceRelique:0.#}%";
         preview.chanceSecondaireText = $"Artefact rare : {result.chanceReliqueRare:0.#}%";
@@ -169,7 +171,9 @@ public static class SVC_EQUIPE_ActionPreviewService
         if (result == null)
             return preview;
 
-        bool actionEnCours = equipe.AUneActionEnCours && equipe.actionEnCours == ENUM_EQUIPE_ACTION.Vadrouille;
+        bool actionEnCours =
+            equipe.AUneActionEnCours &&
+            equipe.actionEnCours == ENUM_EQUIPE_ACTION.Vadrouille;
 
         float influenceActuelle = CalculerPourcentageInfluenceJoueurDansProvince(equipe);
         float influenceProjetee = Mathf.Clamp(influenceActuelle + result.gainOccupationFinal, 0f, 100f);

@@ -65,7 +65,7 @@ public static class SVC_EQUIPE_ActionCostService
             chanceArtefactRareBase
         );
 
-        ENUM_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
+        DATA_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
             stats,
             toursModifies,
             coutParTourBase,

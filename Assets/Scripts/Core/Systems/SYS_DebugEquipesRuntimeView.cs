@@ -50,8 +50,6 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
             if (equipe == null)
                 continue;
 
-            bool actionEnCours = equipe.AUneActionEnCours;
-
             DATA_DebugEquipeRuntimeView debugEquipe = new DATA_DebugEquipeRuntimeView
             {
                 nomEquipe = equipe.data != null ? equipe.data.nomEquipe : "Equipe",
@@ -59,12 +57,12 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
                 province = equipe.provinceAffectee != null && equipe.provinceAffectee.data != null
                     ? equipe.provinceAffectee.data.nom
                     : "Aucune",
-                explorationEnCours = actionEnCours,
-                explorationTerminee = equipe.actionTerminee,
-                toursRestants = equipe.actionToursRestants,
-                toursTotaux = equipe.actionToursTotaux,
+                actionEnCours = equipe.actionEnCours,
+                actionTerminee = equipe.actionTerminee,
+                actionToursRestants = equipe.actionToursRestants,
+                actionToursTotaux = equipe.actionToursTotaux,
                 affectationAutomatique = equipe.affectationAutomatique,
-                lancementExplorationAutomatique = equipe.lancementActionAutomatique,
+                lancementActionAutomatique = equipe.lancementActionAutomatique,
                 niveauEquipe = equipe.niveauActuel,
                 membres = new List<DATA_DebugPersonnageRuntimeView>()
             };

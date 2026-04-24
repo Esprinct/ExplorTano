@@ -18,7 +18,7 @@ public VadrouilleConfig VadrouilleConfig => vadrouilleConfig;
     [Header("Références UI")]
     [SerializeField] private HudController hudController;
     [SerializeField] private UI_EQUIPE_DetailController equipeDetailController;
-    [SerializeField] private UI_EXPLORATION_RecompensePopup explorationRecompensePopup;
+  
 
     [Header("Données runtime affichables")]
     [SerializeField] private DATA_JOUEUR_HUD joueurData = new();
@@ -170,7 +170,7 @@ public SYS_VadrouilleAction VadrouilleAction { get; private set; }
     {
         hudController = null;
         equipeDetailController = null;
-        explorationRecompensePopup = null;
+
     }
 
     private void OnValidate()

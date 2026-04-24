@@ -24,12 +24,12 @@ public class DATA_DebugEquipeRuntimeView
 
     [Header("État")]
     public string province;
-    public bool explorationEnCours;
-    public bool explorationTerminee;
-    public int toursRestants;
-    public int toursTotaux;
+    public ENUM_EQUIPE_ACTION actionEnCours;
+    public bool actionTerminee;
+    public int actionToursRestants;
+    public int actionToursTotaux;
     public bool affectationAutomatique;
-    public bool lancementExplorationAutomatique;
+    public bool lancementActionAutomatique;
 
     [Header("Composition")]
     public int nombreMembres;

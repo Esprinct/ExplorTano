@@ -52,19 +52,21 @@ public static class SVC_EQUIPE_ActionLaunchService
             Debug.LogWarning($"Impossible de démarrer la {GetLibelleAction(actionAttendue)} sans personnages.");
             return false;
         }
-if (actionAttendue == ENUM_EQUIPE_ACTION.Vadrouille)
-{
-    float exploration = equipe.provinceAffectee.GetExploration(equipe.compagnie);
 
-    if (exploration < 100f)
-    {
-        Debug.LogWarning(
-            $"Impossible de démarrer la vadrouille : la province n'est pas explorée à 100%. " +
-            $"Exploration actuelle={exploration:0.#}%"
-        );
-        return false;
-    }
-}
+        if (actionAttendue == ENUM_EQUIPE_ACTION.Vadrouille)
+        {
+            float exploration = equipe.provinceAffectee.GetExploration(equipe.compagnie);
+
+            if (exploration < 100f)
+            {
+                Debug.LogWarning(
+                    $"Impossible de démarrer la vadrouille : la province n'est pas explorée à 100%. " +
+                    $"Exploration actuelle={exploration:0.#}%"
+                );
+                return false;
+            }
+        }
+
         return true;
     }
 

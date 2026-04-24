@@ -1,0 +1,228 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public static class SVC_IA_EquipeSpecialisationService
+{
+    private static List<SCOBJ_EQUIPE_SPECIALISATION> cacheSpecialisations;
+
+    public static void TenterSpecialisationEquipes(SYS_GameManager gameManager, DATA_JOUEUR joueur)
+    {
+        if (gameManager == null || joueur == null || joueur.equipes == null)
+            return;
+
+        List<SCOBJ_EQUIPE_SPECIALISATION> specialisations = ChargerSpecialisationsDisponibles();
+        if (specialisations == null || specialisations.Count == 0)
+            return;
+
+        foreach (STATE_EQUIPE equipe in joueur.equipes)
+        {
+            if (equipe == null)
+                continue;
+
+            if (equipe.AUneActionEnCours)
+                continue;
+
+            SCOBJ_EQUIPE_SPECIALISATION cible = ChoisirSpecialisationPourIA(
+                gameManager,
+                joueur,
+                equipe,
+                specialisations
+            );
+
+            if (cible == null)
+                continue;
+
+            bool succes = SVC_EQUIPE_SpecialisationService.AppliquerSpecialisation(equipe, cible);
+            if (!succes)
+                continue;
+
+            Debug.Log(
+                $"[IA_SPECIALISATION] joueur={joueur.nomJoueur} | " +
+                $"equipe={equipe.data?.nomEquipe} | " +
+                $"specialisation={cible.nomAffiche}"
+            );
+        }
+    }
+
+    private static List<SCOBJ_EQUIPE_SPECIALISATION> ChargerSpecialisationsDisponibles()
+    {
+        if (cacheSpecialisations != null && cacheSpecialisations.Count > 0)
+            return cacheSpecialisations;
+
+        SCOBJ_EQUIPE_SPECIALISATION[] assets =
+            Resources.FindObjectsOfTypeAll<SCOBJ_EQUIPE_SPECIALISATION>();
+
+        cacheSpecialisations = new List<SCOBJ_EQUIPE_SPECIALISATION>();
+
+        if (assets == null || assets.Length == 0)
+            return cacheSpecialisations;
+
+        HashSet<ENUM_EQUIPE_SPECIALISATION> typesAjoutes = new();
+
+        foreach (SCOBJ_EQUIPE_SPECIALISATION asset in assets)
+        {
+            if (asset == null)
+                continue;
+
+            if (typesAjoutes.Contains(asset.type))
+                continue;
+
+            typesAjoutes.Add(asset.type);
+            cacheSpecialisations.Add(asset);
+        }
+
+        return cacheSpecialisations;
+    }
+
+    private static SCOBJ_EQUIPE_SPECIALISATION ChoisirSpecialisationPourIA(
+        SYS_GameManager gameManager,
+        DATA_JOUEUR joueur,
+        STATE_EQUIPE equipe,
+        List<SCOBJ_EQUIPE_SPECIALISATION> specialisations)
+    {
+        if (joueur == null || equipe == null || specialisations == null || specialisations.Count == 0)
+            return null;
+
+        List<SCOBJ_EQUIPE_SPECIALISATION> choixDisponibles =
+            SVC_EQUIPE_SpecialisationService.GetChoixDisponibles(equipe, specialisations);
+
+        if (choixDisponibles == null || choixDisponibles.Count == 0)
+            return null;
+
+        SCOBJ_EQUIPE_SPECIALISATION meilleurChoix = null;
+        float meilleurScore = float.MinValue;
+
+        foreach (SCOBJ_EQUIPE_SPECIALISATION specialisation in choixDisponibles)
+        {
+            if (specialisation == null)
+                continue;
+
+            float score = EvaluerSpecialisationPourIA(gameManager, joueur, equipe, specialisation);
+
+            if (score > meilleurScore)
+            {
+                meilleurScore = score;
+                meilleurChoix = specialisation;
+            }
+        }
+
+        return meilleurChoix;
+    }
+
+    private static float EvaluerSpecialisationPourIA(
+        SYS_GameManager gameManager,
+        DATA_JOUEUR joueur,
+        STATE_EQUIPE equipe,
+        SCOBJ_EQUIPE_SPECIALISATION specialisation)
+    {
+        if (joueur == null || equipe == null || specialisation == null)
+            return float.MinValue;
+
+        float score = 0f;
+        STATE_PROVINCE province = equipe.provinceAffectee;
+
+        float exploration = 0f;
+        float influenceAdverse = 0f;
+        float etrinium = 0f;
+        float prestige = 0f;
+
+        if (province != null && province.data != null)
+        {
+            exploration = province.GetExploration(joueur.compagnie);
+            etrinium = province.data.etrinium;
+            prestige = province.data.prestige;
+            influenceAdverse = GetInfluenceAdverseDominante(province, joueur.compagnie);
+        }
+
+        switch (specialisation.type)
+        {
+            case ENUM_EQUIPE_SPECIALISATION.Exploration:
+                score += (100f - exploration) * 3f;
+                score += etrinium * 1.5f;
+                score += prestige * 1.2f;
+                break;
+
+            case ENUM_EQUIPE_SPECIALISATION.Archeologues:
+                score += prestige * 2.5f;
+                score += etrinium * 0.8f;
+                break;
+
+            case ENUM_EQUIPE_SPECIALISATION.Arpenteurs:
+                score += (100f - exploration) * 4f;
+                score += etrinium * 1.0f;
+                break;
+
+            case ENUM_EQUIPE_SPECIALISATION.Miliciens:
+                if (exploration >= 100f)
+                    score += 120f;
+
+                score += influenceAdverse * 4f;
+                break;
+
+            case ENUM_EQUIPE_SPECIALISATION.GardienDeLaPaix:
+                if (exploration >= 100f)
+                    score += 100f;
+
+                score += influenceAdverse * 3f;
+                score += 30f;
+                break;
+
+            case ENUM_EQUIPE_SPECIALISATION.Intervention:
+                if (exploration >= 100f)
+                    score += 100f;
+
+                score += influenceAdverse * 5f;
+                break;
+
+            case ENUM_EQUIPE_SPECIALISATION.Construction:
+                score += 20f;
+                break;
+
+            case ENUM_EQUIPE_SPECIALISATION.Colons:
+            case ENUM_EQUIPE_SPECIALISATION.GenieCivil:
+                score += 10f;
+                break;
+        }
+
+        switch (joueur.personnaliteIA)
+        {
+            case ENUM_IA_Personnalite.Agressive:
+                if (specialisation.type == ENUM_EQUIPE_SPECIALISATION.Miliciens ||
+                    specialisation.type == ENUM_EQUIPE_SPECIALISATION.Intervention)
+                    score += 80f;
+                break;
+
+            case ENUM_IA_Personnalite.Expansionniste:
+                if (specialisation.type == ENUM_EQUIPE_SPECIALISATION.Exploration ||
+                    specialisation.type == ENUM_EQUIPE_SPECIALISATION.Arpenteurs)
+                    score += 80f;
+                break;
+
+            case ENUM_IA_Personnalite.Prestige:
+                if (specialisation.type == ENUM_EQUIPE_SPECIALISATION.Archeologues)
+                    score += 80f;
+                break;
+
+            case ENUM_IA_Personnalite.Economique:
+                if (specialisation.type == ENUM_EQUIPE_SPECIALISATION.Construction ||
+                    specialisation.type == ENUM_EQUIPE_SPECIALISATION.Colons)
+                    score += 60f;
+                break;
+        }
+
+        score += Random.Range(0f, 5f);
+        return score;
+    }
+
+    private static float GetInfluenceAdverseDominante(STATE_PROVINCE province, ENUM_Compagnie compagnie)
+    {
+        if (province == null)
+            return 0f;
+
+        float maizin = compagnie == ENUM_Compagnie.Maizin ? 0f : province.influenceMaizin;
+        float kinia = compagnie == ENUM_Compagnie.Kinia ? 0f : province.influenceKinia;
+        float joho = compagnie == ENUM_Compagnie.Joho ? 0f : province.influenceJoho;
+
+        return Mathf.Max(maizin, Mathf.Max(kinia, joho));
+    }
+}
