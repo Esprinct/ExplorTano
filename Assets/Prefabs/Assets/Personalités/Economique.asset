@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e20bbd2af54b8d54bbc1897b2326d6a9, type: 3}
+  m_Name: Economique
+  m_EditorClassIdentifier: Assembly-CSharp::SCOBJ_IA_Personnalite
+  nomAffiche: IA Economique
+  type: 4
+  tailleCibleEquipe: 5
+  tailleMinEquipePourAction: 1
+  ratioMinimalBudgetPourAction: 0.9
+  poidsForce: 1
+  poidsIntelligence: 1
+  poidsDexterite: 1
+  poidsEndurance: 1
+  poidsRarete: 100
+  poidsCoutParTour: 0
+  bonusPreferenceCompagnie: 150
+  bonusExploration: 0
+  bonusArcheologues: 0
+  bonusArpenteurs: 0
+  bonusMiliciens: 1000
+  bonusGardienPaix: 0
+  bonusIntervention: 0
+  bonusConstruction: 0
+  bonusColons: 0
+  bonusGenieCivil: 0

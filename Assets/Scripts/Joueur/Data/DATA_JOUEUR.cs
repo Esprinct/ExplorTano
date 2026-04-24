@@ -9,7 +9,12 @@ public class DATA_JOUEUR
     public ENUM_Compagnie compagnie;
 
     [SerializeField] private SCOBJ_DIRIGEANT dirigeant;
-public ENUM_IA_Personnalite personnaliteIA = ENUM_IA_Personnalite.Equilibree;
+
+    public ENUM_IA_Personnalite personnaliteIA = ENUM_IA_Personnalite.Equilibree;
+
+    [HideInInspector]
+    public SCOBJ_IA_Personnalite profilIA;
+
     public SCOBJ_DIRIGEANT Dirigeant
     {
         get => dirigeant;
@@ -24,7 +29,6 @@ public ENUM_IA_Personnalite personnaliteIA = ENUM_IA_Personnalite.Equilibree;
     public float prestige;
     public float etriniumParTour;
     public EtriniumBreakdownData etriniumBreakdown;
-
     public List<STATE_EQUIPE> equipes = new();
 
     public int provincesControlees;
@@ -67,5 +71,31 @@ public ENUM_IA_Personnalite personnaliteIA = ENUM_IA_Personnalite.Equilibree;
         {
             compagnie = dirigeant.compagnie;
         }
+    }
+
+    public void SynchroniserProfilIA(List<SCOBJ_IA_Personnalite> profilsDisponibles)
+    {
+        if (estHumain)
+        {
+            profilIA = null;
+            return;
+        }
+
+        if (profilsDisponibles == null || profilsDisponibles.Count == 0)
+            return;
+
+        foreach (SCOBJ_IA_Personnalite profil in profilsDisponibles)
+        {
+            if (profil == null)
+                continue;
+
+            if (profil.type == personnaliteIA)
+            {
+                profilIA = profil;
+                return;
+            }
+        }
+
+        profilIA = null;
     }
 }

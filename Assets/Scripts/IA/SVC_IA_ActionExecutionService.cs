@@ -8,7 +8,7 @@ public static class SVC_IA_ActionExecutionService
             return;
 
         int tailleMinEquipe = SVC_IA_EquipeRosterService.GetTailleMinEquipePourAction(joueur);
-        float ratioMinimalBudget = GetRatioMinimalBudgetPourAction(joueur);
+        float ratioMinimalBudget = SVC_IA_PersonnaliteResolver.GetRatioMinimalBudgetPourAction(joueur);
 
         foreach (STATE_EQUIPE equipe in joueur.equipes)
         {
@@ -23,46 +23,19 @@ public static class SVC_IA_ActionExecutionService
 
             ENUM_EQUIPE_ACTION action = SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipe);
 
-            Debug.Log(
-                $"[IA_ACTION_CHECK] joueur={joueur.nomJoueur} | equipe={equipe.data?.nomEquipe} | " +
-                $"spec={equipe.specialisation} | action={action} | province={equipe.provinceAffectee.data.nom}"
-            );
-
             if (action == ENUM_EQUIPE_ACTION.Aucune)
                 continue;
 
             bool peutLancer = SVC_EQUIPE_ActionLaunchService.PeutLancerAction(equipe, action);
             if (!peutLancer)
-            {
-                Debug.Log(
-                    $"[IA_ACTION_BLOCKED] joueur={joueur.nomJoueur} | equipe={equipe.data?.nomEquipe} | action={action}"
-                );
                 continue;
-            }
 
             int coutAction = CalculerCoutAction(gameManager, equipe, action);
             if (coutAction <= 0 || joueur.etrinium < coutAction)
-            {
-                Debug.Log(
-                    $"[IA_ACTION_NO_FUNDS] joueur={joueur.nomJoueur} | equipe={equipe.data?.nomEquipe} | " +
-                    $"action={action} | cout={coutAction} | etrinium={joueur.etrinium}"
-                );
                 continue;
-            }
 
             if (joueur.etriniumParTour < 0f && joueur.etrinium < coutAction * ratioMinimalBudget)
-            {
-                Debug.Log(
-                    $"[IA_ACTION_BUDGET_GUARD] joueur={joueur.nomJoueur} | equipe={equipe.data?.nomEquipe} | " +
-                    $"action={action}"
-                );
                 continue;
-            }
-
-            Debug.Log(
-                $"[IA_ACTION_START] joueur={joueur.nomJoueur} | equipe={equipe.data?.nomEquipe} | " +
-                $"action={action} | province={equipe.provinceAffectee.data.nom}"
-            );
 
             switch (action)
             {
@@ -160,28 +133,5 @@ public static class SVC_IA_ActionExecutionService
         );
 
         return resultat != null ? resultat.coutTotal : 0;
-    }
-
-    private static float GetRatioMinimalBudgetPourAction(DATA_JOUEUR joueur)
-    {
-        if (joueur == null)
-            return 1f;
-
-        switch (joueur.personnaliteIA)
-        {
-            case ENUM_IA_Personnalite.Agressive:
-                return 0.9f;
-            case ENUM_IA_Personnalite.Prestige:
-                return 1.0f;
-            case ENUM_IA_Personnalite.Economique:
-                return 1.15f;
-            case ENUM_IA_Personnalite.Expansionniste:
-                return 1.0f;
-            case ENUM_IA_Personnalite.Opportuniste:
-                return 1.05f;
-            case ENUM_IA_Personnalite.Equilibree:
-            default:
-                return 1.0f;
-        }
     }
 }

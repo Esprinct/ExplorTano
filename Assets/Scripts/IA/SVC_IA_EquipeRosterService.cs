@@ -91,7 +91,7 @@ public static class SVC_IA_EquipeRosterService
 
     public static int GetTailleMinEquipePourAction(DATA_JOUEUR joueur)
     {
-        return 1;
+        return SVC_IA_PersonnaliteResolver.GetTailleMinEquipePourAction(joueur);
     }
 
     private static STATE_EQUIPE ConstruireNouvelleEquipe(SYS_GameManager gameManager, DATA_JOUEUR joueur)
@@ -202,7 +202,7 @@ public static class SVC_IA_EquipeRosterService
             if (personnage == null)
                 continue;
 
-            float score = EvaluerPersonnagePourIA(personnage, joueur);
+            float score = SVC_IA_PersonnaliteResolver.EvaluerPersonnage(personnage, joueur);
 
             if (score > meilleurScore)
             {
@@ -214,85 +214,8 @@ public static class SVC_IA_EquipeRosterService
         return meilleur;
     }
 
-    private static float EvaluerPersonnagePourIA(SCOBJ_Personnage personnage, DATA_JOUEUR joueur)
-    {
-        if (personnage == null || joueur == null)
-            return float.MinValue;
-
-        int force = CALS_PERSONNAGE_STATS_Calculator.GetForceEffective(personnage, joueur.compagnie);
-        int intelligence = CALS_PERSONNAGE_STATS_Calculator.GetIntelligenceEffective(personnage, joueur.compagnie);
-        int dexterite = CALS_PERSONNAGE_STATS_Calculator.GetDexteriteEffective(personnage, joueur.compagnie);
-        int endurance = CALS_PERSONNAGE_STATS_Calculator.GetEnduranceEffective(personnage, joueur.compagnie);
-
-        float score = personnage.rareteEtoiles * 100f;
-
-        switch (joueur.personnaliteIA)
-        {
-            case ENUM_IA_Personnalite.Agressive:
-                score += force * 1.5f;
-                score += endurance * 1.2f;
-                score += dexterite * 0.9f;
-                score += intelligence * 0.5f;
-                score -= personnage.coutParTour * 0.12f;
-                break;
-
-            case ENUM_IA_Personnalite.Prestige:
-                score += force * 1.4f;
-                score += intelligence * 1.2f;
-                score += dexterite * 0.8f;
-                score += endurance * 0.7f;
-                break;
-
-            case ENUM_IA_Personnalite.Economique:
-                score += intelligence * 1.4f;
-                score += endurance * 1.3f;
-                score += dexterite * 1.0f;
-                score += force * 0.7f;
-                score -= personnage.coutParTour * 0.08f;
-                break;
-
-            case ENUM_IA_Personnalite.Expansionniste:
-                score += dexterite * 1.5f;
-                score += endurance * 1.2f;
-                score += force * 0.9f;
-                score += intelligence * 0.9f;
-                break;
-
-            case ENUM_IA_Personnalite.Opportuniste:
-                score += intelligence * 1.3f;
-                score += dexterite * 1.3f;
-                score += force * 0.9f;
-                score += endurance * 0.9f;
-                break;
-
-            case ENUM_IA_Personnalite.Equilibree:
-            default:
-                score += force;
-                score += intelligence;
-                score += dexterite;
-                score += endurance;
-                break;
-        }
-
-        if (personnage.aPreferenceCompagnie && personnage.compagniePreferee == joueur.compagnie)
-            score += 150f;
-
-        return score;
-    }
-
     private static int GetTailleCibleEquipe(DATA_JOUEUR joueur)
     {
-        if (joueur == null)
-            return 4;
-
-        switch (joueur.personnaliteIA)
-        {
-            case ENUM_IA_Personnalite.Agressive:
-                return 5;
-            case ENUM_IA_Personnalite.Economique:
-                return 3;
-            default:
-                return 4;
-        }
+        return SVC_IA_PersonnaliteResolver.GetTailleCibleEquipe(joueur);
     }
 }

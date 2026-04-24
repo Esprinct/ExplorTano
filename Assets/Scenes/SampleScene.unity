@@ -11896,7 +11896,6 @@ MonoBehaviour:
   vadrouilleConfig: {fileID: 11400000, guid: 20733ba0f6213f24aa7abd366848def2, type: 2}
   hudController: {fileID: 782297728}
   equipeDetailController: {fileID: 1468414512}
-  explorationRecompensePopup: {fileID: 0}
   joueurData:
     portraitDirigeant: {fileID: 0}
     logoCompagnie: {fileID: 0}
@@ -11930,7 +11929,8 @@ MonoBehaviour:
     estHumain: 1
     compagnie: 2
     dirigeant: {fileID: 11400000, guid: bade0822614084a498d53e54558610ff, type: 2}
-    personnaliteIA: 0
+    personnaliteIA: 1
+    profilIA: {fileID: 0}
     etrinium: 100000
     prestige: 0
     etriniumParTour: 0
@@ -11956,7 +11956,8 @@ MonoBehaviour:
     compagnie: 1
     dirigeant: {fileID: 11400000, guid: 4a40108f2d442564ba160453b1c9b20e, type: 2}
     personnaliteIA: 1
-    etrinium: 10000
+    profilIA: {fileID: 11400000, guid: 7cea87b61532b9248a7968f270da776e, type: 2}
+    etrinium: 9997
     prestige: 0
     etriniumParTour: 0
     etriniumBreakdown:
@@ -11977,7 +11978,8 @@ MonoBehaviour:
     estHumain: 0
     compagnie: 3
     dirigeant: {fileID: 11400000, guid: 06a144eb96e486747af1ebc25d66fc9f, type: 2}
-    personnaliteIA: 1
+    personnaliteIA: 5
+    profilIA: {fileID: 11400000, guid: 6e0cdbf6f7788bd4c9ac2520e991a057, type: 2}
     etrinium: 10000
     prestige: 0
     etriniumParTour: 0
@@ -11994,6 +11996,10 @@ MonoBehaviour:
     personnagesRecrutes: []
     objetsPossedes: []
     consommablesPossedes: []
+  profilsIADisponibles:
+  - {fileID: 11400000, guid: 7cea87b61532b9248a7968f270da776e, type: 2}
+  - {fileID: 11400000, guid: bdcee31f6157cff42959c4947d3bc017, type: 2}
+  - {fileID: 11400000, guid: 6e0cdbf6f7788bd4c9ac2520e991a057, type: 2}
   poolRecrutementInitial:
   - {fileID: 11400000, guid: bcc3986833351184ca9196286ff54e58, type: 2}
   - {fileID: 11400000, guid: 9a01b4841b2f7e04b98cd6a803b0698f, type: 2}

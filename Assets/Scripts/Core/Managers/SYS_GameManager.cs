@@ -33,7 +33,8 @@ public VadrouilleConfig VadrouilleConfig => vadrouilleConfig;
     public DATA_JOUEUR Joueur1;
     public DATA_JOUEUR Joueur2;
     public DATA_JOUEUR Joueur3;
-
+[Header("Profils IA")]
+[SerializeField] private List<SCOBJ_IA_Personnalite> profilsIADisponibles = new();
     [Header("Recrutement")]
     [SerializeField] private List<SCOBJ_Personnage> poolRecrutementInitial = new();
     [SerializeField] private Sprite[] spritesGeneriquesPersonnages;
@@ -65,6 +66,7 @@ public VadrouilleConfig VadrouilleConfig => vadrouilleConfig;
     public IReadOnlyList<ENUM_Compagnie> OrdreTourCourant => ordreTourCourant;
     public int IndexJoueurActifTour => indexJoueurActifTour;
     public int MaxEquipesParJoueur => maxEquipesParJoueur;
+    public List<SCOBJ_IA_Personnalite> ProfilsIADisponibles => profilsIADisponibles;
 public CFG_LevelProgression ProgressionConfigEquipe => progressionConfigEquipe;
     public HudController HudController
     {
@@ -112,30 +114,30 @@ public SYS_VadrouilleAction VadrouilleAction { get; private set; }
         return equipesDeDepart;
     }
 
-    private void Awake()
-    {
-        Debug.Log("GM Awake start " + Time.realtimeSinceStartup);
+  private void Awake()
+{
+    Debug.Log("GM Awake start " + Time.realtimeSinceStartup);
 
-        InitialiserServices();
-        InitialiserJoueurs();
+    InitialiserServices();
+    InitialiserJoueurs();
+    SynchroniserProfilsIADansInspecteur();
 
-        partieData ??= new DATA_Partie_Hud_Tour();
-        partieData.tourMax = 999;
-        FailliteSystem = new SYS_FailliteSystem();
+    partieData ??= new DATA_Partie_Hud_Tour();
+    partieData.tourMax = 999;
+    FailliteSystem = new SYS_FailliteSystem();
 
-        ConfigurerGenerateurPersonnages();
-        AssignerEffetsAffiniteAutomatiques();
-        InitialiserRecrutement();
+    ConfigurerGenerateurPersonnages();
+    AssignerEffetsAffiniteAutomatiques();
+    InitialiserRecrutement();
 
-        InitializationService.InitialiserPartie(this, equipesDeDepart);
+    InitializationService.InitialiserPartie(this, equipesDeDepart);
 
-        SynchroniserCompagniesJoueursDepuisDirigeants();
-        SynchroniserHudAvecJoueurHumain();
-        ReinitialiserDirigeants();
+    SynchroniserCompagniesJoueursDepuisDirigeants();
+    SynchroniserHudAvecJoueurHumain();
+    ReinitialiserDirigeants();
 
-        Debug.Log($"SYS_RecrutementSystem initialisé | Pool: {poolRecrutementInitial.Count}");
-        Debug.Log("GM Awake end " + Time.realtimeSinceStartup);
-    }
+    Debug.Log("GM Awake end " + Time.realtimeSinceStartup);
+}
 
     private void Start()
     {
@@ -178,6 +180,7 @@ public SYS_VadrouilleAction VadrouilleAction { get; private set; }
         Joueur1?.SynchroniserCompagnieDepuisDirigeant();
         Joueur2?.SynchroniserCompagnieDepuisDirigeant();
         Joueur3?.SynchroniserCompagnieDepuisDirigeant();
+        SynchroniserProfilsIADansInspecteur();
     }
 public void DemarrerExploration(STATE_EQUIPE equipe, int dureeTours)
 {
@@ -214,6 +217,37 @@ public void DemarrerVadrouille(STATE_EQUIPE equipe)
     EquipeActionSystem.DemarrerAction(this, equipe, ENUM_EQUIPE_ACTION.Vadrouille);
     SynchroniserHudAvecJoueurHumain();
     RefreshToutLeHUD();
+}
+
+
+public void SynchroniserProfilsIADansInspecteur()
+{
+    SynchroniserProfilIA(Joueur1);
+    SynchroniserProfilIA(Joueur2);
+    SynchroniserProfilIA(Joueur3);
+
+    Debug.Log(
+        $"[IA_SYNC] " +
+        $"J1={Joueur1?.nomJoueur}:{Joueur1?.profilIA?.name ?? "null"} | " +
+        $"J2={Joueur2?.nomJoueur}:{Joueur2?.profilIA?.name ?? "null"} | " +
+        $"J3={Joueur3?.nomJoueur}:{Joueur3?.profilIA?.name ?? "null"}"
+    );
+}
+
+private void SynchroniserProfilIA(DATA_JOUEUR joueur)
+{
+    if (joueur == null)
+        return;
+
+    joueur.SynchroniserProfilIA(profilsIADisponibles);
+
+    if (!joueur.estHumain && joueur.profilIA == null)
+    {
+        Debug.LogWarning(
+            $"[IA_SYNC_MISSING] Aucun profil IA trouvé pour {joueur.nomJoueur} | " +
+            $"personnaliteIA={joueur.personnaliteIA}"
+        );
+    }
 }
    private void InitialiserServices()
 {
