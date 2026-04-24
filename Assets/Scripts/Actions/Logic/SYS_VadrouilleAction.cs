@@ -98,49 +98,113 @@ public class SYS_VadrouilleAction : SYS_EquipeActionBase
         STATE_PROVINCE province = equipe.provinceAffectee;
         DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
 
+        float gainOccupation = 0f;
+        float reductionAdverse = 0f;
+        int prestigeGagne = 0;
+
         if (province != null && equipe.resultatVadrouille != null)
         {
+            gainOccupation = equipe.resultatVadrouille.gainOccupationFinal;
+            reductionAdverse = equipe.resultatVadrouille.reductionOccupationAdverseFinal;
+            prestigeGagne = equipe.resultatVadrouille.prestigeFinal;
+
             influenceSystem.ReduireOccupationAdverse(
                 province,
                 equipe.compagnie,
-                equipe.resultatVadrouille.reductionOccupationAdverseFinal
+                reductionAdverse
             );
 
             influenceSystem.AppliquerOccupation(
                 province,
                 equipe.compagnie,
-                equipe.resultatVadrouille.gainOccupationFinal
+                gainOccupation
             );
 
             influenceSystem.MettreAJourClaimProvince(gameManager, province);
         }
 
-        if (joueur != null && equipe.resultatVadrouille != null)
+        if (joueur != null)
         {
-            joueur.prestige += equipe.resultatVadrouille.prestigeFinal;
+            joueur.prestige += prestigeGagne;
         }
 
-       CloturerAction(equipe);
-equipe.actionTerminee = true;
-equipe.resultatVadrouille = null;
+        AfficherPopupRecompenseAction(
+            gameManager,
+            equipe,
+            province,
+            prestigeGagne,
+            gainOccupation,
+            reductionAdverse
+        );
 
-if (!equipe.affectationAutomatique)
-    equipe.provinceAffectee = null;
+        CloturerAction(equipe);
+        equipe.actionTerminee = true;
+        equipe.resultatVadrouille = null;
 
-gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
-gameManager.SynchroniserHudAvecJoueurHumain();
-uiSystem?.RefreshToutLeHUD(gameManager);
+        if (!equipe.affectationAutomatique)
+            equipe.provinceAffectee = null;
 
-if (equipe.lancementActionAutomatique &&
-    equipe.provinceAffectee != null &&
-    equipe.provinceAffectee.data != null)
-{
-    Demarrer(gameManager, equipe);
-    return;
-}
+        gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
+        gameManager.SynchroniserHudAvecJoueurHumain();
+        uiSystem?.RefreshToutLeHUD(gameManager);
 
-Debug.Log($"[VADROUILLE_ACTION_END] equipe={equipe.data?.nomEquipe}");
+        if (equipe.lancementActionAutomatique &&
+            equipe.provinceAffectee != null &&
+            equipe.provinceAffectee.data != null)
+        {
+            Demarrer(gameManager, equipe);
+            return;
+        }
 
         Debug.Log($"[VADROUILLE_ACTION_END] equipe={equipe.data?.nomEquipe}");
+    }
+
+    private void AfficherPopupRecompenseAction(
+        SYS_GameManager gameManager,
+        STATE_EQUIPE equipe,
+        STATE_PROVINCE province,
+        int gainPrestige,
+        float gainOccupation,
+        float reductionOccupationAdverse)
+    {
+        if (gameManager == null || equipe == null)
+            return;
+
+        DATA_JOUEUR humain = gameManager.GetHumanPlayer();
+        if (humain == null)
+            return;
+
+        if (humain.equipes == null || !humain.equipes.Contains(equipe))
+            return;
+
+        UI_EQUIPE_ACTION_RecompensePopup popup = gameManager.ActionRecompensePopup;
+
+        if (popup == null)
+        {
+            popup = Object.FindAnyObjectByType<UI_EQUIPE_ACTION_RecompensePopup>(FindObjectsInactive.Include);
+            gameManager.ActionRecompensePopup = popup;
+        }
+
+        if (popup == null)
+            return;
+
+        DATA_EQUIPE_ACTION_RecompensePopup data = new DATA_EQUIPE_ACTION_RecompensePopup
+        {
+            action = ENUM_EQUIPE_ACTION.Vadrouille,
+            titre = "Résultat de la vadrouille",
+            nomEquipe = equipe.data != null ? equipe.data.nomEquipe : "Équipe",
+            nomProvince = province != null && province.data != null ? province.data.nom : "Province inconnue",
+            prestigeGagne = gainPrestige,
+            xpGagneParPersonnage = 0,
+            lignePrincipale = $"+Occupation : {gainOccupation:0.#}%",
+            ligneSecondaire = $"-Occupation adverse : {reductionOccupationAdverse:0.#}%",
+            objetTrouve = false,
+            nomObjet = "",
+            descriptionObjet = "",
+            iconeObjet = null,
+            rareteObjet = 0
+        };
+
+        popup.OpenMenu(data, true);
     }
 }

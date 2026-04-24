@@ -7225,12 +7225,12 @@ GameObject:
   - component: {fileID: 265804320}
   - component: {fileID: 265804321}
   m_Layer: 0
-  m_Name: PopUpRecompenseExploration
+  m_Name: PopUpRecompense
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &265804320
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7260,9 +7260,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 265804319}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 461096bae68fa9d4bbf46d25039d0501, type: 3}
+  m_Script: {fileID: 11500000, guid: e6ae8f5c0339d0840a73b9130471cacf, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UI_EXPLORATION_RecompensePopup
+  m_EditorClassIdentifier: Assembly-CSharp::UI_EQUIPE_ACTION_RecompensePopup
   panelRoot: {fileID: 1389383859}
   boutonFermer: {fileID: 113234329}
   titreText: {fileID: 1477033094}
@@ -7270,11 +7270,13 @@ MonoBehaviour:
   provinceText: {fileID: 502897039}
   prestigeText: {fileID: 1273997582}
   xpText: {fileID: 902435707}
-  artefactNomText: {fileID: 348668183}
-  artefactDescriptionText: {fileID: 1864511293}
-  blocArtefact: {fileID: 1402653132}
-  blocAucunArtefact: {fileID: 1970531491}
-  artefactIconeImage: {fileID: 1390303286}
+  lignePrincipaleText: {fileID: 0}
+  ligneSecondaireText: {fileID: 0}
+  objetNomText: {fileID: 348668183}
+  objetDescriptionText: {fileID: 1864511293}
+  blocObjet: {fileID: 1402653132}
+  blocAucunObjet: {fileID: 1970531491}
+  objetIconeImage: {fileID: 1390303286}
   rareteView: {fileID: 0}
 --- !u!1001 &293047153
 PrefabInstance:
@@ -11894,7 +11896,7 @@ MonoBehaviour:
   vadrouilleConfig: {fileID: 11400000, guid: 20733ba0f6213f24aa7abd366848def2, type: 2}
   hudController: {fileID: 782297728}
   equipeDetailController: {fileID: 1468414512}
-  explorationRecompensePopup: {fileID: 265804321}
+  explorationRecompensePopup: {fileID: 0}
   joueurData:
     portraitDirigeant: {fileID: 0}
     logoCompagnie: {fileID: 0}
@@ -29959,7 +29961,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 64, y: -36.15}
-  m_SizeDelta: {x: 0, y: 62.3}
+  m_SizeDelta: {x: 256, y: 62.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &974318168
 MonoBehaviour:
@@ -32351,6 +32353,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1273997580}
   m_CullTransparentMesh: 1
+--- !u!1 &1342780903 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2451904689232817718, guid: ef97b833880135e40a005406aa9e496d, type: 3}
+  m_PrefabInstance: {fileID: 2353712322177313471}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1352504053
 GameObject:
   m_ObjectHideFlags: 0
@@ -32495,7 +32502,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1389383860
 RectTransform:
   m_ObjectHideFlags: 0
@@ -32763,6 +32770,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 782297727}
     m_Modifications:
+    - target: {fileID: -4062630218503989844, guid: 79c5fad26a13d0848bb67467f6af703b, type: 3}
+      propertyPath: boutonAnnulerAction
+      value: 
+      objectReference: {fileID: 675401213}
+    - target: {fileID: -4062630218503989844, guid: 79c5fad26a13d0848bb67467f6af703b, type: 3}
+      propertyPath: boutonConfirmerAction
+      value: 
+      objectReference: {fileID: 1485440966}
+    - target: {fileID: -4062630218503989844, guid: 79c5fad26a13d0848bb67467f6af703b, type: 3}
+      propertyPath: confirmationActionText
+      value: 
+      objectReference: {fileID: 1715345386}
+    - target: {fileID: -4062630218503989844, guid: 79c5fad26a13d0848bb67467f6af703b, type: 3}
+      propertyPath: panelConfirmationAction
+      value: 
+      objectReference: {fileID: 1342780903}
     - target: {fileID: -4062630218503989844, guid: 79c5fad26a13d0848bb67467f6af703b, type: 3}
       propertyPath: UI_INVENTAIRE_Controller
       value: 
@@ -35160,6 +35183,17 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 1471221880077201873, guid: 8ab8c9a778eb9af4ebe094fa7c5bb6bf, type: 3}
   m_PrefabInstance: {fileID: 75466631}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1485440966 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5506716641976629856, guid: ef97b833880135e40a005406aa9e496d, type: 3}
+  m_PrefabInstance: {fileID: 2353712322177313471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1489464327
 GameObject:
   m_ObjectHideFlags: 0
@@ -40435,6 +40469,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ed1b84be2341e74583f5457a52e1059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PanelRootTag
+--- !u!114 &1715345386 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1237438596981184952, guid: ef97b833880135e40a005406aa9e496d, type: 3}
+  m_PrefabInstance: {fileID: 2353712322177313471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!4 &1731643381 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3947414161369461497, guid: 8ab8c9a778eb9af4ebe094fa7c5bb6bf, type: 3}
@@ -44607,7 +44652,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 828235027538996663, guid: ef97b833880135e40a005406aa9e496d, type: 3}
   m_PrefabInstance: {fileID: 2353712322177313471}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1342780903}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 312f91cba336fb9468c90b67acc9b639, type: 3}

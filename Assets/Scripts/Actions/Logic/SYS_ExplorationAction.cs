@@ -37,9 +37,7 @@ public class SYS_ExplorationAction : SYS_EquipeActionBase
 
         int enclavement = 0;
         if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
-        {
             enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
-        }
 
         int toursModifies = SVC_EQUIPE_ExplorationEffects.GetToursBaseModifies(
             equipe,
@@ -59,15 +57,16 @@ public class SYS_ExplorationAction : SYS_EquipeActionBase
             chanceArtefactRareBase
         );
 
-        ENUM_EXPLORATION_Resultat result = CALC_EXPLORATION_Resolver.CalculerResultat(
-            stats,
-            toursModifies,
-            coutParTourBase,
-            prestigeBase,
-            chanceArtefactModifiee,
-            chanceArtefactRareModifiee,
-            enclavement
-        );
+        DATA_EXPLORATION_Resultat result = new DATA_EXPLORATION_Resultat
+        {
+            toursFinaux = toursModifies,
+            coutParTourFinal = coutParTourBase,
+            coutTotal = coutParTourBase * toursModifies,
+            prestigeFinal = prestigeBase,
+            chanceRelique = chanceArtefactModifiee,
+            chanceReliqueRare = chanceArtefactRareModifiee
+        };
+    
 
         if (result == null)
             return;
@@ -116,9 +115,7 @@ public class SYS_ExplorationAction : SYS_EquipeActionBase
             equipe.actionToursRestants--;
 
             if (equipe.actionToursRestants <= 0)
-            {
                 Terminer(gameManager, equipe);
-            }
         }
     }
 
@@ -138,73 +135,74 @@ public class SYS_ExplorationAction : SYS_EquipeActionBase
 
         ExplorationConfig config = gameManager.ExplorationConfig;
 
-if (config != null)
-{
-    float gainExploration = SVC_EQUIPE_ExplorationEffects.GetGainExplorationFinal(
-        equipe,
-        joueur,
-        config.gainExplorationBase
-    );
+        if (config != null)
+        {
+            float gainExploration = SVC_EQUIPE_ExplorationEffects.GetGainExplorationFinal(
+                equipe,
+                joueur,
+                config.gainExplorationBase
+            );
 
-    float avant = province.GetExploration(equipe.compagnie);
-    province.AjouterExploration(equipe.compagnie, gainExploration);
-    float apres = province.GetExploration(equipe.compagnie);
+            float avant = province.GetExploration(equipe.compagnie);
+            province.AjouterExploration(equipe.compagnie, gainExploration);
+            float apres = province.GetExploration(equipe.compagnie);
 
-    Debug.Log(
-        $"[EXPLORATION_PCT] province={province.data?.nom} | " +
-        $"compagnie={equipe.compagnie} | " +
-        $"equipe={equipe.data?.nomEquipe} | " +
-        $"gain=+{gainExploration:0.##}% | " +
-        $"avant={avant:0.##}% | après={apres:0.##}%"
-    );
+            Debug.Log(
+                $"[EXPLORATION_PCT] province={province.data?.nom} | " +
+                $"compagnie={equipe.compagnie} | " +
+                $"equipe={equipe.data?.nomEquipe} | " +
+                $"gain=+{gainExploration:0.##}% | " +
+                $"avant={avant:0.##}% | après={apres:0.##}%"
+            );
 
-    if (province.EstEntierementExploreePar(equipe.compagnie))
-    {
-        Debug.Log(
-            $"[EXPLORATION_PCT] Province entièrement explorée par {equipe.compagnie} : {province.data?.nom}"
-        );
-    }
+            if (province.EstEntierementExploreePar(equipe.compagnie))
+            {
+                Debug.Log(
+                    $"[EXPLORATION_PCT] Province entièrement explorée par {equipe.compagnie} : {province.data?.nom}"
+                );
+            }
 
-    joueur.prestige += equipe.resultatExploration != null
-        ? equipe.resultatExploration.prestigeFinal
-        : config.prestigeBase;
+            int prestigeGagne = equipe.resultatExploration != null
+                ? equipe.resultatExploration.prestigeFinal
+                : config.prestigeBase;
 
-    DonnerXpPersonnages(equipe, config);
-    DonnerXpEquipeRuntime(equipe, gameManager);
+            joueur.prestige += prestigeGagne;
 
-    SCOBJ_OBJET_EQUIPPABLE artefactGagne = DonnerArtefactFinExploration(
-        gameManager,
-        joueur,
-        equipe
-    );
+            DonnerXpPersonnages(equipe, config);
+            DonnerXpEquipeRuntime(equipe, gameManager);
 
-    AfficherPopupRecompenseExploration(
-        gameManager,
-        equipe,
-        province,
-        equipe.resultatExploration != null ? equipe.resultatExploration.prestigeFinal : 0,
-        artefactGagne
-    );
-}
+            SCOBJ_OBJET_EQUIPPABLE artefactGagne = DonnerArtefactFinExploration(
+                gameManager,
+                joueur,
+                equipe
+            );
+
+            AfficherPopupRecompenseAction(
+                gameManager,
+                equipe,
+                province,
+                prestigeGagne,
+                artefactGagne,
+                apres
+            );
+        }
 
         influenceSystem.MettreAJourClaimProvince(gameManager, province);
 
         CloturerAction(equipe);
-       equipe.actionTerminee = true;
+        equipe.actionTerminee = true;
         equipe.resultatExploration = null;
 
         if (!equipe.affectationAutomatique)
-        {
             equipe.provinceAffectee = null;
-        }
 
         gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
         gameManager.SynchroniserHudAvecJoueurHumain();
         uiSystem?.RefreshToutLeHUD(gameManager);
 
         if (equipe.lancementActionAutomatique &&
-    equipe.provinceAffectee != null &&
-    equipe.provinceAffectee.data != null)
+            equipe.provinceAffectee != null &&
+            equipe.provinceAffectee.data != null)
         {
             Demarrer(gameManager, equipe);
             return;
@@ -252,11 +250,8 @@ if (config != null)
         if (equipe.progression == null)
             equipe.progression = new STATE_LevelProgression();
 
-        if (equipe.progressionConfig == null)
-        {
-            if (gameManager != null)
-                equipe.progressionConfig = gameManager.ProgressionConfigEquipe;
-        }
+        if (equipe.progressionConfig == null && gameManager != null)
+            equipe.progressionConfig = gameManager.ProgressionConfigEquipe;
 
         if (equipe.progression == null || equipe.progressionConfig == null)
         {
@@ -310,7 +305,7 @@ if (config != null)
             return null;
 
         ExplorationConfig config = gameManager.ExplorationConfig;
-        ENUM_EXPLORATION_Resultat resultat = equipe.resultatExploration;
+        DATA_EXPLORATION_Resultat resultat = equipe.resultatExploration;
 
         if (config == null || resultat == null)
             return null;
@@ -348,12 +343,13 @@ if (config != null)
         return pool[index];
     }
 
-    private void AfficherPopupRecompenseExploration(
+    private void AfficherPopupRecompenseAction(
         SYS_GameManager gameManager,
         STATE_EQUIPE equipe,
         STATE_PROVINCE province,
         int gainPrestige,
-        SCOBJ_OBJET_EQUIPPABLE artefactGagne)
+        SCOBJ_OBJET_EQUIPPABLE artefactGagne,
+        float explorationApres)
     {
         if (gameManager == null || equipe == null)
             return;
@@ -365,12 +361,12 @@ if (config != null)
         if (humain.equipes == null || !humain.equipes.Contains(equipe))
             return;
 
-        UI_EXPLORATION_RecompensePopup popup = gameManager.ExplorationRecompensePopup;
+        UI_EQUIPE_ACTION_RecompensePopup popup = gameManager.ActionRecompensePopup;
 
         if (popup == null)
         {
-            popup = Object.FindAnyObjectByType<UI_EXPLORATION_RecompensePopup>(FindObjectsInactive.Include);
-            gameManager.ExplorationRecompensePopup = popup;
+            popup = Object.FindAnyObjectByType<UI_EQUIPE_ACTION_RecompensePopup>(FindObjectsInactive.Include);
+            gameManager.ActionRecompensePopup = popup;
         }
 
         if (popup == null)
@@ -378,17 +374,23 @@ if (config != null)
 
         ExplorationConfig config = gameManager.ExplorationConfig;
 
-        DATA_EXPLORATION_RecompensePopup data = new DATA_EXPLORATION_RecompensePopup
+        DATA_EQUIPE_ACTION_RecompensePopup data = new DATA_EQUIPE_ACTION_RecompensePopup
         {
+            action = ENUM_EQUIPE_ACTION.Exploration,
+            titre = "Récompenses d'exploration",
             nomEquipe = equipe.data != null ? equipe.data.nomEquipe : "Équipe",
             nomProvince = province != null && province.data != null ? province.data.nom : "Province inconnue",
             prestigeGagne = gainPrestige,
             xpGagneParPersonnage = config != null ? config.xpPersonnageParExploration : 25,
-            artefactTrouve = artefactGagne != null,
-            nomArtefact = artefactGagne != null ? artefactGagne.nom : "",
-            descriptionArtefact = artefactGagne != null ? artefactGagne.description : "",
-            iconeArtefact = artefactGagne != null ? artefactGagne.icone : null,
-            rareteArtefact = artefactGagne != null ? artefactGagne.rareteEtoiles : 0
+            lignePrincipale = $"Exploration de la province : {explorationApres:0.#}%",
+            ligneSecondaire = province != null && province.EstEntierementExploreePar(equipe.compagnie)
+                ? "Province entièrement explorée"
+                : "",
+            objetTrouve = artefactGagne != null,
+            nomObjet = artefactGagne != null ? artefactGagne.nom : "",
+            descriptionObjet = artefactGagne != null ? artefactGagne.description : "",
+            iconeObjet = artefactGagne != null ? artefactGagne.icone : null,
+            rareteObjet = artefactGagne != null ? artefactGagne.rareteEtoiles : 0
         };
 
         popup.OpenMenu(data, true);

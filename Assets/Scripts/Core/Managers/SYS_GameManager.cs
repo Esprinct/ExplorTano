@@ -78,11 +78,7 @@ public CFG_LevelProgression ProgressionConfigEquipe => progressionConfigEquipe;
         set => equipeDetailController = value;
     }
 
-    public UI_EXPLORATION_RecompensePopup ExplorationRecompensePopup
-    {
-        get => explorationRecompensePopup;
-        set => explorationRecompensePopup = value;
-    }
+public UI_EQUIPE_ACTION_RecompensePopup ActionRecompensePopup { get; set; }
 
     public bool PartieTerminee { get; set; }
 

@@ -10,8 +10,7 @@ public class DATA_EQUIPE_DetailButtonState
 
     public ENUM_EQUIPE_ACTION actionCourante = ENUM_EQUIPE_ACTION.Aucune;
     public int coutLancement = 0;
-
-    public bool boutonAffecterInteractable;
+public bool provinceAssezExploreePourVadrouille;    public bool boutonAffecterInteractable;
     public bool boutonDemarrerInteractable;
     public bool boutonAjouterInteractable;
     public bool toggleAffectationInteractable;

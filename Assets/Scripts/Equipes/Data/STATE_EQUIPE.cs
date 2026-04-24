@@ -15,7 +15,7 @@ public class STATE_EQUIPE
     public int actionToursTotaux = 0;
     public bool actionTerminee = false;
 
-    public ENUM_EXPLORATION_Resultat resultatExploration;
+    public DATA_EXPLORATION_Resultat resultatExploration;
     public DATA_VADROUILLE_Resultat resultatVadrouille;
 
     public bool affectationAutomatique;

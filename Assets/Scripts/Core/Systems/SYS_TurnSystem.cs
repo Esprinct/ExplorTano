@@ -20,7 +20,7 @@ public class SYS_TurnSystem
         if (gameManager == null || gameManager.PartieTerminee)
             return;
 
-        gameManager.ExplorationRecompensePopup?.FermerSiDemandeeAuTourSuivant();
+        gameManager.ActionRecompensePopup?.FermerSiDemandeeAuTourSuivant();
 
         const int securiteMax = 100;
         int securite = 0;

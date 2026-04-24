@@ -34,6 +34,14 @@ public static class SVC_EQUIPE_DetailButtonStateService
         DATA_JOUEUR humain = gameManager != null ? gameManager.GetHumanPlayer() : null;
         state.aLesFonds = humain != null && humain.etrinium >= coutLancement;
 
+        state.provinceAssezExploreePourVadrouille = true;
+
+        if (state.provinceAffectee && state.actionCourante == ENUM_EQUIPE_ACTION.Vadrouille)
+        {
+            float exploration = equipe.provinceAffectee.GetExploration(equipe.compagnie);
+            state.provinceAssezExploreePourVadrouille = exploration >= 100f;
+        }
+
         state.boutonAffecterInteractable =
             state.equipeValide &&
             state.aDesMembres &&
@@ -47,7 +55,8 @@ public static class SVC_EQUIPE_DetailButtonStateService
             !state.enAttenteSelectionProvince &&
             !state.actionEnCours &&
             state.peutFaireAction &&
-            state.aLesFonds;
+            state.aLesFonds &&
+            state.provinceAssezExploreePourVadrouille;
 
         state.boutonAjouterInteractable =
             state.equipeValide &&
@@ -86,7 +95,10 @@ public static class SVC_EQUIPE_DetailButtonStateService
             state.actionEnCours ||
             state.enAttenteSelectionProvince ||
             (state.aDesMembres && !state.provinceAffectee) ||
-            (state.provinceAffectee && !state.aLesFonds);
+            (state.provinceAffectee && !state.aLesFonds) ||
+            (state.provinceAffectee &&
+             state.actionCourante == ENUM_EQUIPE_ACTION.Vadrouille &&
+             !state.provinceAssezExploreePourVadrouille);
 
         if (state.actionEnCours)
         {
@@ -99,6 +111,12 @@ public static class SVC_EQUIPE_DetailButtonStateService
         else if (state.aDesMembres && !state.provinceAffectee)
         {
             state.texteVerrouillage = "Affectez une province pour lancer l'action";
+        }
+        else if (state.provinceAffectee &&
+                 state.actionCourante == ENUM_EQUIPE_ACTION.Vadrouille &&
+                 !state.provinceAssezExploreePourVadrouille)
+        {
+            state.texteVerrouillage = "La province doit être explorée à 100% avant une vadrouille";
         }
         else if (state.provinceAffectee && !state.aLesFonds)
         {
