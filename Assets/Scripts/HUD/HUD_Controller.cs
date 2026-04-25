@@ -45,6 +45,9 @@ private DATA_JOUEUR_HUD joueurDataCourant;
     [SerializeField] private Transform notificationRecrutementContent;
     [SerializeField] private UI_Recrutement_NotificationItem notificationRecrutementItemPrefab;
     [SerializeField] private Button boutonFermerNotificationRecrutement;
+    [Header("Boutique")]
+[SerializeField] private Button boutonBoutique;
+[SerializeField] private UI_BOUTIQUE_Controller boutiqueController;
 
     [Header("Données de test (optionnel)")]
     [SerializeField] private bool utiliserDonneesDeTestAuStart = false;
@@ -82,6 +85,8 @@ private DATA_JOUEUR_HUD joueurDataCourant;
 
         if (boutonFermerNotificationRecrutement != null)
             boutonFermerNotificationRecrutement.onClick.AddListener(HideNotificationRecrutement);
+       if (boutonBoutique != null)
+    boutonBoutique.onClick.AddListener(OnBoutonBoutiqueClicked);
 
         if (panelNotificationRecrutement != null)
             panelNotificationRecrutement.SetActive(false);
@@ -116,8 +121,22 @@ private DATA_JOUEUR_HUD joueurDataCourant;
 
         if (boutonFermerNotificationRecrutement != null)
             boutonFermerNotificationRecrutement.onClick.RemoveListener(HideNotificationRecrutement);
+       if (boutonBoutique != null)
+    boutonBoutique.onClick.RemoveListener(OnBoutonBoutiqueClicked);
+    }
+private void OnBoutonBoutiqueClicked()
+{
+    if (boutiqueController == null)
+        boutiqueController = FindAnyObjectByType<UI_BOUTIQUE_Controller>(FindObjectsInactive.Include);
+
+    if (boutiqueController == null)
+    {
+        Debug.LogWarning("Aucun UI_BOUTIQUE_Controller trouvé.");
+        return;
     }
 
+    boutiqueController.OpenMenu();
+}
     private void ResolveDependencies()
     {
         if (gameManager == null)

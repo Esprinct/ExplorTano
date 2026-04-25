@@ -6,6 +6,7 @@ public class SYS_GameUiRefreshService
     private HudController hudControllerCache;
     private UI_EQUIPE_DetailController equipeDetailControllerCache;
     private UI_PROVINCE_MenuController provinceMenuControllerCache;
+    private UI_BOUTIQUE_Controller boutiqueControllerCache;
 
     private DATA_EQUIPE_DetailData BuildDATA_EQUIPE_DetailData(STATE_EQUIPE equipe)
     {
@@ -59,7 +60,19 @@ public class SYS_GameUiRefreshService
             statutExploration = statut
         };
     }
+public void RefreshBoutique()
+{
+    if (boutiqueControllerCache == null || !boutiqueControllerCache)
+    {
+        boutiqueControllerCache =
+            Object.FindAnyObjectByType<UI_BOUTIQUE_Controller>(FindObjectsInactive.Include);
+    }
 
+    if (boutiqueControllerCache != null && boutiqueControllerCache.IsOpen())
+    {
+        boutiqueControllerCache.RefreshCurrentBoutique();
+    }
+}
     public void RefreshToutLeHUD(SYS_GameManager gameManager)
     {
         if (gameManager == null)

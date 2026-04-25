@@ -39,7 +39,7 @@ public class UI_EFFET_Slot : MonoBehaviour
             descriptionText.text = GetDescriptionAffichee(effet, genre);
 
         if (valeurText != null)
-            valeurText.text = FMT_EFFET.BuildValeurAfficheeRich(effet);
+         valeurText.text = FMT_EFFET.BuildValeurAfficheeLongueRich(effet);
 
         if (iconeImage != null)
         {

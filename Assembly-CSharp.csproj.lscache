@@ -69,6 +69,10 @@ Assets/Scripts/Actions/Logic/
 Assets/Scripts/Actions/UI/
  UI_EQUIPE_ActionView.cs
  UI_EQUIPE_ACTION_RecompensePopup.cs
+Assets/Scripts/Boutique/
+ Data/SCOBJ_BOUTIQUE_Catalogue.cs
+ Logic/SVC_BOUTIQUE_Service.cs
+ UI/UI_BOUTIQUE_Controller.cs
 Assets/Scripts/Core/Data/
  DATA_Partie_Hud_Tour.cs
  ENUM_Compagnie.cs

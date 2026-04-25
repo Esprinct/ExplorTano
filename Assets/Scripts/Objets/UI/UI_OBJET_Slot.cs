@@ -9,12 +9,28 @@ public class UI_OBJET_Slot : BaseSlotUI<SCOBJ_OBJET>
     [SerializeField] private TMP_Text nomText;
     [SerializeField] private UI_RareteStarsView UI_RareteStarsView;
     [SerializeField] private TMP_Text descriptionText;
-
+[Header("Boutique")]
+[SerializeField] private TMP_Text prixBoutiqueText;
+[SerializeField] private TMP_Text quantitePossedeeText;
     private string overrideDescription;
     private bool descriptionEstIndisponible;
     private SCOBJ_OBJET currentObjet;
+public void RefreshBoutique(SCOBJ_OBJET objet, int prix, int quantitePossedee = 0)
+{
+    Refresh(objet);
 
-    protected override void AutoBind()
+    if (prixBoutiqueText != null)
+    {
+        prixBoutiqueText.gameObject.SetActive(true);
+        prixBoutiqueText.text = $"{prix} étrinium";
+    }
+
+    if (quantitePossedeeText != null)
+    {
+        quantitePossedeeText.gameObject.SetActive(quantitePossedee > 0);
+        quantitePossedeeText.text = $"x{quantitePossedee}";
+    }
+}    protected override void AutoBind()
     {
         base.AutoBind();
 

@@ -36,7 +36,29 @@ public static class FMT_EFFET
             && modificateur.stat != EffetENUM_Stats.Aucune
             && modificateur.valeur != 0;
     }
+public static string BuildValeurAfficheeLongueRich(SCOBJ_EFFET effet)
+{
+    if (effet == null || effet.modificateurs == null || effet.modificateurs.Count == 0)
+        return "";
 
+    List<string> lignes = new();
+
+    foreach (DATA_StatModifier modificateur in effet.modificateurs)
+    {
+        if (modificateur == null || modificateur.stat == EffetENUM_Stats.Aucune || modificateur.valeur == 0)
+            continue;
+
+        string nomStat = GetNomLongStat(modificateur.stat);
+        string signe = modificateur.valeur >= 0 ? "+" : "";
+        string suffixe = modificateur.valeurType == EffetValeurType.Pourcentage ? "%" : "";
+        string contenu = $"{nomStat} {signe}{modificateur.valeur}{suffixe}";
+
+        string color = modificateur.estMalus ? MalusColor : BonusColor;
+        lignes.Add($"<b><color={color}>{contenu}</color></b>");
+    }
+
+    return string.Join("\n", lignes);
+}
     private static string FormatterLigne(DATA_StatModifier modificateur, bool richText)
     {
         string nomStat = GetNomCourtStat(modificateur.stat);
