@@ -7,8 +7,6 @@ public class EQUIPE_StatsSnapshot
     public int enduranceTotale;
     public int coutTotal;
 
-
-
     public int EcartCuriosite => curiositeTotale ;
     public int EcartIngeniosite => ingeniositeTotale ;
     public int EcartCombativite => combativiteTotale ;

@@ -19,7 +19,7 @@ MonoBehaviour:
   valeurAffichee: 
   conditionType: 0
   modificateurs:
-  - stat: 20
+  - stat: 1
     valeurType: 0
     valeur: 60
     estMalus: 0

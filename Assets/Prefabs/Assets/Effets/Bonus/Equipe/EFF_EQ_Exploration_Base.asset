@@ -23,7 +23,7 @@ MonoBehaviour:
     valeurType: 0
     valeur: -1
     estMalus: 0
-  - stat: 20
+  - stat: 1
     valeurType: 0
     valeur: 30
     estMalus: 0

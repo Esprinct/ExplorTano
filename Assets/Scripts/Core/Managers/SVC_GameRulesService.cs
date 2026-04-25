@@ -18,19 +18,21 @@ public class SYS_GameRulesService
         return total;
     }
 
-    public bool PeutCreerEquipe(DATA_JOUEUR joueur, int maxEquipesParJoueur, int coutCreationEquipe)
-    {
-        if (joueur == null)
-            return false;
+public bool PeutCreerEquipe(DATA_JOUEUR joueur, int maxEquipesParJoueur, int coutCreationEquipe)
+{
+    if (joueur == null)
+        return false;
 
-        if (GetNombreEquipesJoueur(joueur) >= maxEquipesParJoueur)
-            return false;
+    bool limiteActive = maxEquipesParJoueur > 0;
 
-        if (joueur.etrinium < coutCreationEquipe)
-            return false;
+    if (limiteActive && GetNombreEquipesJoueur(joueur) >= maxEquipesParJoueur)
+        return false;
 
-        return true;
-    }
+    if (joueur.etrinium < coutCreationEquipe)
+        return false;
+
+    return true;
+}
 
     public bool PeutCreerEquipeCeTour(DATA_JOUEUR joueur, int maxEquipesParJoueur, int coutCreationEquipe)
     {

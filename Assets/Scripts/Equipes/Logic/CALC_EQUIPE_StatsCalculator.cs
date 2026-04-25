@@ -1,4 +1,5 @@
 using System.Linq;
+using UnityEngine;
 
 public static class CALC_EQUIPE_StatsCalculator
 {
@@ -11,17 +12,71 @@ public static class CALC_EQUIPE_StatsCalculator
 
         snapshot.nombreMembres = equipe.membresActuels.Count(p => p != null);
 
+        int baseCuriosite = 0;
+        int baseIngeniosite = 0;
+        int baseCombativite = 0;
+        int baseEndurance = 0;
+        int coutTotal = 0;
+
         foreach (SCOBJ_Personnage personnage in equipe.membresActuels)
         {
             if (personnage == null)
                 continue;
 
-            snapshot.curiositeTotale += CALS_PERSONNAGE_STATS_Calculator.GetCuriositeEffective(personnage, equipe.compagnie);
-            snapshot.ingeniositeTotale += CALS_PERSONNAGE_STATS_Calculator.GetIngeniositeEffective(personnage, equipe.compagnie);
-            snapshot.combativiteTotale += CALS_PERSONNAGE_STATS_Calculator.GetCombativiteEffective(personnage, equipe.compagnie);
-            snapshot.enduranceTotale += CALS_PERSONNAGE_STATS_Calculator.GetEnduranceEffective(personnage, equipe.compagnie);
-            snapshot.coutTotal += SVC_PERSONNAGE_CostService.GetCoutNormal(personnage);
+            baseCuriosite += CALS_PERSONNAGE_STATS_Calculator.GetCuriositeEffective(
+                personnage,
+                equipe.compagnie
+            );
+
+            baseIngeniosite += CALS_PERSONNAGE_STATS_Calculator.GetIngeniositeEffective(
+                personnage,
+                equipe.compagnie
+            );
+
+            baseCombativite += CALS_PERSONNAGE_STATS_Calculator.GetCombativiteEffective(
+                personnage,
+                equipe.compagnie
+            );
+
+            baseEndurance += CALS_PERSONNAGE_STATS_Calculator.GetEnduranceEffective(
+                personnage,
+                equipe.compagnie
+            );
+
+            coutTotal += SVC_PERSONNAGE_CostService.GetCoutNormal(personnage);
         }
+
+        DATA_JOUEUR joueur = ResolveJoueurProprietaire(equipe);
+
+        snapshot.curiositeTotale = SVC_EQUIPE_EffetService.GetValeurFinale(
+            equipe,
+            joueur,
+            EffetENUM_Stats.Curiosite,
+            baseCuriosite
+        );
+
+        snapshot.ingeniositeTotale = SVC_EQUIPE_EffetService.GetValeurFinale(
+            equipe,
+            joueur,
+            EffetENUM_Stats.Ingeniosite,
+            baseIngeniosite
+        );
+
+        snapshot.combativiteTotale = SVC_EQUIPE_EffetService.GetValeurFinale(
+            equipe,
+            joueur,
+            EffetENUM_Stats.Combativite,
+            baseCombativite
+        );
+
+        snapshot.enduranceTotale = SVC_EQUIPE_EffetService.GetValeurFinale(
+            equipe,
+            joueur,
+            EffetENUM_Stats.Endurance,
+            baseEndurance
+        );
+
+        snapshot.coutTotal = coutTotal;
 
         return snapshot;
     }
@@ -42,5 +97,17 @@ public static class CALC_EQUIPE_StatsCalculator
         }
 
         return surcoutTotal;
+    }
+
+    private static DATA_JOUEUR ResolveJoueurProprietaire(STATE_EQUIPE equipe)
+    {
+        if (equipe == null)
+            return null;
+
+        SYS_GameManager gameManager = Object.FindAnyObjectByType<SYS_GameManager>();
+        if (gameManager == null)
+            return null;
+
+        return gameManager.GetJoueurProprietaireEquipe(equipe);
     }
 }

@@ -1367,6 +1367,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5969581141882167342, guid: a4041d77fa114104e8a77a328c576928, type: 3}
+      propertyPath: m_text
+      value: "Curiosit\xE9 : "
+      objectReference: {fileID: 0}
     - target: {fileID: 6176508336125396849, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_Name
       value: StrawInvestiCuriosite
@@ -1928,7 +1932,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5969581141882167342, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_text
-      value: 'Intelligence : '
+      value: "Ing\xE9siosit\xE9 : "
       objectReference: {fileID: 0}
     - target: {fileID: 6176508336125396849, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_Name
@@ -2214,7 +2218,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5969581141882167342, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_text
-      value: "Dexterit\xE9 : "
+      value: "Combativit\xE9 : "
       objectReference: {fileID: 0}
     - target: {fileID: 6176508336125396849, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_Name

@@ -45,7 +45,7 @@ public VadrouilleConfig VadrouilleConfig => vadrouilleConfig;
 
     [Header("Création d'équipes")]
     [SerializeField] private SCOBJ_EQUIPE modeleEquipeVide;
-    [SerializeField] private int maxEquipesParJoueur = 5;
+    [SerializeField] private int maxEquipesParJoueur = 0;
     [SerializeField] private List<int> coutsCreationEquipes = new() { 100, 15000, 45000, 60000, 100000 };
 
     [Header("Ordre du tour")]

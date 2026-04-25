@@ -242,7 +242,7 @@ MonoBehaviour:
   button: {fileID: 7169935312867610093}
   iconeImage: {fileID: 6960160200383666931}
   nomText: {fileID: 8681446040751190922}
-  UI_RareteStarsView: {fileID: 0}
+  UI_RareteStarsView: {fileID: 9147211432804368797}
   descriptionText: {fileID: 0}
 --- !u!114 &8681446040751190922 stripped
 MonoBehaviour:
@@ -255,3 +255,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &9147211432804368797 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6236893893130893968, guid: fb3e54437bd58d54f99483117b6e82d5, type: 3}
+  m_PrefabInstance: {fileID: 2917358004693957389}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b927f57a97920e64bb95e060d8f5dfa5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RareteStarsView

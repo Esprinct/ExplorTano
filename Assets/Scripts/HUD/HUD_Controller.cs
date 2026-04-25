@@ -324,7 +324,7 @@ public SCOBJ_DIRIGEANT GetDirigeantActuel()
         }
     }
 
-   private void RefreshBoutonAjouterEquipe()
+  private void RefreshBoutonAjouterEquipe()
 {
     if (boutonAjouterEquipe == null)
         return;
@@ -345,9 +345,9 @@ public SCOBJ_DIRIGEANT GetDirigeantActuel()
     }
 
     int nbEquipes = gameManager.GetNombreEquipesJoueur(humain);
-    bool maxAtteint = nbEquipes >= gameManager.MaxEquipesParJoueur;
+    bool limiteActive = gameManager.MaxEquipesParJoueur > 0;
+    bool maxAtteint = limiteActive && nbEquipes >= gameManager.MaxEquipesParJoueur;
 
-    // Si le maximum est atteint, on cache complètement le bouton
     if (maxAtteint)
     {
         boutonAjouterEquipe.gameObject.SetActive(false);
@@ -364,7 +364,7 @@ public SCOBJ_DIRIGEANT GetDirigeantActuel()
     if (boutonAjouterEquipeText != null)
     {
         boutonAjouterEquipeText.text =
-            $"Créer équipe ({coutActuel})\n{nbEquipes}/{gameManager.MaxEquipesParJoueur}";
+            $"Créer équipe ({coutActuel})\nnombre d'équipes :{nbEquipes}";
     }
 }
 
@@ -453,7 +453,7 @@ public SCOBJ_DIRIGEANT GetDirigeantActuel()
         );
     }
 
-   private void OnBoutonAjouterEquipeClicked()
+  private void OnBoutonAjouterEquipeClicked()
 {
     ResolveDependencies();
 
@@ -466,34 +466,29 @@ public SCOBJ_DIRIGEANT GetDirigeantActuel()
     DATA_JOUEUR humain = gameManager.GetHumanPlayer();
     if (humain == null)
     {
-        Debug.LogWarning("Joueur humain introuvable.");
-        return;
-    }
-
-    if (gameManager.GetNombreEquipesJoueur(humain) >= gameManager.MaxEquipesParJoueur)
-    {
-        Debug.Log("Nombre maximum d'équipes atteint.");
-        RefreshBoutonAjouterEquipe();
-        return;
-    }
-
-    if (confirmationDialog == null)
-    {
-        Debug.LogWarning("UI_ConfirmationDialog non assigné.");
+        Debug.LogWarning("Aucun joueur humain trouvé.");
         return;
     }
 
     int nbEquipes = gameManager.GetNombreEquipesJoueur(humain);
-    int maxEquipes = gameManager.MaxEquipesParJoueur;
-    int cout = gameManager.GetCoutCreationEquipe(humain);
+    bool limiteActive = gameManager.MaxEquipesParJoueur > 0;
+    bool maxAtteint = limiteActive && nbEquipes >= gameManager.MaxEquipesParJoueur;
 
-    confirmationDialog.Open(
-        $"Créer une nouvelle équipe pour {cout} étrinium ?\n" +
-        $"Équipes actuelles : {nbEquipes}/{maxEquipes}",
-        ConfirmerCreationEquipe,
-        "Créer",
-        "Annuler"
-    );
+    if (maxAtteint)
+    {
+        Debug.Log("Nombre maximum d'équipes atteint.");
+        return;
+    }
+
+    bool succes = gameManager.CreerEquipePourJoueurHumain();
+
+    if (!succes)
+    {
+        Debug.Log("Impossible de créer l'équipe.");
+        return;
+    }
+
+    RefreshFromGameManager();
 }
 
     private void ConfirmerCreationEquipe()
