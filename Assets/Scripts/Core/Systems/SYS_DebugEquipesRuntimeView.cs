@@ -85,8 +85,8 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
                         rarete = personnage.rareteEtoiles,
                         niveau = niveau,
                         curiosite = personnage.curiosite,
-                        intelligence = personnage.intelligence,
-                        dexterite = personnage.dexterite,
+                        ingeniosite = personnage.ingeniosite,
+                        combativite = personnage.combativite,
                         endurance = personnage.endurance,
                         coutParTour = personnage.coutParTour
                     });
@@ -107,8 +107,8 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
 
         debugEquipe.nombreMembres = 0;
         debugEquipe.curiositeTotale = 0;
-        debugEquipe.intelligenceTotale = 0;
-        debugEquipe.dexteriteTotale = 0;
+        debugEquipe.ingeniositeTotale = 0;
+        debugEquipe.combativiteTotale = 0;
         debugEquipe.enduranceTotale = 0;
         debugEquipe.coutPersonnagesParTour = 0;
 
@@ -121,8 +121,8 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
 
                 debugEquipe.nombreMembres++;
                 debugEquipe.curiositeTotale += personnage.curiosite;
-                debugEquipe.intelligenceTotale += personnage.intelligence;
-                debugEquipe.dexteriteTotale += personnage.dexterite;
+                debugEquipe.ingeniositeTotale += personnage.ingeniosite;
+                debugEquipe.combativiteTotale += personnage.combativite;
                 debugEquipe.enduranceTotale += personnage.endurance;
                 debugEquipe.coutPersonnagesParTour += personnage.coutParTour;
             }

@@ -42,15 +42,15 @@ public static class SVC_IA_PersonnaliteResolver
             return float.MinValue;
 
         int curiosite = CALS_PERSONNAGE_STATS_Calculator.GetCuriositeEffective(personnage, joueur.compagnie);
-        int intelligence = CALS_PERSONNAGE_STATS_Calculator.GetIntelligenceEffective(personnage, joueur.compagnie);
-        int dexterite = CALS_PERSONNAGE_STATS_Calculator.GetDexteriteEffective(personnage, joueur.compagnie);
+        int ingeniosite = CALS_PERSONNAGE_STATS_Calculator.GetIngeniositeEffective(personnage, joueur.compagnie);
+        int combativite = CALS_PERSONNAGE_STATS_Calculator.GetCombativiteEffective(personnage, joueur.compagnie);
         int endurance = CALS_PERSONNAGE_STATS_Calculator.GetEnduranceEffective(personnage, joueur.compagnie);
 
         float score = 0f;
         score += personnage.rareteEtoiles * profil.poidsRarete;
         score += curiosite * profil.poidsCuriosite;
-        score += intelligence * profil.poidsIntelligence;
-        score += dexterite * profil.poidsDexterite;
+        score += ingeniosite * profil.poidsIngeniosite;
+        score += combativite * profil.poidsCombativite;
         score += endurance * profil.poidsEndurance;
         score -= personnage.coutParTour * profil.poidsCoutParTour;
 

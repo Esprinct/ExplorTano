@@ -4,8 +4,8 @@ public enum EffetENUM_Stats
 {
     Aucune = 0,
     Curiosite = 1,
-    Intelligence = 2,
-    Dexterite = 3,
+    Ingeniosite = 2,
+    Combativite = 3,
     Endurance = 4,
     Prestige = 5,
     Influence = 6,
@@ -24,8 +24,6 @@ public enum EffetENUM_Stats
     PopulationAutre = 17,
 
     StatEquipeGlobale = 18,
-    Ingeniosite = 21,
-    Combativite = 22,
 
     ToursExploration = 30,
     ToursConstruction = 31,

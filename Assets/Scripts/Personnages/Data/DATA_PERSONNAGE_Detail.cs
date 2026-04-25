@@ -15,23 +15,23 @@ public DATA_LevelProgressionView progression;
     public ENUM_PERSONNAGE_Genre genre;
 
     public int curiosite;
-    public int intelligence;
-    public int dexterite;
+    public int ingeniosite;
+    public int combativite;
     public int endurance;
 
     public int curiositeBase;
-    public int intelligenceBase;
-    public int dexteriteBase;
+    public int ingeniositeBase;
+    public int combativiteBase;
     public int enduranceBase;
 
     public int curiositeDelta;
-    public int intelligenceDelta;
-    public int dexteriteDelta;
+    public int ingeniositeDelta;
+    public int combativiteDelta;
     public int enduranceDelta;
 
     public string curiositeTooltipDetail;
-    public string intelligenceTooltipDetail;
-    public string dexteriteTooltipDetail;
+    public string ingeniositeTooltipDetail;
+    public string combativiteTooltipDetail;
     public string enduranceTooltipDetail;
 
     public int coutParTour;

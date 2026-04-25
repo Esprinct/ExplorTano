@@ -10,8 +10,8 @@ public static class DATA_STATS_AllocationDraftService
         return stat switch
         {
             EffetENUM_Stats.Curiosite => draft.curiosite,
-            EffetENUM_Stats.Intelligence => draft.intelligence,
-            EffetENUM_Stats.Dexterite => draft.dexterite,
+            EffetENUM_Stats.Ingeniosite => draft.ingeniosite,
+            EffetENUM_Stats.Combativite => draft.combativite,
             EffetENUM_Stats.Endurance => draft.endurance,
             _ => 0
         };
@@ -27,11 +27,11 @@ public static class DATA_STATS_AllocationDraftService
             case EffetENUM_Stats.Curiosite:
                 draft.curiosite++;
                 break;
-            case EffetENUM_Stats.Intelligence:
-                draft.intelligence++;
+            case EffetENUM_Stats.Ingeniosite:
+                draft.ingeniosite++;
                 break;
-            case EffetENUM_Stats.Dexterite:
-                draft.dexterite++;
+            case EffetENUM_Stats.Combativite:
+                draft.combativite++;
                 break;
             case EffetENUM_Stats.Endurance:
                 draft.endurance++;
@@ -52,8 +52,8 @@ public static class DATA_STATS_AllocationDraftService
         int minimumConfirme = stat switch
         {
             EffetENUM_Stats.Curiosite => personnage.allocation.curiosite,
-            EffetENUM_Stats.Intelligence => personnage.allocation.intelligence,
-            EffetENUM_Stats.Dexterite => personnage.allocation.dexterite,
+            EffetENUM_Stats.Ingeniosite => personnage.allocation.ingeniosite,
+            EffetENUM_Stats.Combativite => personnage.allocation.combativite,
             EffetENUM_Stats.Endurance => personnage.allocation.endurance,
             _ => 0
         };
@@ -68,11 +68,11 @@ public static class DATA_STATS_AllocationDraftService
             case EffetENUM_Stats.Curiosite:
                 draft.curiosite--;
                 break;
-            case EffetENUM_Stats.Intelligence:
-                draft.intelligence--;
+            case EffetENUM_Stats.Ingeniosite:
+                draft.ingeniosite--;
                 break;
-            case EffetENUM_Stats.Dexterite:
-                draft.dexterite--;
+            case EffetENUM_Stats.Combativite:
+                draft.combativite--;
                 break;
             case EffetENUM_Stats.Endurance:
                 draft.endurance--;
@@ -95,8 +95,8 @@ public static class DATA_STATS_AllocationDraftService
         int minimumConfirme = stat switch
         {
             EffetENUM_Stats.Curiosite => personnage.allocation.curiosite,
-            EffetENUM_Stats.Intelligence => personnage.allocation.intelligence,
-            EffetENUM_Stats.Dexterite => personnage.allocation.dexterite,
+            EffetENUM_Stats.Ingeniosite => personnage.allocation.ingeniosite,
+            EffetENUM_Stats.Combativite => personnage.allocation.combativite,
             EffetENUM_Stats.Endurance => personnage.allocation.endurance,
             _ => 0
         };
@@ -135,11 +135,11 @@ public static class DATA_STATS_AllocationDraftService
             case EffetENUM_Stats.Curiosite:
                 draft.autoCuriosite = enabled;
                 break;
-            case EffetENUM_Stats.Intelligence:
-                draft.autoIntelligence = enabled;
+            case EffetENUM_Stats.Ingeniosite:
+                draft.autoIngeniosite = enabled;
                 break;
-            case EffetENUM_Stats.Dexterite:
-                draft.autoDexterite = enabled;
+            case EffetENUM_Stats.Combativite:
+                draft.autoCombativite = enabled;
                 break;
             case EffetENUM_Stats.Endurance:
                 draft.autoEndurance = enabled;
@@ -155,8 +155,8 @@ public static class DATA_STATS_AllocationDraftService
         return stat switch
         {
             EffetENUM_Stats.Curiosite => draft.autoCuriosite,
-            EffetENUM_Stats.Intelligence => draft.autoIntelligence,
-            EffetENUM_Stats.Dexterite => draft.autoDexterite,
+            EffetENUM_Stats.Ingeniosite => draft.autoIngeniosite,
+            EffetENUM_Stats.Combativite => draft.autoCombativite,
             EffetENUM_Stats.Endurance => draft.autoEndurance,
             _ => false
         };
@@ -179,17 +179,17 @@ public static class DATA_STATS_AllocationDraftService
                 if (draft.pointsRestants <= 0) break;
             }
 
-            if (draft.autoIntelligence)
+            if (draft.autoIngeniosite)
             {
-                draft.intelligence++;
+                draft.ingeniosite++;
                 draft.pointsRestants--;
                 allocated = true;
                 if (draft.pointsRestants <= 0) break;
             }
 
-            if (draft.autoDexterite)
+            if (draft.autoCombativite)
             {
-                draft.dexterite++;
+                draft.combativite++;
                 draft.pointsRestants--;
                 allocated = true;
                 if (draft.pointsRestants <= 0) break;
@@ -214,13 +214,13 @@ public static class DATA_STATS_AllocationDraftService
             return;
 
         personnage.allocation.curiosite = draft.curiosite;
-        personnage.allocation.intelligence = draft.intelligence;
-        personnage.allocation.dexterite = draft.dexterite;
+        personnage.allocation.ingeniosite = draft.ingeniosite;
+        personnage.allocation.combativite = draft.combativite;
         personnage.allocation.endurance = draft.endurance;
 
         personnage.allocation.autoCuriosite = draft.autoCuriosite;
-        personnage.allocation.autoIntelligence = draft.autoIntelligence;
-        personnage.allocation.autoDexterite = draft.autoDexterite;
+        personnage.allocation.autoIngeniosite = draft.autoIngeniosite;
+        personnage.allocation.autoCombativite = draft.autoCombativite;
         personnage.allocation.autoEndurance = draft.autoEndurance;
 
         personnage.progression.pointsDisponibles = draft.pointsRestants;
@@ -233,11 +233,11 @@ public static class DATA_STATS_AllocationDraftService
             case EffetENUM_Stats.Curiosite:
                 draft.curiosite = value;
                 break;
-            case EffetENUM_Stats.Intelligence:
-                draft.intelligence = value;
+            case EffetENUM_Stats.Ingeniosite:
+                draft.ingeniosite = value;
                 break;
-            case EffetENUM_Stats.Dexterite:
-                draft.dexterite = value;
+            case EffetENUM_Stats.Combativite:
+                draft.combativite = value;
                 break;
             case EffetENUM_Stats.Endurance:
                 draft.endurance = value;

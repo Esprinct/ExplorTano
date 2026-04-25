@@ -149,8 +149,8 @@ public class UI_XP_STATS_AllocationRow : MonoBehaviour
         return stat switch
         {
             EffetENUM_Stats.Curiosite => "Curiosite",
-            EffetENUM_Stats.Intelligence => "Intelligence",
-            EffetENUM_Stats.Dexterite => "Dextérité",
+            EffetENUM_Stats.Ingeniosite => "Ingeniosite",
+            EffetENUM_Stats.Combativite => "Dextérité",
             EffetENUM_Stats.Endurance => "Endurance",
             _ => "Stat"
         };

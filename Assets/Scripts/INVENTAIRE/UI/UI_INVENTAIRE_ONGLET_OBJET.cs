@@ -237,18 +237,18 @@ public class UI_INVENTAIRE_ONGLET_OBJET : MonoBehaviour, UI_INVENTAIRE_ONGLET_BA
                     }
                     break;
 
-                case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.IntelligenceMinimum:
-                    if (personnage.intelligence < condition.valeur)
+                case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.IngeniositeMinimum:
+                    if (personnage.ingeniosite < condition.valeur)
                     {
-                        raisonIndisponibilite = $"Intelligence insuffisante ({personnage.intelligence}/{condition.valeur})";
+                        raisonIndisponibilite = $"Ingeniosite insuffisante ({personnage.ingeniosite}/{condition.valeur})";
                         return false;
                     }
                     break;
 
-                case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.DexteriteMinimum:
-                    if (personnage.dexterite < condition.valeur)
+                case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.CombativiteMinimum:
+                    if (personnage.combativite < condition.valeur)
                     {
-                        raisonIndisponibilite = $"Dextérité insuffisante ({personnage.dexterite}/{condition.valeur})";
+                        raisonIndisponibilite = $"Dextérité insuffisante ({personnage.combativite}/{condition.valeur})";
                         return false;
                     }
                     break;

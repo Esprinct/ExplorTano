@@ -1085,9 +1085,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StatAllocationPanelUI
   root: {fileID: 8157111837213486831}
   pointsDisponiblesText: {fileID: 4951226237725311816}
-  forceRow: {fileID: 4035340053601474963}
-  intelligenceRow: {fileID: 946915684222910929}
-  dexteriteRow: {fileID: 8464306818813280704}
+  curiositeRow: {fileID: 4035340053601474963}
+  ingeniositeRow: {fileID: 946915684222910929}
+  combativiteRow: {fileID: 8464306818813280704}
   enduranceRow: {fileID: 3579495170546689835}
   appliquerAutoButton: {fileID: 282920351804025053}
   confirmerButton: {fileID: 1378124618552271695}
@@ -1369,7 +1369,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6176508336125396849, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_Name
-      value: StrawInvestiForce
+      value: StrawInvestiCuriosite
       objectReference: {fileID: 0}
     - target: {fileID: 6381824662842858881, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_Pivot.x
@@ -1932,7 +1932,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6176508336125396849, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_Name
-      value: StrawInvestiIntelligence
+      value: StrawInvestiIngeniosite
       objectReference: {fileID: 0}
     - target: {fileID: 6381824662842858881, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_Pivot.x
@@ -2218,7 +2218,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6176508336125396849, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_Name
-      value: "StrawInvestiDexterit\xE9"
+      value: StrawInvestiCombativite
       objectReference: {fileID: 0}
     - target: {fileID: 6381824662842858881, guid: a4041d77fa114104e8a77a328c576928, type: 3}
       propertyPath: m_Pivot.x

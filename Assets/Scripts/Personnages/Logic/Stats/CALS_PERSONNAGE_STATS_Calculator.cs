@@ -71,11 +71,11 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetCuriositeEffective(SCOBJ_Personnage personnage)
         => GetStatEffective(personnage, EffetENUM_Stats.Curiosite);
 
-    public static int GetIntelligenceEffective(SCOBJ_Personnage personnage)
-        => GetStatEffective(personnage, EffetENUM_Stats.Intelligence);
+    public static int GetIngeniositeEffective(SCOBJ_Personnage personnage)
+        => GetStatEffective(personnage, EffetENUM_Stats.Ingeniosite);
 
-    public static int GetDexteriteEffective(SCOBJ_Personnage personnage)
-        => GetStatEffective(personnage, EffetENUM_Stats.Dexterite);
+    public static int GetCombativiteEffective(SCOBJ_Personnage personnage)
+        => GetStatEffective(personnage, EffetENUM_Stats.Combativite);
 
     public static int GetEnduranceEffective(SCOBJ_Personnage personnage)
         => GetStatEffective(personnage, EffetENUM_Stats.Endurance);
@@ -83,11 +83,11 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetCuriositeEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
         => GetStatEffective(personnage, EffetENUM_Stats.Curiosite, null, compagnie);
 
-    public static int GetIntelligenceEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
-        => GetStatEffective(personnage, EffetENUM_Stats.Intelligence, null, compagnie);
+    public static int GetIngeniositeEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
+        => GetStatEffective(personnage, EffetENUM_Stats.Ingeniosite, null, compagnie);
 
-    public static int GetDexteriteEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
-        => GetStatEffective(personnage, EffetENUM_Stats.Dexterite, null, compagnie);
+    public static int GetCombativiteEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
+        => GetStatEffective(personnage, EffetENUM_Stats.Combativite, null, compagnie);
 
     public static int GetEnduranceEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
         => GetStatEffective(personnage, EffetENUM_Stats.Endurance, null, compagnie);
@@ -95,11 +95,11 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetCuriositeEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
         => GetStatEffective(personnage, EffetENUM_Stats.Curiosite, state, compagnie);
 
-    public static int GetIntelligenceEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
-        => GetStatEffective(personnage, EffetENUM_Stats.Intelligence, state, compagnie);
+    public static int GetIngeniositeEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
+        => GetStatEffective(personnage, EffetENUM_Stats.Ingeniosite, state, compagnie);
 
-    public static int GetDexteriteEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
-        => GetStatEffective(personnage, EffetENUM_Stats.Dexterite, state, compagnie);
+    public static int GetCombativiteEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
+        => GetStatEffective(personnage, EffetENUM_Stats.Combativite, state, compagnie);
 
     public static int GetEnduranceEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
         => GetStatEffective(personnage, EffetENUM_Stats.Endurance, state, compagnie);
@@ -107,11 +107,11 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetCuriositeDelta(SCOBJ_Personnage personnage)
         => GetStatDelta(personnage, EffetENUM_Stats.Curiosite);
 
-    public static int GetIntelligenceDelta(SCOBJ_Personnage personnage)
-        => GetStatDelta(personnage, EffetENUM_Stats.Intelligence);
+    public static int GetIngeniositeDelta(SCOBJ_Personnage personnage)
+        => GetStatDelta(personnage, EffetENUM_Stats.Ingeniosite);
 
-    public static int GetDexteriteDelta(SCOBJ_Personnage personnage)
-        => GetStatDelta(personnage, EffetENUM_Stats.Dexterite);
+    public static int GetCombativiteDelta(SCOBJ_Personnage personnage)
+        => GetStatDelta(personnage, EffetENUM_Stats.Combativite);
 
     public static int GetEnduranceDelta(SCOBJ_Personnage personnage)
         => GetStatDelta(personnage, EffetENUM_Stats.Endurance);
@@ -119,11 +119,11 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetCuriositeDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
         => GetStatDelta(personnage, EffetENUM_Stats.Curiosite, null, compagnie);
 
-    public static int GetIntelligenceDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
-        => GetStatDelta(personnage, EffetENUM_Stats.Intelligence, null, compagnie);
+    public static int GetIngeniositeDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
+        => GetStatDelta(personnage, EffetENUM_Stats.Ingeniosite, null, compagnie);
 
-    public static int GetDexteriteDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
-        => GetStatDelta(personnage, EffetENUM_Stats.Dexterite, null, compagnie);
+    public static int GetCombativiteDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
+        => GetStatDelta(personnage, EffetENUM_Stats.Combativite, null, compagnie);
 
     public static int GetEnduranceDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
         => GetStatDelta(personnage, EffetENUM_Stats.Endurance, null, compagnie);
@@ -131,11 +131,11 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetCuriositeDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
         => GetStatDelta(personnage, EffetENUM_Stats.Curiosite, state, compagnie);
 
-    public static int GetIntelligenceDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
-        => GetStatDelta(personnage, EffetENUM_Stats.Intelligence, state, compagnie);
+    public static int GetIngeniositeDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
+        => GetStatDelta(personnage, EffetENUM_Stats.Ingeniosite, state, compagnie);
 
-    public static int GetDexteriteDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
-        => GetStatDelta(personnage, EffetENUM_Stats.Dexterite, state, compagnie);
+    public static int GetCombativiteDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
+        => GetStatDelta(personnage, EffetENUM_Stats.Combativite, state, compagnie);
 
     public static int GetEnduranceDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
         => GetStatDelta(personnage, EffetENUM_Stats.Endurance, state, compagnie);
@@ -167,10 +167,10 @@ public static class CALS_PERSONNAGE_STATS_Calculator
         {
             case EffetENUM_Stats.Curiosite:
                 return personnage.curiosite;
-            case EffetENUM_Stats.Intelligence:
-                return personnage.intelligence;
-            case EffetENUM_Stats.Dexterite:
-                return personnage.dexterite;
+            case EffetENUM_Stats.Ingeniosite:
+                return personnage.ingeniosite;
+            case EffetENUM_Stats.Combativite:
+                return personnage.combativite;
             case EffetENUM_Stats.Endurance:
                 return personnage.endurance;
             default:
@@ -243,10 +243,10 @@ public static class CALS_PERSONNAGE_STATS_Calculator
         {
             case EffetENUM_Stats.Curiosite:
                 return state.bonusCuriosite;
-            case EffetENUM_Stats.Intelligence:
-                return state.bonusIntelligence;
-            case EffetENUM_Stats.Dexterite:
-                return state.bonusDexterite;
+            case EffetENUM_Stats.Ingeniosite:
+                return state.bonusIngeniosite;
+            case EffetENUM_Stats.Combativite:
+                return state.bonusCombativite;
             case EffetENUM_Stats.Endurance:
                 return state.bonusEndurance;
             default:

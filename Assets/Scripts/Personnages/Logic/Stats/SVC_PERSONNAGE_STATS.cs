@@ -26,8 +26,8 @@ public static class SVC_PERSONNAGE_STATS
         );
 
         result.curiosite = ComputeOne(personnage, EffetENUM_Stats.Curiosite, EFFET_Contexte);
-        result.intelligence = ComputeOne(personnage, EffetENUM_Stats.Intelligence, EFFET_Contexte);
-        result.dexterite = ComputeOne(personnage, EffetENUM_Stats.Dexterite, EFFET_Contexte);
+        result.ingeniosite = ComputeOne(personnage, EffetENUM_Stats.Ingeniosite, EFFET_Contexte);
+        result.combativite = ComputeOne(personnage, EffetENUM_Stats.Combativite, EFFET_Contexte);
         result.endurance = ComputeOne(personnage, EffetENUM_Stats.Endurance, EFFET_Contexte);
 
         return result;
@@ -180,10 +180,10 @@ public static class SVC_PERSONNAGE_STATS
         {
             case EffetENUM_Stats.Curiosite:
                 return state.bonusCuriosite;
-            case EffetENUM_Stats.Intelligence:
-                return state.bonusIntelligence;
-            case EffetENUM_Stats.Dexterite:
-                return state.bonusDexterite;
+            case EffetENUM_Stats.Ingeniosite:
+                return state.bonusIngeniosite;
+            case EffetENUM_Stats.Combativite:
+                return state.bonusCombativite;
             case EffetENUM_Stats.Endurance:
                 return state.bonusEndurance;
             default:

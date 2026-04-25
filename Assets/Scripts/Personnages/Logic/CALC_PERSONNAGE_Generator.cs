@@ -28,8 +28,8 @@ perso.progressionConfig = progressionConfigParDefaut;
 
         int baseStat = 10 + rarete * 5;
         perso.curiosite = baseStat + Random.Range(-10, 10);
-        perso.intelligence = baseStat + Random.Range(-10, 10);
-        perso.dexterite = baseStat + Random.Range(-10, 10);
+        perso.ingeniosite = baseStat + Random.Range(-10, 10);
+        perso.combativite = baseStat + Random.Range(-10, 10);
         perso.endurance = baseStat + Random.Range(-10, 10);
 
         perso.aPreferenceCompagnie = Random.value > 0.5f;

@@ -12,7 +12,7 @@ public class STATE_PERSONNAGE
     public int xpNiveauSuivant;
 
     public int bonusCuriosite;
-    public int bonusIntelligence;
-    public int bonusDexterite;
+    public int bonusIngeniosite;
+    public int bonusCombativite;
     public int bonusEndurance;
 }

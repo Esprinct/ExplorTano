@@ -29,12 +29,12 @@ public CFG_LevelProgression progressionConfig;
 
     [Header("Stats")]
     public int curiosite = 100;
-    public int intelligence = 100;
-    public int dexterite = 100;
+    public int ingeniosite = 100;
+    public int combativite = 100;
     public int endurance = 100;
     public int pointsCuriositeInvestis;
-public int pointsIntelligenceInvestis;
-public int pointsDexteriteInvestis;
+public int pointsIngeniositeInvestis;
+public int pointsCombativiteInvestis;
 public int pointsEnduranceInvestis;
 public STATE_STATS_Allocation allocation = new();
 

@@ -17,8 +17,8 @@ public class UI_Recrutement_Slot : MonoBehaviour
 
     [Header("Stats")]
     [SerializeField] private TMP_Text curiositeText;
-    [SerializeField] private TMP_Text intelligenceText;
-    [SerializeField] private TMP_Text dexteriteText;
+    [SerializeField] private TMP_Text ingeniositeText;
+    [SerializeField] private TMP_Text combativiteText;
     [SerializeField] private TMP_Text enduranceText;
 
     [Header("Recrutement")]
@@ -98,11 +98,11 @@ public class UI_Recrutement_Slot : MonoBehaviour
         if (curiositeText != null)
             curiositeText.text = $"FOR {data.curiosite}";
 
-        if (intelligenceText != null)
-            intelligenceText.text = $"INT {data.intelligence}";
+        if (ingeniositeText != null)
+            ingeniositeText.text = $"INT {data.ingeniosite}";
 
-        if (dexteriteText != null)
-            dexteriteText.text = $"DEX {data.dexterite}";
+        if (combativiteText != null)
+            combativiteText.text = $"DEX {data.combativite}";
 
         if (enduranceText != null)
             enduranceText.text = $"END {data.endurance}";

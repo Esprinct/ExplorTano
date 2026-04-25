@@ -10597,8 +10597,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EquipeStatsView
   curiositeEquipe: {fileID: 514839974871948839}
-  intelligenceEquipe: {fileID: 7301584036869544522}
-  dexteriteEquipe: {fileID: 6429872468980873740}
+  ingeniositeEquipe: {fileID: 0}
+  combativiteEquipe: {fileID: 0}
   enduranceEquipe: {fileID: 6850863256922964140}
   nombreMembresEquipe: {fileID: 8413733737481989373}
   coutParTour: {fileID: 2266440985683631023}
@@ -13037,6 +13037,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3712908406881464395, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
+      propertyPath: ENUM_Stats
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4683859022535964420, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -13056,6 +13060,10 @@ PrefabInstance:
     - target: {fileID: 4683859022535964420, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4721478864262754119, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
+      propertyPath: m_text
+      value: "Combativit\xE9 : "
       objectReference: {fileID: 0}
     - target: {fileID: 4930298524520095014, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
       propertyPath: m_AnchorMax.y
@@ -13225,6 +13233,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9072784082228465409, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
+      propertyPath: m_text
+      value: "Ing\xE9niosit\xE9 : "
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13246,31 +13258,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
---- !u!114 &6429872468980873740 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 647936785790673135, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
-  m_PrefabInstance: {fileID: 5892557568506403555}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &6850863256922964140 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1068960832852220495, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
-  m_PrefabInstance: {fileID: 5892557568506403555}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
---- !u!114 &7301584036869544522 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3788369639463485609, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
   m_PrefabInstance: {fileID: 5892557568506403555}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}

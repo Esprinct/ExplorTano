@@ -19,8 +19,8 @@ public class CFG_LevelBonus : ScriptableObject
                 continue;
 
             cumul.bonusCuriosite += bonus.bonusCuriosite;
-            cumul.bonusIntelligence += bonus.bonusIntelligence;
-            cumul.bonusDexterite += bonus.bonusDexterite;
+            cumul.bonusIngeniosite += bonus.bonusIngeniosite;
+            cumul.bonusCombativite += bonus.bonusCombativite;
             cumul.bonusEndurance += bonus.bonusEndurance;
         }
 

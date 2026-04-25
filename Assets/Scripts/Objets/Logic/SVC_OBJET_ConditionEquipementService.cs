@@ -34,11 +34,11 @@ public static class SVC_OBJET_ConditionEquipementService
             case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.CuriositeMinimum:
                 return personnage.curiosite >= condition.valeur;
 
-            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.IntelligenceMinimum:
-                return personnage.intelligence >= condition.valeur;
+            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.IngeniositeMinimum:
+                return personnage.ingeniosite >= condition.valeur;
 
-            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.DexteriteMinimum:
-                return personnage.dexterite >= condition.valeur;
+            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.CombativiteMinimum:
+                return personnage.combativite >= condition.valeur;
 
             case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.EnduranceMinimum:
                 return personnage.endurance >= condition.valeur;

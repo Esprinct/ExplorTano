@@ -101,11 +101,11 @@ public static class UTIL_PERSONNAGE_EQUIPEMENT
             case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.CuriositeMinimum:
                 return p.curiosite >= c.valeur;
 
-            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.IntelligenceMinimum:
-                return p.intelligence >= c.valeur;
+            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.IngeniositeMinimum:
+                return p.ingeniosite >= c.valeur;
 
-            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.DexteriteMinimum:
-                return p.dexterite >= c.valeur;
+            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.CombativiteMinimum:
+                return p.combativite >= c.valeur;
 
             case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.EnduranceMinimum:
                 return p.endurance >= c.valeur;

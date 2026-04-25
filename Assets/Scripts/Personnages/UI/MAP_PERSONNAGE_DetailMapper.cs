@@ -50,23 +50,23 @@ public static class MAP_PERSONNAGE_DetailMapper
             rareteEtoiles = data.rareteEtoiles,
 
             curiositeBase = stats.curiosite.baseValue,
-            intelligenceBase = stats.intelligence.baseValue,
-            dexteriteBase = stats.dexterite.baseValue,
+            ingeniositeBase = stats.ingeniosite.baseValue,
+            combativiteBase = stats.combativite.baseValue,
             enduranceBase = stats.endurance.baseValue,
 
             curiosite = stats.curiosite.finalValue,
-            intelligence = stats.intelligence.finalValue,
-            dexterite = stats.dexterite.finalValue,
+            ingeniosite = stats.ingeniosite.finalValue,
+            combativite = stats.combativite.finalValue,
             endurance = stats.endurance.finalValue,
 
             curiositeDelta = stats.curiosite.delta,
-            intelligenceDelta = stats.intelligence.delta,
-            dexteriteDelta = stats.dexterite.delta,
+            ingeniositeDelta = stats.ingeniosite.delta,
+            combativiteDelta = stats.combativite.delta,
             enduranceDelta = stats.endurance.delta,
 
             curiositeTooltipDetail = string.Join("\n", stats.curiosite.detailLines),
-            intelligenceTooltipDetail = string.Join("\n", stats.intelligence.detailLines),
-            dexteriteTooltipDetail = string.Join("\n", stats.dexterite.detailLines),
+            ingeniositeTooltipDetail = string.Join("\n", stats.ingeniosite.detailLines),
+            combativiteTooltipDetail = string.Join("\n", stats.combativite.detailLines),
             enduranceTooltipDetail = string.Join("\n", stats.endurance.detailLines),
 
             coutParTour = data.coutParTour,

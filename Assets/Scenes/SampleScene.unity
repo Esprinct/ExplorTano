@@ -7278,6 +7278,17 @@ MonoBehaviour:
   blocAucunObjet: {fileID: 1970531491}
   objetIconeImage: {fileID: 1390303286}
   rareteView: {fileID: 0}
+--- !u!114 &291165166 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8925104193303278095, guid: f69a8f3aae9ef0e4898f64260046f6de, type: 3}
+  m_PrefabInstance: {fileID: 810352286}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &293047153
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12827,6 +12838,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 366794490}
   m_CullTransparentMesh: 1
+--- !u!114 &371812884 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7301584036869544522, guid: 79c5fad26a13d0848bb67467f6af703b, type: 3}
+  m_PrefabInstance: {fileID: 1468414510}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!212 &383675688 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 8764958940245333411, guid: 8ab8c9a778eb9af4ebe094fa7c5bb6bf, type: 3}
@@ -27704,6 +27726,18 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 152
       objectReference: {fileID: 0}
+    - target: {fileID: 2064567045703932016, guid: f69a8f3aae9ef0e4898f64260046f6de, type: 3}
+      propertyPath: combativiteText
+      value: 
+      objectReference: {fileID: 1531822268}
+    - target: {fileID: 2064567045703932016, guid: f69a8f3aae9ef0e4898f64260046f6de, type: 3}
+      propertyPath: ingeniositeText
+      value: 
+      objectReference: {fileID: 291165166}
+    - target: {fileID: 2064567045703932016, guid: f69a8f3aae9ef0e4898f64260046f6de, type: 3}
+      propertyPath: combativiteTooltipTrigger
+      value: 
+      objectReference: {fileID: 1742523437}
     - target: {fileID: 2147302220413915525, guid: f69a8f3aae9ef0e4898f64260046f6de, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -29967,7 +30001,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 64, y: -36.15}
-  m_SizeDelta: {x: 256, y: 62.3}
+  m_SizeDelta: {x: 0, y: 62.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &974318168
 MonoBehaviour:
@@ -33672,6 +33706,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -217
       objectReference: {fileID: 0}
+    - target: {fileID: 4506714902113435819, guid: 79c5fad26a13d0848bb67467f6af703b, type: 3}
+      propertyPath: combativiteEquipe
+      value: 
+      objectReference: {fileID: 1911416288}
+    - target: {fileID: 4506714902113435819, guid: 79c5fad26a13d0848bb67467f6af703b, type: 3}
+      propertyPath: ingeniositeEquipe
+      value: 
+      objectReference: {fileID: 371812884}
     - target: {fileID: 4598682941405217012, guid: 79c5fad26a13d0848bb67467f6af703b, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -35442,6 +35484,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EtriniumHoverTrigger
   hudController: {fileID: 782297728}
+--- !u!114 &1531822268 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5166552316976714313, guid: f69a8f3aae9ef0e4898f64260046f6de, type: 3}
+  m_PrefabInstance: {fileID: 810352286}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1553095695
 GameObject:
   m_ObjectHideFlags: 0
@@ -40499,6 +40552,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3947414161369461497, guid: 8ab8c9a778eb9af4ebe094fa7c5bb6bf, type: 3}
   m_PrefabInstance: {fileID: 6567457277754522193}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1742523437 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1791207126925506000, guid: f69a8f3aae9ef0e4898f64260046f6de, type: 3}
+  m_PrefabInstance: {fileID: 810352286}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a4712c104a23ba49bd783a5f542a5dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatTooltipTrigger
 --- !u!1 &1761196682
 GameObject:
   m_ObjectHideFlags: 0
@@ -41299,6 +41363,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58cb7158a82a1e24ab627f61bc8892b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PersonnageInventoryMenuController
+--- !u!114 &1911416288 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6429872468980873740, guid: 79c5fad26a13d0848bb67467f6af703b, type: 3}
+  m_PrefabInstance: {fileID: 1468414510}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &1951527942 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 186173362154046566, guid: c6abb651acfa63e4e80b7f61efae66ab, type: 3}

@@ -9,8 +9,8 @@ public class UI_XP_STATS_AllocationPanel : MonoBehaviour
 
     [Header("Rows")]
     [SerializeField] private UI_XP_STATS_AllocationRow curiositeRow;
-    [SerializeField] private UI_XP_STATS_AllocationRow intelligenceRow;
-    [SerializeField] private UI_XP_STATS_AllocationRow dexteriteRow;
+    [SerializeField] private UI_XP_STATS_AllocationRow ingeniositeRow;
+    [SerializeField] private UI_XP_STATS_AllocationRow combativiteRow;
     [SerializeField] private UI_XP_STATS_AllocationRow enduranceRow;
 
     [Header("Actions")]
@@ -45,11 +45,11 @@ public class UI_XP_STATS_AllocationPanel : MonoBehaviour
         if (curiositeRow != null)
             curiositeRow.Setup(personnage, draft, EffetENUM_Stats.Curiosite, Refresh);
 
-        if (intelligenceRow != null)
-            intelligenceRow.Setup(personnage, draft, EffetENUM_Stats.Intelligence, Refresh);
+        if (ingeniositeRow != null)
+            ingeniositeRow.Setup(personnage, draft, EffetENUM_Stats.Ingeniosite, Refresh);
 
-        if (dexteriteRow != null)
-            dexteriteRow.Setup(personnage, draft, EffetENUM_Stats.Dexterite, Refresh);
+        if (combativiteRow != null)
+            combativiteRow.Setup(personnage, draft, EffetENUM_Stats.Combativite, Refresh);
 
         if (enduranceRow != null)
             enduranceRow.Setup(personnage, draft, EffetENUM_Stats.Endurance, Refresh);
@@ -69,8 +69,8 @@ public class UI_XP_STATS_AllocationPanel : MonoBehaviour
         }
 
         curiositeRow?.Refresh();
-        intelligenceRow?.Refresh();
-        dexteriteRow?.Refresh();
+        ingeniositeRow?.Refresh();
+        combativiteRow?.Refresh();
         enduranceRow?.Refresh();
 
         if (appliquerAutoButton != null)

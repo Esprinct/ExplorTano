@@ -21,9 +21,9 @@ public static class CALC_EXPLORATION_Resolver
         int malusPrestigeSousEffectif = GetMalusPrestigeSousEffectif(nombreMembres);
 
         int bonusPrestigeCuriosite = Mathf.Max(0, Mathf.FloorToInt(stats.EcartCuriosite / 80f));
-        float bonusRelique = Mathf.Max(0f, stats.EcartIntelligence * 0.015f);
-        float bonusReliqueRare = Mathf.Max(0f, stats.EcartIntelligence * 0.0035f);
-        int bonusToursDex = Mathf.Max(0, Mathf.FloorToInt(stats.EcartDexterite / 160f));
+        float bonusRelique = Mathf.Max(0f, stats.EcartIngeniosite * 0.015f);
+        float bonusReliqueRare = Mathf.Max(0f, stats.EcartIngeniosite * 0.0035f);
+        int bonusToursDex = Mathf.Max(0, Mathf.FloorToInt(stats.EcartCombativite / 160f));
         int bonusCoutEndurance = Mathf.Max(0, Mathf.FloorToInt(stats.EcartEndurance / 40f));
         int bonusToursEnclavement = Mathf.Max(0, Mathf.FloorToInt(enclavementComte / 100f));
 

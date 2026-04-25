@@ -44,8 +44,8 @@ public class UI_StatRow : MonoBehaviour
         switch (type)
         {
             case ENUM_Stats.Curiosite: return "Curiosite";
-            case ENUM_Stats.Intelligence: return "Intelligence";
-            case ENUM_Stats.Dexterite: return "Dextérité";
+            case ENUM_Stats.Ingeniosite: return "Ingeniosite";
+            case ENUM_Stats.Combativite: return "Dextérité";
             case ENUM_Stats.Endurance: return "Endurance";
             default: return "Stat";
         }

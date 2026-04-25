@@ -9,8 +9,8 @@ public class DATA_DebugPersonnageRuntimeView
     public int rarete;
     public int niveau;
     public int curiosite;
-    public int intelligence;
-    public int dexterite;
+    public int ingeniosite;
+    public int combativite;
     public int endurance;
     public int coutParTour;
 }
@@ -37,8 +37,8 @@ public class DATA_DebugEquipeRuntimeView
 
     [Header("Stats équipe")]
     public int curiositeTotale;
-    public int intelligenceTotale;
-    public int dexteriteTotale;
+    public int ingeniositeTotale;
+    public int combativiteTotale;
     public int enduranceTotale;
 
     [Header("Économie")]

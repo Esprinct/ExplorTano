@@ -4,12 +4,12 @@ using System;
 public class STATE_STATS_Allocation
 {
     public int curiosite;
-    public int intelligence;
-    public int dexterite;
+    public int ingeniosite;
+    public int combativite;
     public int endurance;
 
     public bool autoCuriosite;
-    public bool autoIntelligence;
-    public bool autoDexterite;
+    public bool autoIngeniosite;
+    public bool autoCombativite;
     public bool autoEndurance;
 }

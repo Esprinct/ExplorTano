@@ -631,7 +631,7 @@ GameObject:
   - component: {fileID: 163946224753455529}
   - component: {fileID: 4394154104083722648}
   m_Layer: 5
-  m_Name: INTText
+  m_Name: INGText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -684,7 +684,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: INT 100
+  m_text: ING 100
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
@@ -848,7 +848,7 @@ GameObject:
   - component: {fileID: 6714595218276632651}
   - component: {fileID: 6331335121705217809}
   m_Layer: 5
-  m_Name: FORText
+  m_Name: CURText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -901,7 +901,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: FOR 100
+  m_text: CUR 100
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
@@ -1184,8 +1184,8 @@ MonoBehaviour:
   UI_RareteStarsView: {fileID: 6854531148498620133}
   boutonRecruter: {fileID: 4139541022921540794}
   curiositeText: {fileID: 6331335121705217809}
-  intelligenceText: {fileID: 4394154104083722648}
-  dexteriteText: {fileID: 6371279951934304138}
+  ingeniositeText: {fileID: 4394154104083722648}
+  combativiteText: {fileID: 6371279951934304138}
   enduranceText: {fileID: 3325760225537728672}
   prixText: {fileID: 6788141100198075293}
   coutParTourText: {fileID: 1579392873421373121}
@@ -1556,7 +1556,7 @@ GameObject:
   - component: {fileID: 8400952393498968009}
   - component: {fileID: 6371279951934304138}
   m_Layer: 5
-  m_Name: DEXText
+  m_Name: COMText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1609,7 +1609,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: DEX 100
+  m_text: COM 100
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}

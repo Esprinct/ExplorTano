@@ -57,13 +57,10 @@ public static class FMT_EFFET
     {
         switch (stat)
         {
-      
-            case EffetENUM_Stats.Intelligence: return "INT";
-            case EffetENUM_Stats.Dexterite: return "DEX";
-            case EffetENUM_Stats.Endurance: return "END";
             case EffetENUM_Stats.Curiosite: return "CUR";
             case EffetENUM_Stats.Ingeniosite: return "ING";
             case EffetENUM_Stats.Combativite: return "COM";
+            case EffetENUM_Stats.Endurance: return "END";
             case EffetENUM_Stats.ToursExploration: return "T.EXP";
             case EffetENUM_Stats.ToursConstruction: return "T.CST";
             case EffetENUM_Stats.ToursVadrouille: return "T.VAD";
@@ -111,13 +108,11 @@ public static string GetNomLongStat(EffetENUM_Stats stat)
     switch (stat)
     {
   
-        case EffetENUM_Stats.Intelligence: return "Intelligence";
-        case EffetENUM_Stats.Dexterite: return "Dextérité";
-        case EffetENUM_Stats.Endurance: return "Endurance";
-
-        case EffetENUM_Stats.Curiosite: return "Curiosité";
+       case EffetENUM_Stats.Curiosite: return "Curiosité";
         case EffetENUM_Stats.Ingeniosite: return "Ingéniosité";
         case EffetENUM_Stats.Combativite: return "Combativité";
+       
+         case EffetENUM_Stats.Endurance: return "Endurance";
 
         case EffetENUM_Stats.ToursExploration: return "Tours d'exploration";
         case EffetENUM_Stats.ToursConstruction: return "Tours de construction";

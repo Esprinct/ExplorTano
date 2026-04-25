@@ -26,8 +26,8 @@ public class SCOBJ_IA_Personnalite : ScriptableObject
 
     [Header("Scoring personnage")]
     public float poidsCuriosite = 1f;
-    public float poidsIntelligence = 1f;
-    public float poidsDexterite = 1f;
+    public float poidsIngeniosite = 1f;
+    public float poidsCombativite = 1f;
     public float poidsEndurance = 1f;
     public float poidsRarete = 100f;
     public float poidsCoutParTour = 0f;

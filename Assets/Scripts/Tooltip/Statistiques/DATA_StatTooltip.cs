@@ -7,10 +7,10 @@ public static class DATA_StatTooltip
             case ENUM_Stats.Curiosite:
                 return "Curiosite";
 
-            case ENUM_Stats.Intelligence:
-                return "Intelligence";
+            case ENUM_Stats.Ingeniosite:
+                return "Ingeniosite";
 
-            case ENUM_Stats.Dexterite:
+            case ENUM_Stats.Combativite:
                 return "Dextérité";
 
             case ENUM_Stats.Endurance:
@@ -28,10 +28,10 @@ public static class DATA_StatTooltip
         case ENUM_Stats.Curiosite:
             return "+1 prestige tous les 60 points de Curiosite.";
 
-        case ENUM_Stats.Intelligence:
-            return "+1% de chance de relique tous les 40 points d'Intelligence.";
+        case ENUM_Stats.Ingeniosite:
+            return "+1% de chance de relique tous les 40 points d'Ingeniosite.";
 
-        case ENUM_Stats.Dexterite:
+        case ENUM_Stats.Combativite:
             return "-1 tour tous les 120 points de Dextérité.";
 
         case ENUM_Stats.Endurance:

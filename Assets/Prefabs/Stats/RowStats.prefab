@@ -188,7 +188,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 74357758103940429, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
       propertyPath: m_Name
-      value: StatRowForce
+      value: StatRowCuriosite
       objectReference: {fileID: 0}
     - target: {fileID: 1232413289840325969, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
       propertyPath: m_AnchorMax.y
@@ -367,7 +367,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 74357758103940429, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
       propertyPath: m_Name
-      value: StatRowIntelligence
+      value: StatRowIngeniosite
       objectReference: {fileID: 0}
     - target: {fileID: 1232413289840325969, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
       propertyPath: m_AnchorMax.y
@@ -420,6 +420,10 @@ PrefabInstance:
     - target: {fileID: 5390834024093153865, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7177866076760289822, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
+      propertyPath: ENUM_Stats
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7244321136488219388, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
       propertyPath: m_fontAsset
@@ -711,7 +715,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 74357758103940429, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
       propertyPath: m_Name
-      value: StatRowDexterite
+      value: StatRowCombativite
       objectReference: {fileID: 0}
     - target: {fileID: 1232413289840325969, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
       propertyPath: m_AnchorMax.y

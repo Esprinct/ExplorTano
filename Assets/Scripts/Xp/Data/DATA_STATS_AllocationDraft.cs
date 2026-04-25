@@ -4,13 +4,13 @@ using System;
 public class DATA_STATS_AllocationDraft
 {
     public int curiosite;
-    public int intelligence;
-    public int dexterite;
+    public int ingeniosite;
+    public int combativite;
     public int endurance;
 
     public bool autoCuriosite;
-    public bool autoIntelligence;
-    public bool autoDexterite;
+    public bool autoIngeniosite;
+    public bool autoCombativite;
     public bool autoEndurance;
 
     public int pointsRestants;
@@ -25,13 +25,13 @@ public class DATA_STATS_AllocationDraft
         if (personnage.allocation != null)
         {
             draft.curiosite = personnage.allocation.curiosite;
-            draft.intelligence = personnage.allocation.intelligence;
-            draft.dexterite = personnage.allocation.dexterite;
+            draft.ingeniosite = personnage.allocation.ingeniosite;
+            draft.combativite = personnage.allocation.combativite;
             draft.endurance = personnage.allocation.endurance;
 
             draft.autoCuriosite = personnage.allocation.autoCuriosite;
-            draft.autoIntelligence = personnage.allocation.autoIntelligence;
-            draft.autoDexterite = personnage.allocation.autoDexterite;
+            draft.autoIngeniosite = personnage.allocation.autoIngeniosite;
+            draft.autoCombativite = personnage.allocation.autoCombativite;
             draft.autoEndurance = personnage.allocation.autoEndurance;
         }
 

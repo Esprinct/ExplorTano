@@ -5,8 +5,8 @@ public class UI_EQUIPE_StatsView : MonoBehaviour
 {
     [Header("Stats Equipe")]
     [SerializeField] private TMP_Text curiositeEquipe;
-    [SerializeField] private TMP_Text intelligenceEquipe;
-    [SerializeField] private TMP_Text dexteriteEquipe;
+    [SerializeField] private TMP_Text ingeniositeEquipe;
+    [SerializeField] private TMP_Text combativiteEquipe;
     [SerializeField] private TMP_Text enduranceEquipe;
     [SerializeField] private TMP_Text nombreMembresEquipe;
     [SerializeField] private TMP_Text coutParTour;
@@ -21,11 +21,11 @@ public class UI_EQUIPE_StatsView : MonoBehaviour
         if (curiositeEquipe != null)
             curiositeEquipe.text = stats.curiositeTotale.ToString();
 
-        if (intelligenceEquipe != null)
-            intelligenceEquipe.text = stats.intelligenceTotale.ToString();
+        if (ingeniositeEquipe != null)
+            ingeniositeEquipe.text = stats.ingeniositeTotale.ToString();
 
-        if (dexteriteEquipe != null)
-            dexteriteEquipe.text = stats.dexteriteTotale.ToString();
+        if (combativiteEquipe != null)
+            combativiteEquipe.text = stats.combativiteTotale.ToString();
 
         if (enduranceEquipe != null)
             enduranceEquipe.text = stats.enduranceTotale.ToString();

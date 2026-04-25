@@ -4,7 +4,7 @@ public enum ENUM_OBJET_EQUIPPABLE_ConditionEquipement
 {
     NiveauMinimum,
     CuriositeMinimum,
-    IntelligenceMinimum,
-    DexteriteMinimum,
+    IngeniositeMinimum,
+    CombativiteMinimum,
     EnduranceMinimum
 }

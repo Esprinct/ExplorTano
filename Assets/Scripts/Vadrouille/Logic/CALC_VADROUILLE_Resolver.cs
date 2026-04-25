@@ -17,7 +17,7 @@ public static class CALC_VADROUILLE_Resolver
         int bonusPrestige = Mathf.Max(0, Mathf.FloorToInt(stats.EcartCuriosite / 100f));
 
         float bonusOccupation = Mathf.Max(0f, stats.EcartCuriosite * 0.02f);
-        float bonusReductionAdverse = Mathf.Max(0f, stats.EcartDexterite * 0.02f);
+        float bonusReductionAdverse = Mathf.Max(0f, stats.EcartCombativite * 0.02f);
 
         result.toursFinaux = Mathf.Max(1, toursBase - bonusToursCombativite);
 
