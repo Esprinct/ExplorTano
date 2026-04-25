@@ -20,7 +20,7 @@ public static class CALC_EXPLORATION_Resolver
         int surcoutSousEffectif = GetSurcoutSousEffectif(nombreMembres);
         int malusPrestigeSousEffectif = GetMalusPrestigeSousEffectif(nombreMembres);
 
-        int bonusPrestigeForce = Mathf.Max(0, Mathf.FloorToInt(stats.EcartForce / 80f));
+        int bonusPrestigeCuriosite = Mathf.Max(0, Mathf.FloorToInt(stats.EcartCuriosite / 80f));
         float bonusRelique = Mathf.Max(0f, stats.EcartIntelligence * 0.015f);
         float bonusReliqueRare = Mathf.Max(0f, stats.EcartIntelligence * 0.0035f);
         int bonusToursDex = Mathf.Max(0, Mathf.FloorToInt(stats.EcartDexterite / 160f));
@@ -29,7 +29,7 @@ public static class CALC_EXPLORATION_Resolver
 
         result.prestigeFinal = Mathf.Max(
             0,
-            prestigeBase + bonusPrestigeForce - malusPrestigeSousEffectif
+            prestigeBase + bonusPrestigeCuriosite - malusPrestigeSousEffectif
         );
 
         result.chanceRelique = Mathf.Clamp(

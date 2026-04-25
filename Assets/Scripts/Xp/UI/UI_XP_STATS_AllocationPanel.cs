@@ -8,7 +8,7 @@ public class UI_XP_STATS_AllocationPanel : MonoBehaviour
     [SerializeField] private TMP_Text pointsDisponiblesText;
 
     [Header("Rows")]
-    [SerializeField] private UI_XP_STATS_AllocationRow forceRow;
+    [SerializeField] private UI_XP_STATS_AllocationRow curiositeRow;
     [SerializeField] private UI_XP_STATS_AllocationRow intelligenceRow;
     [SerializeField] private UI_XP_STATS_AllocationRow dexteriteRow;
     [SerializeField] private UI_XP_STATS_AllocationRow enduranceRow;
@@ -42,8 +42,8 @@ public class UI_XP_STATS_AllocationPanel : MonoBehaviour
         this.onCommitted = onCommitted;
         this.draft = DATA_STATS_AllocationDraft.FromPersonnage(personnage);
 
-        if (forceRow != null)
-            forceRow.Setup(personnage, draft, EffetENUM_Stats.Force, Refresh);
+        if (curiositeRow != null)
+            curiositeRow.Setup(personnage, draft, EffetENUM_Stats.Curiosite, Refresh);
 
         if (intelligenceRow != null)
             intelligenceRow.Setup(personnage, draft, EffetENUM_Stats.Intelligence, Refresh);
@@ -68,7 +68,7 @@ public class UI_XP_STATS_AllocationPanel : MonoBehaviour
             pointsDisponiblesText.text = $"Points disponibles : {points}";
         }
 
-        forceRow?.Refresh();
+        curiositeRow?.Refresh();
         intelligenceRow?.Refresh();
         dexteriteRow?.Refresh();
         enduranceRow?.Refresh();

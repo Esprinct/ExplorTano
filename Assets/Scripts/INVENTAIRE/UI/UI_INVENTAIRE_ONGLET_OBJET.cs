@@ -229,10 +229,10 @@ public class UI_INVENTAIRE_ONGLET_OBJET : MonoBehaviour, UI_INVENTAIRE_ONGLET_BA
                         break;
                     }
 
-                case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.ForceMinimum:
-                    if (personnage.force < condition.valeur)
+                case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.CuriositeMinimum:
+                    if (personnage.curiosite < condition.valeur)
                     {
-                        raisonIndisponibilite = $"Force insuffisante ({personnage.force}/{condition.valeur})";
+                        raisonIndisponibilite = $"Curiosite insuffisante ({personnage.curiosite}/{condition.valeur})";
                         return false;
                     }
                     break;

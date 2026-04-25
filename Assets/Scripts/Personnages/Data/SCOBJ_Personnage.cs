@@ -28,11 +28,11 @@ public STATE_LevelProgression progression = new();
 public CFG_LevelProgression progressionConfig;
 
     [Header("Stats")]
-    public int force = 100;
+    public int curiosite = 100;
     public int intelligence = 100;
     public int dexterite = 100;
     public int endurance = 100;
-    public int pointsForceInvestis;
+    public int pointsCuriositeInvestis;
 public int pointsIntelligenceInvestis;
 public int pointsDexteriteInvestis;
 public int pointsEnduranceInvestis;

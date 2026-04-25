@@ -54,7 +54,7 @@ public static class SVC_LevelProgression
 
     return cible switch
     {
-        EffetENUM_Stats.Force => personnage.allocation.force,
+        EffetENUM_Stats.Curiosite => personnage.allocation.curiosite,
         EffetENUM_Stats.Intelligence => personnage.allocation.intelligence,
         EffetENUM_Stats.Dexterite => personnage.allocation.dexterite,
         EffetENUM_Stats.Endurance => personnage.allocation.endurance,

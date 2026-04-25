@@ -1,6 +1,6 @@
 public enum ENUM_Stats
 {
-    Force,
+    Curiosite,
     Intelligence,
     Dexterite,
     Endurance

@@ -37,14 +37,14 @@ public class SYS_IA_ProgressionEquipementSystem
     private EffetENUM_Stats ChoisirStatPrioritaire(DATA_JOUEUR joueur, SCOBJ_Personnage personnage)
     {
         if (joueur == null || personnage == null)
-            return EffetENUM_Stats.Force;
+            return EffetENUM_Stats.Curiosite;
 
         switch (joueur.personnaliteIA)
         {
             case ENUM_IA_Personnalite.Agressive:
                 return ChoisirStatSelonPriorites(
                     personnage,
-                    EffetENUM_Stats.Force,
+                    EffetENUM_Stats.Curiosite,
                     EffetENUM_Stats.Endurance,
                     EffetENUM_Stats.Dexterite,
                     EffetENUM_Stats.Intelligence
@@ -53,7 +53,7 @@ public class SYS_IA_ProgressionEquipementSystem
             case ENUM_IA_Personnalite.Prestige:
                 return ChoisirStatSelonPriorites(
                     personnage,
-                    EffetENUM_Stats.Force,
+                    EffetENUM_Stats.Curiosite,
                     EffetENUM_Stats.Intelligence,
                     EffetENUM_Stats.Dexterite,
                     EffetENUM_Stats.Endurance
@@ -65,7 +65,7 @@ public class SYS_IA_ProgressionEquipementSystem
                     EffetENUM_Stats.Intelligence,
                     EffetENUM_Stats.Endurance,
                     EffetENUM_Stats.Dexterite,
-                    EffetENUM_Stats.Force
+                    EffetENUM_Stats.Curiosite
                 );
 
             case ENUM_IA_Personnalite.Expansionniste:
@@ -74,7 +74,7 @@ public class SYS_IA_ProgressionEquipementSystem
                     EffetENUM_Stats.Dexterite,
                     EffetENUM_Stats.Endurance,
                     EffetENUM_Stats.Intelligence,
-                    EffetENUM_Stats.Force
+                    EffetENUM_Stats.Curiosite
                 );
 
             case ENUM_IA_Personnalite.Opportuniste:
@@ -82,7 +82,7 @@ public class SYS_IA_ProgressionEquipementSystem
                     personnage,
                     EffetENUM_Stats.Intelligence,
                     EffetENUM_Stats.Dexterite,
-                    EffetENUM_Stats.Force,
+                    EffetENUM_Stats.Curiosite,
                     EffetENUM_Stats.Endurance
                 );
 
@@ -116,7 +116,7 @@ public class SYS_IA_ProgressionEquipementSystem
     {
         return ChoisirStatSelonPriorites(
             personnage,
-            EffetENUM_Stats.Force,
+            EffetENUM_Stats.Curiosite,
             EffetENUM_Stats.Intelligence,
             EffetENUM_Stats.Dexterite,
             EffetENUM_Stats.Endurance
@@ -133,8 +133,8 @@ public class SYS_IA_ProgressionEquipementSystem
 
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                personnage.allocation.force++;
+            case EffetENUM_Stats.Curiosite:
+                personnage.allocation.curiosite++;
                 break;
             case EffetENUM_Stats.Intelligence:
                 personnage.allocation.intelligence++;
@@ -212,7 +212,7 @@ public class SYS_IA_ProgressionEquipementSystem
         if (objet == null || joueur == null || personnage == null)
             return 0f;
 
-        int forceAvant = CALS_PERSONNAGE_STATS_Calculator.GetForceEffective(personnage, joueur.compagnie);
+        int curiositeAvant = CALS_PERSONNAGE_STATS_Calculator.GetCuriositeEffective(personnage, joueur.compagnie);
         int intelligenceAvant = CALS_PERSONNAGE_STATS_Calculator.GetIntelligenceEffective(personnage, joueur.compagnie);
         int dexteriteAvant = CALS_PERSONNAGE_STATS_Calculator.GetDexteriteEffective(personnage, joueur.compagnie);
         int enduranceAvant = CALS_PERSONNAGE_STATS_Calculator.GetEnduranceEffective(personnage, joueur.compagnie);
@@ -225,7 +225,7 @@ public class SYS_IA_ProgressionEquipementSystem
         personnage.objetsEquipes ??= new List<SCOBJ_OBJET_EQUIPPABLE>();
         personnage.objetsEquipes.Add(objet);
 
-        int forceApres = CALS_PERSONNAGE_STATS_Calculator.GetForceEffective(personnage, joueur.compagnie);
+        int curiositeApres = CALS_PERSONNAGE_STATS_Calculator.GetCuriositeEffective(personnage, joueur.compagnie);
         int intelligenceApres = CALS_PERSONNAGE_STATS_Calculator.GetIntelligenceEffective(personnage, joueur.compagnie);
         int dexteriteApres = CALS_PERSONNAGE_STATS_Calculator.GetDexteriteEffective(personnage, joueur.compagnie);
         int enduranceApres = CALS_PERSONNAGE_STATS_Calculator.GetEnduranceEffective(personnage, joueur.compagnie);
@@ -234,7 +234,7 @@ public class SYS_IA_ProgressionEquipementSystem
         if (ancien != null)
             personnage.objetsEquipes.Add(ancien);
 
-        int deltaForce = forceApres - forceAvant;
+        int deltaCuriosite = curiositeApres - curiositeAvant;
         int deltaIntelligence = intelligenceApres - intelligenceAvant;
         int deltaDexterite = dexteriteApres - dexteriteAvant;
         int deltaEndurance = enduranceApres - enduranceAvant;
@@ -242,23 +242,23 @@ public class SYS_IA_ProgressionEquipementSystem
         switch (joueur.personnaliteIA)
         {
             case ENUM_IA_Personnalite.Agressive:
-                return deltaForce * 2.0f + deltaEndurance * 1.5f + deltaDexterite * 0.8f + deltaIntelligence * 0.3f;
+                return deltaCuriosite * 2.0f + deltaEndurance * 1.5f + deltaDexterite * 0.8f + deltaIntelligence * 0.3f;
 
             case ENUM_IA_Personnalite.Prestige:
-                return deltaForce * 1.6f + deltaIntelligence * 1.2f + deltaDexterite * 0.6f + deltaEndurance * 0.5f;
+                return deltaCuriosite * 1.6f + deltaIntelligence * 1.2f + deltaDexterite * 0.6f + deltaEndurance * 0.5f;
 
             case ENUM_IA_Personnalite.Economique:
-                return deltaIntelligence * 1.6f + deltaEndurance * 1.3f + deltaDexterite * 0.7f + deltaForce * 0.4f;
+                return deltaIntelligence * 1.6f + deltaEndurance * 1.3f + deltaDexterite * 0.7f + deltaCuriosite * 0.4f;
 
             case ENUM_IA_Personnalite.Expansionniste:
-                return deltaDexterite * 1.8f + deltaEndurance * 1.1f + deltaIntelligence * 0.8f + deltaForce * 0.6f;
+                return deltaDexterite * 1.8f + deltaEndurance * 1.1f + deltaIntelligence * 0.8f + deltaCuriosite * 0.6f;
 
             case ENUM_IA_Personnalite.Opportuniste:
-                return deltaIntelligence * 1.2f + deltaDexterite * 1.2f + deltaForce * 0.9f + deltaEndurance * 0.9f;
+                return deltaIntelligence * 1.2f + deltaDexterite * 1.2f + deltaCuriosite * 0.9f + deltaEndurance * 0.9f;
 
             case ENUM_IA_Personnalite.Equilibree:
             default:
-                return deltaForce + deltaIntelligence + deltaDexterite + deltaEndurance;
+                return deltaCuriosite + deltaIntelligence + deltaDexterite + deltaEndurance;
         }
     }
 }

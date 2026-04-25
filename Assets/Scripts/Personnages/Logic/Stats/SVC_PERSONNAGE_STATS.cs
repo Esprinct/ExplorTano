@@ -25,7 +25,7 @@ public static class SVC_PERSONNAGE_STATS
             state
         );
 
-        result.force = ComputeOne(personnage, EffetENUM_Stats.Force, EFFET_Contexte);
+        result.curiosite = ComputeOne(personnage, EffetENUM_Stats.Curiosite, EFFET_Contexte);
         result.intelligence = ComputeOne(personnage, EffetENUM_Stats.Intelligence, EFFET_Contexte);
         result.dexterite = ComputeOne(personnage, EffetENUM_Stats.Dexterite, EFFET_Contexte);
         result.endurance = ComputeOne(personnage, EffetENUM_Stats.Endurance, EFFET_Contexte);
@@ -178,8 +178,8 @@ public static class SVC_PERSONNAGE_STATS
 
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                return state.bonusForce;
+            case EffetENUM_Stats.Curiosite:
+                return state.bonusCuriosite;
             case EffetENUM_Stats.Intelligence:
                 return state.bonusIntelligence;
             case EffetENUM_Stats.Dexterite:

@@ -27,7 +27,7 @@ perso.progressionConfig = progressionConfigParDefaut;
         }
 
         int baseStat = 10 + rarete * 5;
-        perso.force = baseStat + Random.Range(-10, 10);
+        perso.curiosite = baseStat + Random.Range(-10, 10);
         perso.intelligence = baseStat + Random.Range(-10, 10);
         perso.dexterite = baseStat + Random.Range(-10, 10);
         perso.endurance = baseStat + Random.Range(-10, 10);

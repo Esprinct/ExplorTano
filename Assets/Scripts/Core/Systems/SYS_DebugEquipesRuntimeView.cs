@@ -84,7 +84,7 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
                         role = personnage.roleActuel.ToString(),
                         rarete = personnage.rareteEtoiles,
                         niveau = niveau,
-                        force = personnage.force,
+                        curiosite = personnage.curiosite,
                         intelligence = personnage.intelligence,
                         dexterite = personnage.dexterite,
                         endurance = personnage.endurance,
@@ -106,7 +106,7 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
             return;
 
         debugEquipe.nombreMembres = 0;
-        debugEquipe.forceTotale = 0;
+        debugEquipe.curiositeTotale = 0;
         debugEquipe.intelligenceTotale = 0;
         debugEquipe.dexteriteTotale = 0;
         debugEquipe.enduranceTotale = 0;
@@ -120,7 +120,7 @@ public class SYS_DebugEquipesRuntimeView : MonoBehaviour
                     continue;
 
                 debugEquipe.nombreMembres++;
-                debugEquipe.forceTotale += personnage.force;
+                debugEquipe.curiositeTotale += personnage.curiosite;
                 debugEquipe.intelligenceTotale += personnage.intelligence;
                 debugEquipe.dexteriteTotale += personnage.dexterite;
                 debugEquipe.enduranceTotale += personnage.endurance;

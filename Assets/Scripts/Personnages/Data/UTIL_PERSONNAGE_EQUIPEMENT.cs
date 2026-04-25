@@ -98,8 +98,8 @@ public static class UTIL_PERSONNAGE_EQUIPEMENT
             case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.NiveauMinimum:
                 return p.progression != null && p.progression.niveau >= c.valeur;
 
-            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.ForceMinimum:
-                return p.force >= c.valeur;
+            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.CuriositeMinimum:
+                return p.curiosite >= c.valeur;
 
             case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.IntelligenceMinimum:
                 return p.intelligence >= c.valeur;

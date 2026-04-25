@@ -31,8 +31,8 @@ public static class SVC_OBJET_ConditionEquipementService
             case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.NiveauMinimum:
                 return personnage.progression != null && personnage.progression.niveau >= condition.valeur;
 
-            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.ForceMinimum:
-                return personnage.force >= condition.valeur;
+            case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.CuriositeMinimum:
+                return personnage.curiosite >= condition.valeur;
 
             case ENUM_OBJET_EQUIPPABLE_ConditionEquipement.IntelligenceMinimum:
                 return personnage.intelligence >= condition.valeur;

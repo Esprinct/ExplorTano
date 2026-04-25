@@ -1,7 +1,7 @@
 public class EQUIPE_StatsSnapshot
 {
     public int nombreMembres;
-    public int forceTotale;
+    public int curiositeTotale;
     public int intelligenceTotale;
     public int dexteriteTotale;
     public int enduranceTotale;
@@ -9,7 +9,7 @@ public class EQUIPE_StatsSnapshot
 
 
 
-    public int EcartForce => forceTotale ;
+    public int EcartCuriosite => curiositeTotale ;
     public int EcartIntelligence => intelligenceTotale ;
     public int EcartDexterite => dexteriteTotale ;
     public int EcartEndurance => enduranceTotale ;

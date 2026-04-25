@@ -57,7 +57,7 @@ public static class FMT_EFFET
     {
         switch (stat)
         {
-            case EffetENUM_Stats.Force: return "FOR";
+      
             case EffetENUM_Stats.Intelligence: return "INT";
             case EffetENUM_Stats.Dexterite: return "DEX";
             case EffetENUM_Stats.Endurance: return "END";
@@ -110,7 +110,7 @@ public static string GetNomLongStat(EffetENUM_Stats stat)
 {
     switch (stat)
     {
-        case EffetENUM_Stats.Force: return "Force";
+  
         case EffetENUM_Stats.Intelligence: return "Intelligence";
         case EffetENUM_Stats.Dexterite: return "Dextérité";
         case EffetENUM_Stats.Endurance: return "Endurance";

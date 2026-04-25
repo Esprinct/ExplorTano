@@ -9,7 +9,7 @@ public static class DATA_STATS_AllocationDraftService
 
         return stat switch
         {
-            EffetENUM_Stats.Force => draft.force,
+            EffetENUM_Stats.Curiosite => draft.curiosite,
             EffetENUM_Stats.Intelligence => draft.intelligence,
             EffetENUM_Stats.Dexterite => draft.dexterite,
             EffetENUM_Stats.Endurance => draft.endurance,
@@ -24,8 +24,8 @@ public static class DATA_STATS_AllocationDraftService
 
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                draft.force++;
+            case EffetENUM_Stats.Curiosite:
+                draft.curiosite++;
                 break;
             case EffetENUM_Stats.Intelligence:
                 draft.intelligence++;
@@ -51,7 +51,7 @@ public static class DATA_STATS_AllocationDraftService
 
         int minimumConfirme = stat switch
         {
-            EffetENUM_Stats.Force => personnage.allocation.force,
+            EffetENUM_Stats.Curiosite => personnage.allocation.curiosite,
             EffetENUM_Stats.Intelligence => personnage.allocation.intelligence,
             EffetENUM_Stats.Dexterite => personnage.allocation.dexterite,
             EffetENUM_Stats.Endurance => personnage.allocation.endurance,
@@ -65,8 +65,8 @@ public static class DATA_STATS_AllocationDraftService
 
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                draft.force--;
+            case EffetENUM_Stats.Curiosite:
+                draft.curiosite--;
                 break;
             case EffetENUM_Stats.Intelligence:
                 draft.intelligence--;
@@ -94,7 +94,7 @@ public static class DATA_STATS_AllocationDraftService
 
         int minimumConfirme = stat switch
         {
-            EffetENUM_Stats.Force => personnage.allocation.force,
+            EffetENUM_Stats.Curiosite => personnage.allocation.curiosite,
             EffetENUM_Stats.Intelligence => personnage.allocation.intelligence,
             EffetENUM_Stats.Dexterite => personnage.allocation.dexterite,
             EffetENUM_Stats.Endurance => personnage.allocation.endurance,
@@ -132,8 +132,8 @@ public static class DATA_STATS_AllocationDraftService
 
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                draft.autoForce = enabled;
+            case EffetENUM_Stats.Curiosite:
+                draft.autoCuriosite = enabled;
                 break;
             case EffetENUM_Stats.Intelligence:
                 draft.autoIntelligence = enabled;
@@ -154,7 +154,7 @@ public static class DATA_STATS_AllocationDraftService
 
         return stat switch
         {
-            EffetENUM_Stats.Force => draft.autoForce,
+            EffetENUM_Stats.Curiosite => draft.autoCuriosite,
             EffetENUM_Stats.Intelligence => draft.autoIntelligence,
             EffetENUM_Stats.Dexterite => draft.autoDexterite,
             EffetENUM_Stats.Endurance => draft.autoEndurance,
@@ -171,9 +171,9 @@ public static class DATA_STATS_AllocationDraftService
         {
             bool allocated = false;
 
-            if (draft.autoForce)
+            if (draft.autoCuriosite)
             {
-                draft.force++;
+                draft.curiosite++;
                 draft.pointsRestants--;
                 allocated = true;
                 if (draft.pointsRestants <= 0) break;
@@ -213,12 +213,12 @@ public static class DATA_STATS_AllocationDraftService
         if (personnage == null || personnage.allocation == null || personnage.progression == null || draft == null)
             return;
 
-        personnage.allocation.force = draft.force;
+        personnage.allocation.curiosite = draft.curiosite;
         personnage.allocation.intelligence = draft.intelligence;
         personnage.allocation.dexterite = draft.dexterite;
         personnage.allocation.endurance = draft.endurance;
 
-        personnage.allocation.autoForce = draft.autoForce;
+        personnage.allocation.autoCuriosite = draft.autoCuriosite;
         personnage.allocation.autoIntelligence = draft.autoIntelligence;
         personnage.allocation.autoDexterite = draft.autoDexterite;
         personnage.allocation.autoEndurance = draft.autoEndurance;
@@ -230,8 +230,8 @@ public static class DATA_STATS_AllocationDraftService
     {
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                draft.force = value;
+            case EffetENUM_Stats.Curiosite:
+                draft.curiosite = value;
                 break;
             case EffetENUM_Stats.Intelligence:
                 draft.intelligence = value;

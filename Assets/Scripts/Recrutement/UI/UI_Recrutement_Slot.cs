@@ -16,7 +16,7 @@ public class UI_Recrutement_Slot : MonoBehaviour
     [SerializeField] private Button boutonRecruter;
 
     [Header("Stats")]
-    [SerializeField] private TMP_Text forceText;
+    [SerializeField] private TMP_Text curiositeText;
     [SerializeField] private TMP_Text intelligenceText;
     [SerializeField] private TMP_Text dexteriteText;
     [SerializeField] private TMP_Text enduranceText;
@@ -95,8 +95,8 @@ public class UI_Recrutement_Slot : MonoBehaviour
 
         UI_RareteStarsView?.Refresh(data.rareteEtoiles);
 
-        if (forceText != null)
-            forceText.text = $"FOR {data.force}";
+        if (curiositeText != null)
+            curiositeText.text = $"FOR {data.curiosite}";
 
         if (intelligenceText != null)
             intelligenceText.text = $"INT {data.intelligence}";

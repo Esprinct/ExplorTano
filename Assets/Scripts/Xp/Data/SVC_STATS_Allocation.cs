@@ -9,7 +9,7 @@ public static class SVC_STATS_Allocation
 
         return stat switch
         {
-            EffetENUM_Stats.Force => personnage.allocation.force,
+            EffetENUM_Stats.Curiosite => personnage.allocation.curiosite,
             EffetENUM_Stats.Intelligence => personnage.allocation.intelligence,
             EffetENUM_Stats.Dexterite => personnage.allocation.dexterite,
             EffetENUM_Stats.Endurance => personnage.allocation.endurance,
@@ -24,7 +24,7 @@ public static class SVC_STATS_Allocation
 
         return stat switch
         {
-            EffetENUM_Stats.Force => personnage.allocation.autoForce,
+            EffetENUM_Stats.Curiosite => personnage.allocation.autoCuriosite,
             EffetENUM_Stats.Intelligence => personnage.allocation.autoIntelligence,
             EffetENUM_Stats.Dexterite => personnage.allocation.autoDexterite,
             EffetENUM_Stats.Endurance => personnage.allocation.autoEndurance,
@@ -39,8 +39,8 @@ public static class SVC_STATS_Allocation
 
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                personnage.allocation.autoForce = enabled;
+            case EffetENUM_Stats.Curiosite:
+                personnage.allocation.autoCuriosite = enabled;
                 break;
             case EffetENUM_Stats.Intelligence:
                 personnage.allocation.autoIntelligence = enabled;
@@ -64,8 +64,8 @@ public static class SVC_STATS_Allocation
 
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                personnage.allocation.force++;
+            case EffetENUM_Stats.Curiosite:
+                personnage.allocation.curiosite++;
                 break;
             case EffetENUM_Stats.Intelligence:
                 personnage.allocation.intelligence++;
@@ -91,9 +91,9 @@ public static class SVC_STATS_Allocation
 
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                if (personnage.allocation.force <= 0) return false;
-                personnage.allocation.force--;
+            case EffetENUM_Stats.Curiosite:
+                if (personnage.allocation.curiosite <= 0) return false;
+                personnage.allocation.curiosite--;
                 break;
             case EffetENUM_Stats.Intelligence:
                 if (personnage.allocation.intelligence <= 0) return false;
@@ -153,9 +153,9 @@ public static class SVC_STATS_Allocation
         {
             bool allocated = false;
 
-            if (personnage.allocation.autoForce)
+            if (personnage.allocation.autoCuriosite)
             {
-                personnage.allocation.force++;
+                personnage.allocation.curiosite++;
                 personnage.progression.pointsDisponibles--;
                 allocated = true;
                 if (personnage.progression.pointsDisponibles <= 0) break;
@@ -195,12 +195,12 @@ public static class SVC_STATS_Allocation
         if (personnage == null || personnage.progression == null || personnage.allocation == null)
             return;
 
-        personnage.progression.pointsDisponibles += personnage.allocation.force;
+        personnage.progression.pointsDisponibles += personnage.allocation.curiosite;
         personnage.progression.pointsDisponibles += personnage.allocation.intelligence;
         personnage.progression.pointsDisponibles += personnage.allocation.dexterite;
         personnage.progression.pointsDisponibles += personnage.allocation.endurance;
 
-        personnage.allocation.force = 0;
+        personnage.allocation.curiosite = 0;
         personnage.allocation.intelligence = 0;
         personnage.allocation.dexterite = 0;
         personnage.allocation.endurance = 0;
@@ -212,7 +212,7 @@ public static int GetAllocationBonus(SCOBJ_Personnage personnage, EffetENUM_Stat
 
     return stat switch
     {
-        EffetENUM_Stats.Force => personnage.allocation.force,
+        EffetENUM_Stats.Curiosite => personnage.allocation.curiosite,
         EffetENUM_Stats.Intelligence => personnage.allocation.intelligence,
         EffetENUM_Stats.Dexterite => personnage.allocation.dexterite,
         EffetENUM_Stats.Endurance => personnage.allocation.endurance,
@@ -223,8 +223,8 @@ public static int GetAllocationBonus(SCOBJ_Personnage personnage, EffetENUM_Stat
     {
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                personnage.allocation.force = value;
+            case EffetENUM_Stats.Curiosite:
+                personnage.allocation.curiosite = value;
                 break;
             case EffetENUM_Stats.Intelligence:
                 personnage.allocation.intelligence = value;

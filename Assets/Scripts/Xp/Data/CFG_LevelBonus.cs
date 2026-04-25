@@ -18,7 +18,7 @@ public class CFG_LevelBonus : ScriptableObject
             if (bonus.niveau > niveau)
                 continue;
 
-            cumul.bonusForce += bonus.bonusForce;
+            cumul.bonusCuriosite += bonus.bonusCuriosite;
             cumul.bonusIntelligence += bonus.bonusIntelligence;
             cumul.bonusDexterite += bonus.bonusDexterite;
             cumul.bonusEndurance += bonus.bonusEndurance;

@@ -41,14 +41,14 @@ public static class SVC_IA_PersonnaliteResolver
         if (profil == null)
             return float.MinValue;
 
-        int force = CALS_PERSONNAGE_STATS_Calculator.GetForceEffective(personnage, joueur.compagnie);
+        int curiosite = CALS_PERSONNAGE_STATS_Calculator.GetCuriositeEffective(personnage, joueur.compagnie);
         int intelligence = CALS_PERSONNAGE_STATS_Calculator.GetIntelligenceEffective(personnage, joueur.compagnie);
         int dexterite = CALS_PERSONNAGE_STATS_Calculator.GetDexteriteEffective(personnage, joueur.compagnie);
         int endurance = CALS_PERSONNAGE_STATS_Calculator.GetEnduranceEffective(personnage, joueur.compagnie);
 
         float score = 0f;
         score += personnage.rareteEtoiles * profil.poidsRarete;
-        score += force * profil.poidsForce;
+        score += curiosite * profil.poidsCuriosite;
         score += intelligence * profil.poidsIntelligence;
         score += dexterite * profil.poidsDexterite;
         score += endurance * profil.poidsEndurance;

@@ -155,7 +155,7 @@ public static class SVC_IA_EquipeSpecialisationService
 
         // Très important :
         // si l'IA a des provinces prêtes à être occupées et aucune branche milicienne,
-        // on force Miliciens.
+        // on curiosite Miliciens.
         if (choixMiliciens != null && nbMiliciens == 0 && pressionVadrouille >= 80f)
             return choixMiliciens;
 

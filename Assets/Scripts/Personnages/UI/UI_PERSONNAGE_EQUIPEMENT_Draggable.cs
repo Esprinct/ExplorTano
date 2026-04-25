@@ -70,7 +70,7 @@ public class UI_PERSONNAGE_EQUIPEMENT_Draggable : MonoBehaviour, IBeginDragHandl
         EQUIPEMENT_DragContext.Clear();
     }
 
-    public void ForceStopDragVisual()
+    public void CuriositeStopDragVisual()
     {
         ResetOriginalVisual();
         DestroyGhost();

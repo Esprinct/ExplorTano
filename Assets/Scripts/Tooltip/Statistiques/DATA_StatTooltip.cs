@@ -4,8 +4,8 @@ public static class DATA_StatTooltip
     {
         switch (ENUM_Stats)
         {
-            case ENUM_Stats.Force:
-                return "Force";
+            case ENUM_Stats.Curiosite:
+                return "Curiosite";
 
             case ENUM_Stats.Intelligence:
                 return "Intelligence";
@@ -25,8 +25,8 @@ public static class DATA_StatTooltip
 {
     switch (ENUM_Stats)
     {
-        case ENUM_Stats.Force:
-            return "+1 prestige tous les 60 points de Force.";
+        case ENUM_Stats.Curiosite:
+            return "+1 prestige tous les 60 points de Curiosite.";
 
         case ENUM_Stats.Intelligence:
             return "+1% de chance de relique tous les 40 points d'Intelligence.";

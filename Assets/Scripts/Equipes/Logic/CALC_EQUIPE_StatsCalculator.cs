@@ -16,7 +16,7 @@ public static class CALC_EQUIPE_StatsCalculator
             if (personnage == null)
                 continue;
 
-            snapshot.forceTotale += CALS_PERSONNAGE_STATS_Calculator.GetForceEffective(personnage, equipe.compagnie);
+            snapshot.curiositeTotale += CALS_PERSONNAGE_STATS_Calculator.GetCuriositeEffective(personnage, equipe.compagnie);
             snapshot.intelligenceTotale += CALS_PERSONNAGE_STATS_Calculator.GetIntelligenceEffective(personnage, equipe.compagnie);
             snapshot.dexteriteTotale += CALS_PERSONNAGE_STATS_Calculator.GetDexteriteEffective(personnage, equipe.compagnie);
             snapshot.enduranceTotale += CALS_PERSONNAGE_STATS_Calculator.GetEnduranceEffective(personnage, equipe.compagnie);

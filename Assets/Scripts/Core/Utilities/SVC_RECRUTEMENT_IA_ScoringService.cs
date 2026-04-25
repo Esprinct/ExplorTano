@@ -44,7 +44,7 @@ public static class SVC_RECRUTEMENT_IA_ScoringService
         }
 
         // 3. Stats utiles, mais moins importantes que la rareté / affinité
-        score += personnage.force * 2;
+        score += personnage.curiosite * 2;
         score += personnage.intelligence * 2;
         score += personnage.dexterite * 2;
         score += personnage.endurance * 2;

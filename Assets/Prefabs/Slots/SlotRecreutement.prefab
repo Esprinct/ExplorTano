@@ -1183,7 +1183,7 @@ MonoBehaviour:
   roleText: {fileID: 0}
   UI_RareteStarsView: {fileID: 6854531148498620133}
   boutonRecruter: {fileID: 4139541022921540794}
-  forceText: {fileID: 6331335121705217809}
+  curiositeText: {fileID: 6331335121705217809}
   intelligenceText: {fileID: 4394154104083722648}
   dexteriteText: {fileID: 6371279951934304138}
   enduranceText: {fileID: 3325760225537728672}

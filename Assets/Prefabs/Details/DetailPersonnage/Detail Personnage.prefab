@@ -256,11 +256,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9112337da1263d24c89a172eea40de35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PersonnageDetailStatsView
-  forceText: {fileID: 1850184767373096546}
+  curiositeText: {fileID: 1850184767373096546}
   intelligenceText: {fileID: 8925104193303278095}
   dexteriteText: {fileID: 5166552316976714313}
   enduranceText: {fileID: 4727406118192425193}
-  forceTooltipTrigger: {fileID: 5099710505426620923}
+  curiositeTooltipTrigger: {fileID: 5099710505426620923}
   intelligenceTooltipTrigger: {fileID: 2644937253505488278}
   dexteriteTooltipTrigger: {fileID: 1791207126925506000}
   enduranceTooltipTrigger: {fileID: 2230403594006990704}
@@ -7113,17 +7113,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
---- !u!114 &3978591096109416881 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 687756930837406557, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
-  m_PrefabInstance: {fileID: 4520959598965957356}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a4712c104a23ba49bd783a5f542a5dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StatTooltipTrigger
 --- !u!1 &5732604253747039235 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8157111837213486831, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
@@ -7141,11 +7130,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 214565d6e792fd54b960fd6496e7e550, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI_PERSONNAGE_EQUIPPEMENT_Stats
-  forceText: {fileID: 7520493596172543528}
+  curiositeText: {fileID: 0}
   intelligenceText: {fileID: 733896321120510533}
   dexteriteText: {fileID: 3909199104797049347}
   enduranceText: {fileID: 3488067579366635683}
-  forceTooltipTrigger: {fileID: 3978591096109416881}
+  curiositeTooltipTrigger: {fileID: 0}
   intelligenceTooltipTrigger: {fileID: 6145074014001694172}
   dexteriteTooltipTrigger: {fileID: 7577483731928130970}
   enduranceTooltipTrigger: {fileID: 7998666075411636026}
@@ -7160,17 +7149,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a4712c104a23ba49bd783a5f542a5dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StatTooltipTrigger
---- !u!114 &7520493596172543528 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6260995077438751940, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
-  m_PrefabInstance: {fileID: 4520959598965957356}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &7577483731928130970 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6310965312487589750, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
@@ -8779,6 +8757,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6069160170067683319, guid: ba8aba7ea5fa19043bbff4476b963afd, type: 3}
+      propertyPath: curiositeRow
+      value: 
+      objectReference: {fileID: 7583122812163540656}
     - target: {fileID: 6392672592811903318, guid: ba8aba7ea5fa19043bbff4476b963afd, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -8936,6 +8918,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6062786816230753606, guid: ba8aba7ea5fa19043bbff4476b963afd, type: 3}
   m_PrefabInstance: {fileID: 5853767347373416227}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7583122812163540656 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4035340053601474963, guid: ba8aba7ea5fa19043bbff4476b963afd, type: 3}
+  m_PrefabInstance: {fileID: 5853767347373416227}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29301c5beb618a941afff47da80f43d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatAllocationRowUI
 --- !u!1001 &8751903206560128858
 PrefabInstance:
   m_ObjectHideFlags: 0

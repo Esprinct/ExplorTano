@@ -8,7 +8,7 @@ public class DATA_DebugPersonnageRuntimeView
     public string role;
     public int rarete;
     public int niveau;
-    public int force;
+    public int curiosite;
     public int intelligence;
     public int dexterite;
     public int endurance;
@@ -36,7 +36,7 @@ public class DATA_DebugEquipeRuntimeView
     public int niveauEquipe;
 
     [Header("Stats équipe")]
-    public int forceTotale;
+    public int curiositeTotale;
     public int intelligenceTotale;
     public int dexteriteTotale;
     public int enduranceTotale;

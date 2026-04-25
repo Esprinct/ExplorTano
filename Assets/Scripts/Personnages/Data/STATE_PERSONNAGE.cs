@@ -11,7 +11,7 @@ public class STATE_PERSONNAGE
     public int xpActuel;
     public int xpNiveauSuivant;
 
-    public int bonusForce;
+    public int bonusCuriosite;
     public int bonusIntelligence;
     public int bonusDexterite;
     public int bonusEndurance;

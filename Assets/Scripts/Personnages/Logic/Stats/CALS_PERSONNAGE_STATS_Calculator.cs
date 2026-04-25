@@ -68,8 +68,8 @@ public static class CALS_PERSONNAGE_STATS_Calculator
         return result;
     }
 
-    public static int GetForceEffective(SCOBJ_Personnage personnage)
-        => GetStatEffective(personnage, EffetENUM_Stats.Force);
+    public static int GetCuriositeEffective(SCOBJ_Personnage personnage)
+        => GetStatEffective(personnage, EffetENUM_Stats.Curiosite);
 
     public static int GetIntelligenceEffective(SCOBJ_Personnage personnage)
         => GetStatEffective(personnage, EffetENUM_Stats.Intelligence);
@@ -80,8 +80,8 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetEnduranceEffective(SCOBJ_Personnage personnage)
         => GetStatEffective(personnage, EffetENUM_Stats.Endurance);
 
-    public static int GetForceEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
-        => GetStatEffective(personnage, EffetENUM_Stats.Force, null, compagnie);
+    public static int GetCuriositeEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
+        => GetStatEffective(personnage, EffetENUM_Stats.Curiosite, null, compagnie);
 
     public static int GetIntelligenceEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
         => GetStatEffective(personnage, EffetENUM_Stats.Intelligence, null, compagnie);
@@ -92,8 +92,8 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetEnduranceEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
         => GetStatEffective(personnage, EffetENUM_Stats.Endurance, null, compagnie);
 
-    public static int GetForceEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
-        => GetStatEffective(personnage, EffetENUM_Stats.Force, state, compagnie);
+    public static int GetCuriositeEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
+        => GetStatEffective(personnage, EffetENUM_Stats.Curiosite, state, compagnie);
 
     public static int GetIntelligenceEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
         => GetStatEffective(personnage, EffetENUM_Stats.Intelligence, state, compagnie);
@@ -104,8 +104,8 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetEnduranceEffective(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
         => GetStatEffective(personnage, EffetENUM_Stats.Endurance, state, compagnie);
 
-    public static int GetForceDelta(SCOBJ_Personnage personnage)
-        => GetStatDelta(personnage, EffetENUM_Stats.Force);
+    public static int GetCuriositeDelta(SCOBJ_Personnage personnage)
+        => GetStatDelta(personnage, EffetENUM_Stats.Curiosite);
 
     public static int GetIntelligenceDelta(SCOBJ_Personnage personnage)
         => GetStatDelta(personnage, EffetENUM_Stats.Intelligence);
@@ -116,8 +116,8 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetEnduranceDelta(SCOBJ_Personnage personnage)
         => GetStatDelta(personnage, EffetENUM_Stats.Endurance);
 
-    public static int GetForceDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
-        => GetStatDelta(personnage, EffetENUM_Stats.Force, null, compagnie);
+    public static int GetCuriositeDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
+        => GetStatDelta(personnage, EffetENUM_Stats.Curiosite, null, compagnie);
 
     public static int GetIntelligenceDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
         => GetStatDelta(personnage, EffetENUM_Stats.Intelligence, null, compagnie);
@@ -128,8 +128,8 @@ public static class CALS_PERSONNAGE_STATS_Calculator
     public static int GetEnduranceDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie)
         => GetStatDelta(personnage, EffetENUM_Stats.Endurance, null, compagnie);
 
-    public static int GetForceDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
-        => GetStatDelta(personnage, EffetENUM_Stats.Force, state, compagnie);
+    public static int GetCuriositeDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
+        => GetStatDelta(personnage, EffetENUM_Stats.Curiosite, state, compagnie);
 
     public static int GetIntelligenceDelta(SCOBJ_Personnage personnage, ENUM_Compagnie compagnie, STATE_PERSONNAGE state)
         => GetStatDelta(personnage, EffetENUM_Stats.Intelligence, state, compagnie);
@@ -165,8 +165,8 @@ public static class CALS_PERSONNAGE_STATS_Calculator
 
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                return personnage.force;
+            case EffetENUM_Stats.Curiosite:
+                return personnage.curiosite;
             case EffetENUM_Stats.Intelligence:
                 return personnage.intelligence;
             case EffetENUM_Stats.Dexterite:
@@ -241,8 +241,8 @@ public static class CALS_PERSONNAGE_STATS_Calculator
 
         switch (stat)
         {
-            case EffetENUM_Stats.Force:
-                return state.bonusForce;
+            case EffetENUM_Stats.Curiosite:
+                return state.bonusCuriosite;
             case EffetENUM_Stats.Intelligence:
                 return state.bonusIntelligence;
             case EffetENUM_Stats.Dexterite:

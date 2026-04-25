@@ -212,7 +212,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3310990843010043220, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
       propertyPath: m_text
-      value: 'Force : '
+      value: "Curiosit\xE9 : "
       objectReference: {fileID: 0}
     - target: {fileID: 3310990843010043220, guid: 62befd1d521e77449920d4e09cb0e5ee, type: 3}
       propertyPath: m_fontAsset

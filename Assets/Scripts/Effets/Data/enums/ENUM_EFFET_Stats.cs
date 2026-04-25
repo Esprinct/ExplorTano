@@ -3,7 +3,7 @@ using UnityEngine;
 public enum EffetENUM_Stats
 {
     Aucune = 0,
-    Force = 1,
+    Curiosite = 1,
     Intelligence = 2,
     Dexterite = 3,
     Endurance = 4,
@@ -24,7 +24,6 @@ public enum EffetENUM_Stats
     PopulationAutre = 17,
 
     StatEquipeGlobale = 18,
-       Curiosite = 20,
     Ingeniosite = 21,
     Combativite = 22,
 

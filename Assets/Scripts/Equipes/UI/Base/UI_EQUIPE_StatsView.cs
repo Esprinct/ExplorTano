@@ -4,7 +4,7 @@ using UnityEngine;
 public class UI_EQUIPE_StatsView : MonoBehaviour
 {
     [Header("Stats Equipe")]
-    [SerializeField] private TMP_Text forceEquipe;
+    [SerializeField] private TMP_Text curiositeEquipe;
     [SerializeField] private TMP_Text intelligenceEquipe;
     [SerializeField] private TMP_Text dexteriteEquipe;
     [SerializeField] private TMP_Text enduranceEquipe;
@@ -18,8 +18,8 @@ public class UI_EQUIPE_StatsView : MonoBehaviour
 
         EQUIPE_StatsSnapshot stats = CALC_EQUIPE_StatsCalculator.Calculer(equipe);
 
-        if (forceEquipe != null)
-            forceEquipe.text = stats.forceTotale.ToString();
+        if (curiositeEquipe != null)
+            curiositeEquipe.text = stats.curiositeTotale.ToString();
 
         if (intelligenceEquipe != null)
             intelligenceEquipe.text = stats.intelligenceTotale.ToString();

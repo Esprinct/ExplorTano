@@ -12,11 +12,11 @@ public static class CALC_VADROUILLE_Resolver
     {
         DATA_VADROUILLE_Resultat result = new DATA_VADROUILLE_Resultat();
 
-        int bonusToursCombativite = Mathf.Max(0, Mathf.FloorToInt(stats.EcartForce / 160f));
+        int bonusToursCombativite = Mathf.Max(0, Mathf.FloorToInt(stats.EcartCuriosite / 160f));
         int bonusCoutEndurance = Mathf.Max(0, Mathf.FloorToInt(stats.EcartEndurance / 40f));
-        int bonusPrestige = Mathf.Max(0, Mathf.FloorToInt(stats.EcartForce / 100f));
+        int bonusPrestige = Mathf.Max(0, Mathf.FloorToInt(stats.EcartCuriosite / 100f));
 
-        float bonusOccupation = Mathf.Max(0f, stats.EcartForce * 0.02f);
+        float bonusOccupation = Mathf.Max(0f, stats.EcartCuriosite * 0.02f);
         float bonusReductionAdverse = Mathf.Max(0f, stats.EcartDexterite * 0.02f);
 
         result.toursFinaux = Mathf.Max(1, toursBase - bonusToursCombativite);

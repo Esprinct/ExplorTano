@@ -25,7 +25,7 @@ public class DATA_EQUIPE_DetailData
 
     public string statutExploration;
     public int coutParTour;
-    public string forceTooltipDetail;
+    public string curiositeTooltipDetail;
     public string intelligenceTooltipDetail;
     public string dexteriteTooltipDetail;
     public string enduranceTooltipDetail;

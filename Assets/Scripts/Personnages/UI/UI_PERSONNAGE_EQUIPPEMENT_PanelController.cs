@@ -299,7 +299,7 @@ private System.Collections.IEnumerator AttendreSimpleClicEquipement(SCOBJ_OBJET_
         }
 
         if (EQUIPEMENT_DragContext.SourceUI != null)
-            EQUIPEMENT_DragContext.SourceUI.ForceStopDragVisual();
+            EQUIPEMENT_DragContext.SourceUI.CuriositeStopDragVisual();
 
         EQUIPEMENT_DragContext.Clear();
 
@@ -319,7 +319,7 @@ private System.Collections.IEnumerator AttendreSimpleClicEquipement(SCOBJ_OBJET_
             return;
 
         if (EQUIPEMENT_DragContext.SourceUI != null)
-            EQUIPEMENT_DragContext.SourceUI.ForceStopDragVisual();
+            EQUIPEMENT_DragContext.SourceUI.CuriositeStopDragVisual();
 
         EQUIPEMENT_DragContext.Clear();
 

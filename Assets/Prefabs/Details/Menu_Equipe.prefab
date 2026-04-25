@@ -10596,7 +10596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8cbd0529044384ab86194d9ae791f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EquipeStatsView
-  forceEquipe: {fileID: 514839974871948839}
+  curiositeEquipe: {fileID: 514839974871948839}
   intelligenceEquipe: {fileID: 7301584036869544522}
   dexteriteEquipe: {fileID: 6429872468980873740}
   enduranceEquipe: {fileID: 6850863256922964140}
@@ -12948,6 +12948,10 @@ PrefabInstance:
     - target: {fileID: 2044004819834078125, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2276704619036380012, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
+      propertyPath: m_text
+      value: "Curiosit\xE9 : "
       objectReference: {fileID: 0}
     - target: {fileID: 2345635968769532666, guid: 35449324d7c389643838081a85c4b0d6, type: 3}
       propertyPath: m_AnchorMax.y

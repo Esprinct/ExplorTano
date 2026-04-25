@@ -4,7 +4,7 @@ using UnityEngine;
 public class DATA_LevelBonusDefinition
 {
     public int niveau = 1;
-    public int bonusForce;
+    public int bonusCuriosite;
     public int bonusIntelligence;
     public int bonusDexterite;
     public int bonusEndurance;

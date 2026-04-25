@@ -49,22 +49,22 @@ public static class MAP_PERSONNAGE_DetailMapper
             genre = data.genre,
             rareteEtoiles = data.rareteEtoiles,
 
-            forceBase = stats.force.baseValue,
+            curiositeBase = stats.curiosite.baseValue,
             intelligenceBase = stats.intelligence.baseValue,
             dexteriteBase = stats.dexterite.baseValue,
             enduranceBase = stats.endurance.baseValue,
 
-            force = stats.force.finalValue,
+            curiosite = stats.curiosite.finalValue,
             intelligence = stats.intelligence.finalValue,
             dexterite = stats.dexterite.finalValue,
             endurance = stats.endurance.finalValue,
 
-            forceDelta = stats.force.delta,
+            curiositeDelta = stats.curiosite.delta,
             intelligenceDelta = stats.intelligence.delta,
             dexteriteDelta = stats.dexterite.delta,
             enduranceDelta = stats.endurance.delta,
 
-            forceTooltipDetail = string.Join("\n", stats.force.detailLines),
+            curiositeTooltipDetail = string.Join("\n", stats.curiosite.detailLines),
             intelligenceTooltipDetail = string.Join("\n", stats.intelligence.detailLines),
             dexteriteTooltipDetail = string.Join("\n", stats.dexterite.detailLines),
             enduranceTooltipDetail = string.Join("\n", stats.endurance.detailLines),
