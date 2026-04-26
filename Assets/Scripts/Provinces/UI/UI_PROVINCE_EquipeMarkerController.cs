@@ -5,39 +5,58 @@ public class UI_PROVINCE_EquipeMarkerController : MonoBehaviour
 {
     [Header("Marqueurs équipes")]
     [SerializeField] private Transform markerRoot;
-    [SerializeField] private UI_EquipeProvinceMarker markerPrefab;
-    [SerializeField] private float markerSpacing = 0.9f;
+    [SerializeField] private UI_EquipeProvinceMarker markerTemplate;
+    [SerializeField] private float markerSpacing = 1f;
     [SerializeField] private float markerYOffset = 0.8f;
     [SerializeField] private int maxMarkersVisibles = 8;
 
     [Header("Debug")]
     [SerializeField] private bool afficherLogs = false;
 
-    private readonly List<UI_EquipeProvinceMarker> markersEquipe = new();
+    private readonly List<UI_EquipeProvinceMarker> markers = new();
 
-    private STATE_PROVINCE province;
-    private SYS_GameManager gameManager;
-
-    public void Setup(STATE_PROVINCE provinceSource, SYS_GameManager gm)
+    private void Awake()
     {
-        province = provinceSource;
-        gameManager = gm;
+        if (markerRoot == null)
+            markerRoot = transform;
 
-        EnsureMarkerPool();
-        HideAll();
-        Refresh();
+        if (markerTemplate != null)
+            markerTemplate.Hide();
     }
 
-    public void Refresh()
+    public void RefreshMarkers(STATE_PROVINCE province, SYS_GameManager gameManager)
     {
-        if (markerRoot == null || markerPrefab == null)
-            return;
+        if (markerRoot == null)
+            markerRoot = transform;
 
-        EnsureMarkerPool();
-        HideAll();
+        if (markerTemplate == null)
+        {
+            if (afficherLogs)
+                Debug.LogWarning($"[MARKER] {name} : Marker Template non assigné.");
 
-        if (province == null || gameManager == null || gameManager.EquipesRuntime == null)
             return;
+        }
+
+        EnsurePool();
+        HideAllMarkers();
+
+        if (province == null)
+        {
+            Log("province null");
+            return;
+        }
+
+        if (gameManager == null)
+        {
+            Log("gameManager null");
+            return;
+        }
+
+        if (gameManager.EquipesRuntime == null)
+        {
+            Log("EquipesRuntime null");
+            return;
+        }
 
         List<STATE_EQUIPE> equipesSurProvince = new();
 
@@ -46,90 +65,93 @@ public class UI_PROVINCE_EquipeMarkerController : MonoBehaviour
             if (equipe == null)
                 continue;
 
-            if (equipe.provinceAffectee != province)
-                continue;
-
-            equipesSurProvince.Add(equipe);
-        }
-
-        if (afficherLogs)
-        {
-            Debug.Log(
-                $"[MARKER RESULT] province={province.data?.nom} | " +
-                $"équipes trouvées={equipesSurProvince.Count} | pool={markersEquipe.Count}"
-            );
+            if (EstEquipeSurProvince(equipe, province))
+                equipesSurProvince.Add(equipe);
         }
 
         int total = Mathf.Min(equipesSurProvince.Count, maxMarkersVisibles);
 
+        if (afficherLogs)
+        {
+            Debug.Log(
+                $"[MARKER REFRESH] province={province.data?.nom} | " +
+                $"equipesSurProvince={equipesSurProvince.Count} | affichées={total} | pool={markers.Count}"
+            );
+        }
+
         for (int i = 0; i < total; i++)
         {
+            UI_EquipeProvinceMarker marker = markers[i];
             STATE_EQUIPE equipe = equipesSurProvince[i];
-            UI_EquipeProvinceMarker marker = markersEquipe[i];
 
-            if (equipe == null || marker == null)
+            if (marker == null || equipe == null)
                 continue;
 
             marker.transform.localPosition = CalculateMarkerLocalPosition(i, total);
             marker.transform.localRotation = Quaternion.identity;
             marker.transform.localScale = Vector3.one;
 
-            string nomEquipe =
-                equipe.data != null && !string.IsNullOrWhiteSpace(equipe.data.nomEquipe)
-                    ? equipe.data.nomEquipe
-                    : "Équipe";
+            string nomEquipe = equipe.data != null && !string.IsNullOrWhiteSpace(equipe.data.nomEquipe)
+                ? equipe.data.nomEquipe
+                : "Équipe";
 
             marker.Setup(equipe.compagnie, nomEquipe);
         }
     }
 
-    public void HideAll()
+    private void EnsurePool()
     {
-        foreach (UI_EquipeProvinceMarker marker in markersEquipe)
-        {
-            if (marker != null)
-                marker.Hide();
-        }
-
-        if (markerPrefab != null)
-            markerPrefab.Hide();
-
-        if (markerRoot == null)
+        if (markerRoot == null || markerTemplate == null)
             return;
 
-        UI_EquipeProvinceMarker[] markersExistants =
-            markerRoot.GetComponentsInChildren<UI_EquipeProvinceMarker>(true);
+        markerTemplate.Hide();
 
-        foreach (UI_EquipeProvinceMarker marker in markersExistants)
+        int cible = Mathf.Max(0, maxMarkersVisibles);
+
+        while (markers.Count < cible)
         {
-            if (marker == null)
-                continue;
-
-            if (marker == markerPrefab)
-                continue;
-
-            if (!markersEquipe.Contains(marker))
-                marker.Hide();
-        }
-    }
-
-    private void EnsureMarkerPool()
-    {
-        if (markerRoot == null || markerPrefab == null)
-            return;
-
-        markerPrefab.Hide();
-
-        while (markersEquipe.Count < maxMarkersVisibles)
-        {
-            UI_EquipeProvinceMarker marker = Instantiate(markerPrefab, markerRoot);
+            UI_EquipeProvinceMarker marker = Instantiate(markerTemplate, markerRoot);
+            marker.name = $"EquipeMarker_Runtime_{markers.Count}";
             marker.transform.localPosition = Vector3.zero;
             marker.transform.localRotation = Quaternion.identity;
             marker.transform.localScale = Vector3.one;
             marker.Hide();
 
-            markersEquipe.Add(marker);
+            markers.Add(marker);
         }
+    }
+
+    private void HideAllMarkers()
+    {
+        if (markerTemplate != null)
+            markerTemplate.Hide();
+
+        foreach (UI_EquipeProvinceMarker marker in markers)
+        {
+            if (marker != null)
+                marker.Hide();
+        }
+    }
+
+    private bool EstEquipeSurProvince(STATE_EQUIPE equipe, STATE_PROVINCE province)
+    {
+        if (equipe == null || province == null)
+            return false;
+
+        if (equipe.provinceAffectee == province)
+            return true;
+
+        if (equipe.provinceAffectee == null)
+            return false;
+
+        if (equipe.provinceAffectee.data != null &&
+            province.data != null &&
+            equipe.provinceAffectee.data == province.data)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private Vector3 CalculateMarkerLocalPosition(int index, int total)
@@ -142,5 +164,13 @@ public class UI_PROVINCE_EquipeMarkerController : MonoBehaviour
         float x = startX + index * markerSpacing;
 
         return new Vector3(x, markerYOffset, 0f);
+    }
+
+    private void Log(string message)
+    {
+        if (!afficherLogs)
+            return;
+
+        Debug.LogWarning($"[MARKER] {name} : {message}");
     }
 }

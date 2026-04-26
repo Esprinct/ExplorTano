@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(PolygonCollider2D))]
 public class UI_PROVINCE_View : MonoBehaviour
@@ -10,11 +10,7 @@ public class UI_PROVINCE_View : MonoBehaviour
     [SerializeField] private SCOBJ_PROVINCE data;
 
     [Header("Marqueurs équipes")]
-    [SerializeField] private Transform markerRoot;
-    [SerializeField] private UI_EquipeProvinceMarker markerPrefab;
-    [SerializeField] private float markerSpacing = 0.9f;
-    [SerializeField] private float markerYOffset = 0.8f;
-    [SerializeField] private int maxMarkersVisibles = 8;
+    [SerializeField] private UI_PROVINCE_EquipeMarkerController equipeMarkerController;
 
     [Header("Références")]
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -59,15 +55,11 @@ public class UI_PROVINCE_View : MonoBehaviour
     private UI_PROVINCE_MenuController provinceMenuControllerCache;
 
     private Material overlayMaterialInstance;
-    private readonly List<UI_EquipeProvinceMarker> markersEquipe = new();
 
     public string NomProvince => STATE_PROVINCE != null && STATE_PROVINCE.data != null
         ? STATE_PROVINCE.data.nom
         : nomProvince;
-private void Start()
-{
-    RefreshEquipeMarkers();
-}
+
     private void Reset()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -75,6 +67,9 @@ private void Start()
 
         if (mapController == null)
             mapController = FindAnyObjectByType<MapController>();
+
+        if (equipeMarkerController == null)
+            equipeMarkerController = GetComponentInChildren<UI_PROVINCE_EquipeMarkerController>(true);
     }
 
     private void OnValidate()
@@ -84,6 +79,9 @@ private void Start()
 
         if (polygonCollider == null)
             polygonCollider = GetComponent<PolygonCollider2D>();
+
+        if (equipeMarkerController == null)
+            equipeMarkerController = GetComponentInChildren<UI_PROVINCE_EquipeMarkerController>(true);
 
         if (spriteRenderer != null && data != null && data.sprite != null)
         {
@@ -125,12 +123,15 @@ private void Start()
         InitialiserRenderers();
         InitialiserState();
 
-        GetGameManager()?.RegisterProvince(STATE_PROVINCE);
-
-        EnsureMarkerPool();
-        CacherTousLesMarkersEquipe();
+        SYS_GameManager gameManager = GetGameManager();
+        gameManager?.RegisterProvince(STATE_PROVINCE);
 
         RefreshVisual();
+    }
+
+    private void Start()
+    {
+        RefreshEquipeMarkersPublic();
     }
 
     private void OnDestroy()
@@ -151,12 +152,19 @@ private void Start()
             gameManagerCache = FindAnyObjectByType<SYS_GameManager>();
 
         if (equipeDetailControllerCache == null)
+        {
             equipeDetailControllerCache =
                 FindAnyObjectByType<UI_EQUIPE_DetailController>(FindObjectsInactive.Include);
+        }
 
         if (provinceMenuControllerCache == null)
+        {
             provinceMenuControllerCache =
                 FindAnyObjectByType<UI_PROVINCE_MenuController>(FindObjectsInactive.Include);
+        }
+
+        if (equipeMarkerController == null)
+            equipeMarkerController = GetComponentInChildren<UI_PROVINCE_EquipeMarkerController>(true);
     }
 
     private SYS_GameManager GetGameManager()
@@ -216,79 +224,50 @@ private void Start()
 
     private void InitialiserState()
     {
-        STATE_PROVINCE = new STATE_PROVINCE
-        {
-            data = data,
-            proprietaireActuel = null,
-            estClaim = false,
-            explorationEnCours = false,
-            toursRestants = 0,
-            influenceMaizin = data.influenceMaizinInitiale,
-            influenceKinia = data.influenceKiniaInitiale,
-            influenceJoho = data.influenceJohoInitiale,
-            influenceAutre = data.influenceAutreInitiale
-        };
+        STATE_PROVINCE = UI_PROVINCE_StateFactory.CreerDepuisData(data);
     }
 
     private void RebuildCollider()
     {
-        if (polygonCollider == null || spriteRenderer == null || spriteRenderer.sprite == null)
-            return;
-
-        polygonCollider.pathCount = 0;
-
-        int shapeCount = spriteRenderer.sprite.GetPhysicsShapeCount();
-        if (shapeCount <= 0)
-        {
-            Debug.LogWarning($"UI_PROVINCE_View '{name}' : le sprite n'a pas de Physics Shape.");
-            return;
-        }
-
-        polygonCollider.pathCount = shapeCount;
-
-        List<Vector2> shape = new();
-
-        for (int i = 0; i < shapeCount; i++)
-        {
-            shape.Clear();
-            spriteRenderer.sprite.GetPhysicsShape(i, shape);
-            polygonCollider.SetPath(i, shape);
-        }
+        UI_PROVINCE_ColliderBuilder.Rebuild(polygonCollider, spriteRenderer, this);
     }
 
-private void OnMouseDown()
-{
-    if (IsPointerOverUI())
-        return;
-
-    ResolveDependencies();
-
-    if (mapController != null)
-        mapController.SelectionnerProvince(this);
-    else
-        Selectionner();
-
-    if (equipeDetailControllerCache != null &&
-        equipeDetailControllerCache.EstEnAttenteSelectionProvince)
+    private void OnMouseDown()
     {
-        equipeDetailControllerCache.OnProvinceCliqueePourAffectation(STATE_PROVINCE);
-        return;
+        if (IsPointerOverUI())
+            return;
+
+        ResolveDependencies();
+
+        if (mapController != null)
+            mapController.SelectionnerProvince(this);
+        else
+            Selectionner();
+
+        if (equipeDetailControllerCache != null &&
+            equipeDetailControllerCache.EstEnAttenteSelectionProvince)
+        {
+            equipeDetailControllerCache.OnProvinceCliqueePourAffectation(STATE_PROVINCE);
+            return;
+        }
+
+        if (provinceMenuControllerCache != null)
+            provinceMenuControllerCache.OpenProvinceMenu(STATE_PROVINCE);
     }
 
-    if (provinceMenuControllerCache != null)
-        provinceMenuControllerCache.OpenProvinceMenu(STATE_PROVINCE);
-}
+    private bool IsPointerOverUI()
+    {
+        if (EventSystem.current == null)
+            return false;
 
-private bool IsPointerOverUI()
-{
-    if (EventSystem.current == null)
-        return false;
-
-    return EventSystem.current.IsPointerOverGameObject();
-}
+        return EventSystem.current.IsPointerOverGameObject();
+    }
 
     private void OnMouseEnter()
     {
+        if (IsPointerOverUI())
+            return;
+
         estSurvolee = true;
         RefreshVisual();
     }
@@ -340,7 +319,15 @@ private bool IsPointerOverUI()
                 DesactiverOverlay();
         }
 
-        RefreshEquipeMarkers();
+        RefreshEquipeMarkersPublic();
+    }
+
+    public void RefreshEquipeMarkersPublic()
+    {
+        if (equipeMarkerController == null)
+            equipeMarkerController = GetComponentInChildren<UI_PROVINCE_EquipeMarkerController>(true);
+
+        equipeMarkerController?.RefreshMarkers(STATE_PROVINCE, GetGameManager());
     }
 
     private void AppliquerClaimOverlay()
@@ -360,12 +347,7 @@ private bool IsPointerOverUI()
 
         if (!afficherClaim)
         {
-            Color invisible = claimRenderer.color;
-            invisible.r = 1f;
-            invisible.g = 1f;
-            invisible.b = 1f;
-            invisible.a = 0f;
-            claimRenderer.color = invisible;
+            claimRenderer.color = new Color(1f, 1f, 1f, 0f);
             return;
         }
 
@@ -503,184 +485,12 @@ private bool IsPointerOverUI()
 
     private Color GetCouleurBase()
     {
-        if (STATE_PROVINCE == null || !STATE_PROVINCE.proprietaireActuel.HasValue)
-            return couleurAutre;
-
-        switch (STATE_PROVINCE.proprietaireActuel.Value)
-        {
-            case ENUM_Compagnie.Maizin:
-                return couleurMaizin;
-
-            case ENUM_Compagnie.Kinia:
-                return couleurKinia;
-
-            case ENUM_Compagnie.Joho:
-                return couleurJoho;
-
-            default:
-                return couleurAutre;
-        }
-    }
-
-    private void EnsureMarkerPool()
-    {
-        if (markerRoot == null || markerPrefab == null)
-            return;
-
-        markerPrefab.Hide();
-
-        while (markersEquipe.Count < maxMarkersVisibles)
-        {
-            UI_EquipeProvinceMarker marker = Instantiate(markerPrefab, markerRoot);
-            marker.transform.localPosition = Vector3.zero;
-            marker.transform.localRotation = Quaternion.identity;
-            marker.transform.localScale = Vector3.one;
-
-            marker.Hide();
-            markersEquipe.Add(marker);
-        }
-    }
-
-    private void CacherTousLesMarkersEquipe()
-    {
-        foreach (UI_EquipeProvinceMarker marker in markersEquipe)
-        {
-            if (marker != null)
-                marker.Hide();
-        }
-
-        if (markerPrefab != null)
-            markerPrefab.Hide();
-
-        if (markerRoot == null)
-            return;
-
-        UI_EquipeProvinceMarker[] markersExistants =
-            markerRoot.GetComponentsInChildren<UI_EquipeProvinceMarker>(true);
-
-        foreach (UI_EquipeProvinceMarker marker in markersExistants)
-        {
-            if (marker == null)
-                continue;
-
-            if (marker == markerPrefab)
-                continue;
-
-            if (!markersEquipe.Contains(marker))
-                marker.Hide();
-        }
-    }
-
-  private void RefreshEquipeMarkers()
-{
-    if (markerRoot == null)
-    {
-        Debug.LogWarning($"[MARKER] {name} : markerRoot est null");
-        return;
-    }
-
-    if (markerPrefab == null)
-    {
-        Debug.LogWarning($"[MARKER] {name} : markerPrefab est null");
-        return;
-    }
-
-    EnsureMarkerPool();
-    CacherTousLesMarkersEquipe();
-
-    if (STATE_PROVINCE == null)
-    {
-        Debug.LogWarning($"[MARKER] {name} : STATE_PROVINCE est null");
-        return;
-    }
-
-    SYS_GameManager gameManager = GetGameManager();
-
-    if (gameManager == null)
-    {
-        Debug.LogWarning($"[MARKER] {name} : SYS_GameManager introuvable");
-        return;
-    }
-
-    if (gameManager.EquipesRuntime == null)
-    {
-        Debug.LogWarning($"[MARKER] {name} : EquipesRuntime est null");
-        return;
-    }
-
-    List<STATE_EQUIPE> equipesSurProvince = new();
-
-    foreach (STATE_EQUIPE equipe in gameManager.EquipesRuntime)
-    {
-        if (equipe == null)
-            continue;
-
-        string provinceEquipe = equipe.provinceAffectee != null && equipe.provinceAffectee.data != null
-            ? equipe.provinceAffectee.data.nom
-            : "Aucune";
-
-        string provinceActuelleNom = STATE_PROVINCE.data != null
-            ? STATE_PROVINCE.data.nom
-            : name;
-
-        Debug.Log(
-            $"[MARKER CHECK] provinceActuelle={provinceActuelleNom} | " +
-            $"equipe={equipe.data?.nomEquipe} | " +
-            $"provinceEquipe={provinceEquipe} | " +
-            $"memeReference={(equipe.provinceAffectee == STATE_PROVINCE)}"
+        return UI_PROVINCE_ColorResolver.GetCouleurBase(
+            STATE_PROVINCE,
+            couleurMaizin,
+            couleurKinia,
+            couleurJoho,
+            couleurAutre
         );
-
-        if (equipe.provinceAffectee != STATE_PROVINCE)
-            continue;
-
-        equipesSurProvince.Add(equipe);
-    }
-
-    Debug.Log(
-        $"[MARKER RESULT] province={NomProvince} | équipes trouvées={equipesSurProvince.Count} | " +
-        $"markersPool={markersEquipe.Count}"
-    );
-
-    int total = Mathf.Min(equipesSurProvince.Count, maxMarkersVisibles);
-
-    for (int i = 0; i < total; i++)
-    {
-        STATE_EQUIPE equipe = equipesSurProvince[i];
-
-        if (equipe == null || i >= markersEquipe.Count)
-            continue;
-
-        UI_EquipeProvinceMarker marker = markersEquipe[i];
-
-        if (marker == null)
-            continue;
-
-        marker.transform.localPosition = CalculateMarkerLocalPosition(i, total);
-        marker.transform.localRotation = Quaternion.identity;
-        marker.transform.localScale = Vector3.one;
-
-        string nomEquipe =
-            equipe.data != null && !string.IsNullOrWhiteSpace(equipe.data.nomEquipe)
-                ? equipe.data.nomEquipe
-                : "Équipe";
-
-        Debug.Log(
-            $"[MARKER SHOW] province={NomProvince} | equipe={nomEquipe} | compagnie={equipe.compagnie}"
-        );
-
-        marker.Setup(equipe.compagnie, nomEquipe);
-    }
-}
-
-    private Vector3 CalculateMarkerLocalPosition(int index, int total)
-    {
-        if (total <= 1)
-            return new Vector3(0f, markerYOffset, 0f);
-
-        float largeurTotale = (total - 1) * markerSpacing;
-        float startX = -largeurTotale * 0.5f;
-        float x = startX + index * markerSpacing;
-
-        return new Vector3(x, markerYOffset, 0f);
     }
 }

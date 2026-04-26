@@ -630,6 +630,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 288069544375953113}
+  - component: {fileID: 8782778822686583186}
   m_Layer: 0
   m_Name: EquipeMarkersRoot
   m_TagString: Untagged
@@ -653,6 +654,24 @@ Transform:
   - {fileID: 1953775757031493071}
   m_Father: {fileID: 3947414161369461497}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8782778822686583186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6685793784523623224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcf902f1052e03247a3de9bf1777b95f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_PROVINCE_EquipeMarkerController
+  markerRoot: {fileID: 288069544375953113}
+  markerTemplate: {fileID: 3649615358133052115}
+  markerSpacing: 1
+  markerYOffset: 0.8
+  maxMarkersVisibles: 8
+  afficherLogs: 0
 --- !u!1 &8551853587931200160
 GameObject:
   m_ObjectHideFlags: 0
@@ -839,11 +858,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UI_PROVINCE_View
   nomProvince: 
   data: {fileID: 0}
-  markerRoot: {fileID: 288069544375953113}
-  markerPrefab: {fileID: 3649615358133052115}
-  markerSpacing: 0.9
-  markerYOffset: 0.8
-  maxMarkersVisibles: 8
+  equipeMarkerController: {fileID: 8782778822686583186}
   spriteRenderer: {fileID: 8188528973353818073}
   claimRenderer: {fileID: 2446072397108888032}
   overlayRenderer: {fileID: 1471221880077201873}

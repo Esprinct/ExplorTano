@@ -126,7 +126,9 @@ gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
 
     RefreshProvinceMenu();
     RefreshBoutique();
-
+RefreshProvinceMenu();
+RefreshBoutique();
+RefreshToutesLesProvinces();
     if (equipeDetailControllerCache == null || !equipeDetailControllerCache)
     {
         equipeDetailControllerCache = gameManager.EquipeDetailController != null
@@ -157,7 +159,21 @@ gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
             }
         }
     }
+public void RefreshToutesLesProvinces()
+{
+    UI_PROVINCE_View[] provinceViews = Object.FindObjectsByType<UI_PROVINCE_View>(
+        FindObjectsInactive.Include,
+        FindObjectsSortMode.None
+    );
 
+    foreach (UI_PROVINCE_View view in provinceViews)
+    {
+        if (view == null)
+            continue;
+
+        view.RefreshVisual();
+    }
+}
     public void RefreshProvinceMenu()
     {
         if (provinceMenuControllerCache == null || !provinceMenuControllerCache)

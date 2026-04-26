@@ -274,8 +274,12 @@ Assets/Scripts/Provinces/Data/
 Assets/Scripts/Provinces/UI/
  UI_CarteController.cs
  UI_EquipeProvinceMarker.cs
+ UI_PROVINCE_ColliderBuilder.cs
+ UI_PROVINCE_ColorResolver.cs
  UI_PROVINCE_EquipeMarkerController.cs
+ UI_PROVINCE_ExplorationContourResolver.cs
  UI_PROVINCE_MenuController.cs
+ UI_PROVINCE_StateFactory.cs
  UI_PROVINCE_View.cs
 Assets/Scripts/Recrutement/Data/
  DATA_OffreRecrutement.cs
