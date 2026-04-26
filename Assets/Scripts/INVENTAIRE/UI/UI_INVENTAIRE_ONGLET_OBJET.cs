@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_INVENTAIRE_ONGLET_OBJET : MonoBehaviour, UI_INVENTAIRE_ONGLET_BASE
 {
@@ -266,19 +267,38 @@ public class UI_INVENTAIRE_ONGLET_OBJET : MonoBehaviour, UI_INVENTAIRE_ONGLET_BA
         return true;
     }
 
-    private void ConfigurerVisuelSlot(UI_OBJET_Slot slot, bool estEquipableMaintenant)
+private void ConfigurerVisuelSlot(UI_OBJET_Slot slot, bool estEquipableMaintenant)
+{
+    if (slot == null)
+        return;
+
+    CanvasGroup canvasGroup = slot.GetComponent<CanvasGroup>();
+    if (canvasGroup == null)
+        canvasGroup = slot.gameObject.AddComponent<CanvasGroup>();
+
+    canvasGroup.alpha = estEquipableMaintenant ? 1f : 0.45f;
+    canvasGroup.interactable = true;
+    canvasGroup.blocksRaycasts = true;
+
+    // Très important pour que le ScrollView / RectMask2D continue de fonctionner.
+    canvasGroup.ignoreParentGroups = false;
+
+    Image[] images = slot.GetComponentsInChildren<Image>(true);
+    foreach (Image image in images)
     {
-        if (slot == null)
-            return;
+        if (image == null)
+            continue;
 
-        CanvasGroup canvasGroup = slot.GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
+        image.maskable = true;
+
+        string lower = image.name.ToLowerInvariant();
+        if (lower.Contains("sprite") || lower.Contains("icone") || lower.Contains("icon"))
         {
-            canvasGroup = slot.gameObject.AddComponent<CanvasGroup>();
+            image.preserveAspect = true;
+            image.raycastTarget = false;
         }
-
-        canvasGroup.alpha = estEquipableMaintenant ? 1f : 0.45f;
     }
+}
 
     private void ConfigurerDescriptionSlot(
         UI_OBJET_Slot slot,
@@ -303,19 +323,48 @@ public class UI_INVENTAIRE_ONGLET_OBJET : MonoBehaviour, UI_INVENTAIRE_ONGLET_BA
         }
     }
 
-    private void ConfigurerInteractionsSlot(UI_OBJET_Slot slot, SCOBJ_OBJET objet, bool estEquipableMaintenant)
+private void ConfigurerInteractionsSlot(UI_OBJET_Slot slot, SCOBJ_OBJET objet, bool estEquipableMaintenant)
+{
+    if (slot == null || objet == null)
+        return;
+
+    slot.SetOnClick(_ => HandleUI_OBJET_SlotClicked(objet, estEquipableMaintenant));
+
+    // Important :
+    // Le drag ne doit être actif que dans l'inventaire embarqué du menu personnage.
+    bool modeEquipementPersonnage =
+        personnageCourant != null &&
+        onObjetEquipableChoisi != null;
+
+    if (modeEquipementPersonnage && estEquipableMaintenant)
     {
-        if (slot == null || objet == null)
-            return;
-
-        slot.SetOnClick(_ => HandleUI_OBJET_SlotClicked(objet, estEquipableMaintenant));
-
-        if (estEquipableMaintenant)
-        {
-            SetupDragIfEquipable(slot, objet);
-        }
+        SetupDragIfEquipable(slot, objet);
     }
+    else
+    {
+        DesactiverDragSiPresent(slot);
+    }
+}
+private void DesactiverDragSiPresent(UI_OBJET_Slot slot)
+{
+    if (slot == null)
+        return;
 
+    UI_PERSONNAGE_EQUIPEMENT_Draggable draggable =
+        slot.GetComponent<UI_PERSONNAGE_EQUIPEMENT_Draggable>();
+
+    if (draggable != null)
+        draggable.Clear();
+
+    CanvasGroup canvasGroup = slot.GetComponent<CanvasGroup>();
+    if (canvasGroup == null)
+        canvasGroup = slot.gameObject.AddComponent<CanvasGroup>();
+
+    canvasGroup.alpha = 1f;
+    canvasGroup.interactable = true;
+    canvasGroup.blocksRaycasts = true;
+    canvasGroup.ignoreParentGroups = false;
+}
     private void HandleUI_OBJET_SlotClicked(SCOBJ_OBJET objet, bool estEquipableMaintenant)
     {
         if (objet == null)
@@ -419,31 +468,42 @@ public class UI_INVENTAIRE_ONGLET_OBJET : MonoBehaviour, UI_INVENTAIRE_ONGLET_BA
         }
     }
 
-    private void SetupDragIfEquipable(UI_OBJET_Slot slot, SCOBJ_OBJET objet)
+   private void SetupDragIfEquipable(UI_OBJET_Slot slot, SCOBJ_OBJET objet)
+{
+    if (slot == null || objet == null)
+        return;
+
+    SCOBJ_OBJET_EQUIPPABLE equipable = objet as SCOBJ_OBJET_EQUIPPABLE;
+    if (equipable == null)
     {
-        if (slot == null || objet == null)
-            return;
-
-        SCOBJ_OBJET_EQUIPPABLE equipable = objet as SCOBJ_OBJET_EQUIPPABLE;
-        if (equipable == null)
-            return;
-
-        Canvas rootCanvas = GetComponentInParent<Canvas>();
-        if (rootCanvas == null)
-        {
-            Debug.LogWarning("UI_INVENTAIRE_ONGLET_OBJET : aucun Canvas parent trouvé pour le drag and drop.");
-            return;
-        }
-
-        UI_PERSONNAGE_EQUIPEMENT_Draggable draggable = slot.GetComponent<UI_PERSONNAGE_EQUIPEMENT_Draggable>();
-        if (draggable == null)
-        {
-            draggable = slot.gameObject.AddComponent<UI_PERSONNAGE_EQUIPEMENT_Draggable>();
-        }
-
-        draggable.Setup(equipable, rootCanvas, false, null);
+        DesactiverDragSiPresent(slot);
+        return;
     }
 
+    Canvas rootCanvas = GetComponentInParent<Canvas>();
+    if (rootCanvas == null)
+    {
+        Debug.LogWarning("UI_INVENTAIRE_ONGLET_OBJET : aucun Canvas parent trouvé pour le drag and drop.");
+        return;
+    }
+
+    UI_PERSONNAGE_EQUIPEMENT_Draggable draggable =
+        slot.GetComponent<UI_PERSONNAGE_EQUIPEMENT_Draggable>();
+
+    if (draggable == null)
+        draggable = slot.gameObject.AddComponent<UI_PERSONNAGE_EQUIPEMENT_Draggable>();
+
+    draggable.Setup(equipable, rootCanvas, false, null);
+
+    CanvasGroup canvasGroup = slot.GetComponent<CanvasGroup>();
+    if (canvasGroup == null)
+        canvasGroup = slot.gameObject.AddComponent<CanvasGroup>();
+
+    canvasGroup.alpha = 1f;
+    canvasGroup.interactable = true;
+    canvasGroup.blocksRaycasts = true;
+    canvasGroup.ignoreParentGroups = false;
+}
     private bool PasseFiltreEquipable(SCOBJ_OBJET objet)
     {
         if (!typeEquipableFiltre.HasValue)

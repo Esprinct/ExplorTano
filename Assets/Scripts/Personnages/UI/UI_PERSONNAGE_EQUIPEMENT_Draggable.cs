@@ -5,13 +5,25 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CanvasGroup))]
 public class UI_PERSONNAGE_EQUIPEMENT_Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    [Header("Références")]
     [SerializeField] private Canvas canvas;
+    [SerializeField] private ScrollRect parentScrollRect;
+
+    [Header("Options")]
+    [SerializeField] private bool dragActif = true;
+    [SerializeField] private bool autoriserScrollParent = true;
+
+    [Tooltip("Si le mouvement vertical est plus fort que l'horizontal, on scrolle au lieu de drag.")]
+    [SerializeField] private float ratioVerticalPourScroll = 1.15f;
 
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
 
     private GameObject ghostInstance;
     private RectTransform ghostRectTransform;
+
+    private bool scrollEnCours;
+    private bool dragEnCours;
 
     public SCOBJ_OBJET_EQUIPPABLE Objet { get; private set; }
     public bool VientEquipement { get; private set; }
@@ -27,6 +39,34 @@ public class UI_PERSONNAGE_EQUIPEMENT_Draggable : MonoBehaviour, IBeginDragHandl
         canvas = rootCanvas;
         VientEquipement = vientEquipement;
         TypeEquipementSource = typeEquipementSource;
+
+        SetDragActif(objet != null);
+    }
+
+    public void Clear()
+    {
+        Objet = null;
+        VientEquipement = false;
+        TypeEquipementSource = null;
+
+        scrollEnCours = false;
+        dragEnCours = false;
+
+        ResetOriginalVisual();
+        DestroyGhost();
+
+        if (EQUIPEMENT_DragContext.SourceUI == this)
+            EQUIPEMENT_DragContext.Clear();
+    }
+
+    public void SetDragActif(bool actif)
+    {
+        dragActif = actif;
+
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
+
+        ResetOriginalVisual();
     }
 
     private void Awake()
@@ -36,20 +76,54 @@ public class UI_PERSONNAGE_EQUIPEMENT_Draggable : MonoBehaviour, IBeginDragHandl
 
         if (canvas == null)
             canvas = GetComponentInParent<Canvas>();
+
+        if (parentScrollRect == null)
+            parentScrollRect = GetComponentInParent<ScrollRect>();
+
+        ResetOriginalVisual();
+    }
+
+    private void OnDisable()
+    {
+        ResetOriginalVisual();
+        DestroyGhost();
+
+        scrollEnCours = false;
+        dragEnCours = false;
+
+        if (EQUIPEMENT_DragContext.SourceUI == this)
+            EQUIPEMENT_DragContext.Clear();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (Objet == null || canvas == null)
+        scrollEnCours = false;
+        dragEnCours = false;
+
+        bool doitScroller =
+            autoriserScrollParent &&
+            parentScrollRect != null &&
+            EstGesteDeScroll(eventData);
+
+        if (doitScroller || !dragActif || Objet == null || canvas == null)
+        {
+            DemarrerScrollParent(eventData);
             return;
+        }
+
+        dragEnCours = true;
 
         EQUIPEMENT_DragContext.ObjetEnCours = Objet;
         EQUIPEMENT_DragContext.SourceUI = this;
         EQUIPEMENT_DragContext.VientEquipement = VientEquipement;
         EQUIPEMENT_DragContext.TypeEquipementSource = TypeEquipementSource;
 
-        canvasGroup.blocksRaycasts = false;
-        canvasGroup.alpha = 0.5f;
+        if (canvasGroup != null)
+        {
+            canvasGroup.ignoreParentGroups = false;
+            canvasGroup.blocksRaycasts = false;
+            canvasGroup.alpha = 0.5f;
+        }
 
         CreateGhost();
         UpdateGhostPosition(eventData);
@@ -57,7 +131,13 @@ public class UI_PERSONNAGE_EQUIPEMENT_Draggable : MonoBehaviour, IBeginDragHandl
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (ghostRectTransform == null || canvas == null)
+        if (scrollEnCours)
+        {
+            parentScrollRect?.OnDrag(eventData);
+            return;
+        }
+
+        if (!dragEnCours || ghostRectTransform == null || canvas == null)
             return;
 
         UpdateGhostPosition(eventData);
@@ -65,22 +145,65 @@ public class UI_PERSONNAGE_EQUIPEMENT_Draggable : MonoBehaviour, IBeginDragHandl
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (scrollEnCours)
+        {
+            parentScrollRect?.OnEndDrag(eventData);
+        }
+
         ResetOriginalVisual();
         DestroyGhost();
-        EQUIPEMENT_DragContext.Clear();
+
+        if (dragEnCours && EQUIPEMENT_DragContext.SourceUI == this)
+            EQUIPEMENT_DragContext.Clear();
+
+        scrollEnCours = false;
+        dragEnCours = false;
     }
 
     public void CuriositeStopDragVisual()
     {
         ResetOriginalVisual();
         DestroyGhost();
+
+        scrollEnCours = false;
+        dragEnCours = false;
+    }
+
+    private bool EstGesteDeScroll(PointerEventData eventData)
+    {
+        if (eventData == null)
+            return false;
+
+        Vector2 delta = eventData.delta;
+
+        if (delta.sqrMagnitude <= 0.01f)
+            return false;
+
+        float vertical = Mathf.Abs(delta.y);
+        float horizontal = Mathf.Abs(delta.x);
+
+        return vertical > horizontal * ratioVerticalPourScroll;
+    }
+
+    private void DemarrerScrollParent(PointerEventData eventData)
+    {
+        if (parentScrollRect == null)
+            return;
+
+        scrollEnCours = true;
+        dragEnCours = false;
+
+        ResetOriginalVisual();
+        parentScrollRect.OnBeginDrag(eventData);
     }
 
     private void ResetOriginalVisual()
     {
         if (canvasGroup != null)
         {
+            canvasGroup.ignoreParentGroups = false;
             canvasGroup.blocksRaycasts = true;
+            canvasGroup.interactable = true;
             canvasGroup.alpha = 1f;
         }
     }
@@ -104,10 +227,13 @@ public class UI_PERSONNAGE_EQUIPEMENT_Draggable : MonoBehaviour, IBeginDragHandl
 
         CanvasGroup ghostCanvasGroup = ghostInstance.GetComponent<CanvasGroup>();
         ghostCanvasGroup.blocksRaycasts = false;
+        ghostCanvasGroup.interactable = false;
+        ghostCanvasGroup.ignoreParentGroups = true;
         ghostCanvasGroup.alpha = 0.85f;
 
         Image ghostImage = ghostInstance.GetComponent<Image>();
         ghostImage.raycastTarget = false;
+        ghostImage.maskable = false;
         ghostImage.preserveAspect = true;
         ghostImage.sprite = ResolveBestSprite();
         ghostImage.color = Color.white;
@@ -124,6 +250,9 @@ public class UI_PERSONNAGE_EQUIPEMENT_Draggable : MonoBehaviour, IBeginDragHandl
 
     private void UpdateGhostPosition(PointerEventData eventData)
     {
+        if (ghostRectTransform == null || canvas == null)
+            return;
+
         RectTransform canvasRect = canvas.transform as RectTransform;
         if (canvasRect == null)
             return;
