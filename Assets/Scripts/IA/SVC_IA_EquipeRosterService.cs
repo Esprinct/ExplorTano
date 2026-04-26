@@ -10,43 +10,76 @@ public static class SVC_IA_EquipeRosterService
     if (gameManager == null || joueur == null)
         return;
 
+    joueur.equipes ??= new List<STATE_EQUIPE>();
+    joueur.personnagesRecrutes ??= new List<SCOBJ_Personnage>();
+
     int personnagesLibres = CompterPersonnagesLibres(gameManager, joueur);
+    int nbPersonnagesRecrutes = joueur.personnagesRecrutes.Count;
     int nbEquipes = GetNombreEquipesValides(joueur);
 
     int nombreEquipesMaximumSouhaite = SVC_IA_EquipeCompositionService.GetNombreEquipesMaximumSouhaite(joueur);
     bool besoinStructurel = SVC_IA_EquipeCompositionService.IADevraitCreerNouvelleEquipe(joueur);
 
-    if (nbEquipes >= nombreEquipesMaximumSouhaite)
-        return;
+    Debug.Log(
+        $"[IA_EQUIPE_CHECK] joueur={joueur.nomJoueur} | " +
+        $"persosRecrutes={nbPersonnagesRecrutes} | " +
+        $"persosLibres={personnagesLibres} | " +
+        $"equipes={nbEquipes} | " +
+        $"maxSouhaite={nombreEquipesMaximumSouhaite} | " +
+        $"maxGameManager={gameManager.MaxEquipesParJoueur} | " +
+        $"etrinium={joueur.etrinium} | " +
+        $"coutCreation={gameManager.GetCoutCreationEquipe(joueur)} | " +
+        $"peutCreer={gameManager.PeutCreerEquipe(joueur)} | " +
+        $"besoinStructurel={besoinStructurel}"
+    );
 
-    if (nbEquipes >= gameManager.MaxEquipesParJoueur)
+    if (nbEquipes >= nombreEquipesMaximumSouhaite)
+    {
+        Debug.Log($"[IA_EQUIPE_SKIP] {joueur.nomJoueur} | raison=max souhaité atteint");
         return;
+    }
+
+  if (gameManager.MaxEquipesParJoueur > 0 && nbEquipes >= gameManager.MaxEquipesParJoueur)
+{
+    Debug.Log($"[IA_EQUIPE_SKIP] {joueur.nomJoueur} | raison=max GameManager atteint");
+    return;
+}
 
     if (personnagesLibres <= 0)
+    {
+        Debug.Log($"[IA_EQUIPE_SKIP] {joueur.nomJoueur} | raison=aucun personnage libre");
         return;
+    }
 
-    // Plus agressif : si l'IA veut encore des équipes, elle en crée dès qu'elle a au moins 1 perso libre.
     bool doitCreerEquipe =
         nbEquipes == 0 ||
         besoinStructurel ||
         personnagesLibres >= GetTailleCibleEquipe(joueur);
 
     if (!doitCreerEquipe)
+    {
+        Debug.Log($"[IA_EQUIPE_SKIP] {joueur.nomJoueur} | raison=doitCreerEquipe=false");
         return;
+    }
 
     if (!gameManager.PeutCreerEquipe(joueur))
+    {
+        Debug.Log($"[IA_EQUIPE_SKIP] {joueur.nomJoueur} | raison=PeutCreerEquipe=false");
         return;
+    }
 
     STATE_EQUIPE nouvelleEquipe = ConstruireNouvelleEquipe(gameManager, joueur);
     if (nouvelleEquipe == null)
+    {
+        Debug.Log($"[IA_EQUIPE_SKIP] {joueur.nomJoueur} | raison=ConstruireNouvelleEquipe=null");
         return;
+    }
 
     int coutCreation = gameManager.GetCoutCreationEquipe(joueur);
     joueur.etrinium -= coutCreation;
 
     gameManager.EquipesRuntime.Add(nouvelleEquipe);
 
-    joueur.equipes ??= new List<STATE_EQUIPE>();
     joueur.equipes.Add(nouvelleEquipe);
 
     Debug.Log(
