@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.EventSystems;
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(PolygonCollider2D))]
 public class UI_PROVINCE_View : MonoBehaviour
@@ -59,12 +59,15 @@ public class UI_PROVINCE_View : MonoBehaviour
     private UI_PROVINCE_MenuController provinceMenuControllerCache;
 
     private Material overlayMaterialInstance;
-    private readonly List<UI_EquipeProvinceMarker> activeMarkers = new();
+    private readonly List<UI_EquipeProvinceMarker> markersEquipe = new();
 
     public string NomProvince => STATE_PROVINCE != null && STATE_PROVINCE.data != null
         ? STATE_PROVINCE.data.nom
         : nomProvince;
-
+private void Start()
+{
+    RefreshEquipeMarkers();
+}
     private void Reset()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -122,8 +125,10 @@ public class UI_PROVINCE_View : MonoBehaviour
         InitialiserRenderers();
         InitialiserState();
 
-        if (gameManagerCache != null)
-            gameManagerCache.RegisterProvince(STATE_PROVINCE);
+        GetGameManager()?.RegisterProvince(STATE_PROVINCE);
+
+        EnsureMarkerPool();
+        CacherTousLesMarkersEquipe();
 
         RefreshVisual();
     }
@@ -146,10 +151,20 @@ public class UI_PROVINCE_View : MonoBehaviour
             gameManagerCache = FindAnyObjectByType<SYS_GameManager>();
 
         if (equipeDetailControllerCache == null)
-            equipeDetailControllerCache = FindAnyObjectByType<UI_EQUIPE_DetailController>(FindObjectsInactive.Include);
+            equipeDetailControllerCache =
+                FindAnyObjectByType<UI_EQUIPE_DetailController>(FindObjectsInactive.Include);
 
         if (provinceMenuControllerCache == null)
-            provinceMenuControllerCache = FindAnyObjectByType<UI_PROVINCE_MenuController>(FindObjectsInactive.Include);
+            provinceMenuControllerCache =
+                FindAnyObjectByType<UI_PROVINCE_MenuController>(FindObjectsInactive.Include);
+    }
+
+    private SYS_GameManager GetGameManager()
+    {
+        if (gameManagerCache == null)
+            gameManagerCache = FindAnyObjectByType<SYS_GameManager>();
+
+        return gameManagerCache;
     }
 
     private void InitialiserRenderers()
@@ -241,24 +256,36 @@ public class UI_PROVINCE_View : MonoBehaviour
         }
     }
 
-    private void OnMouseDown()
+private void OnMouseDown()
+{
+    if (IsPointerOverUI())
+        return;
+
+    ResolveDependencies();
+
+    if (mapController != null)
+        mapController.SelectionnerProvince(this);
+    else
+        Selectionner();
+
+    if (equipeDetailControllerCache != null &&
+        equipeDetailControllerCache.EstEnAttenteSelectionProvince)
     {
-        ResolveDependencies();
-
-        if (mapController != null)
-            mapController.SelectionnerProvince(this);
-        else
-            Selectionner();
-
-        if (equipeDetailControllerCache != null && equipeDetailControllerCache.EstEnAttenteSelectionProvince)
-        {
-            equipeDetailControllerCache.OnProvinceCliqueePourAffectation(STATE_PROVINCE);
-            return;
-        }
-
-        if (provinceMenuControllerCache != null)
-            provinceMenuControllerCache.OpenProvinceMenu(STATE_PROVINCE);
+        equipeDetailControllerCache.OnProvinceCliqueePourAffectation(STATE_PROVINCE);
+        return;
     }
+
+    if (provinceMenuControllerCache != null)
+        provinceMenuControllerCache.OpenProvinceMenu(STATE_PROVINCE);
+}
+
+private bool IsPointerOverUI()
+{
+    if (EventSystem.current == null)
+        return false;
+
+    return EventSystem.current.IsPointerOverGameObject();
+}
 
     private void OnMouseEnter()
     {
@@ -300,21 +327,18 @@ public class UI_PROVINCE_View : MonoBehaviour
         if (estSelectionnee)
         {
             AppliquerSelection();
-            RefreshEquipeMarkers();
-            return;
         }
-
-        if (estSurvolee)
+        else if (estSurvolee)
         {
             AppliquerSurvol();
-            RefreshEquipeMarkers();
-            return;
         }
+        else
+        {
+            CacherHighlight();
 
-        CacherHighlight();
-
-        if (!provinceContestee)
-            DesactiverOverlay();
+            if (!provinceContestee)
+                DesactiverOverlay();
+        }
 
         RefreshEquipeMarkers();
     }
@@ -498,78 +522,164 @@ public class UI_PROVINCE_View : MonoBehaviour
         }
     }
 
-    private void RefreshEquipeMarkers()
+    private void EnsureMarkerPool()
     {
-        ResolveDependencies();
-
-        if (markerRoot == null || markerPrefab == null || STATE_PROVINCE == null || gameManagerCache == null)
-        {
-            HideAllEquipeMarkers();
+        if (markerRoot == null || markerPrefab == null)
             return;
+
+        markerPrefab.Hide();
+
+        while (markersEquipe.Count < maxMarkersVisibles)
+        {
+            UI_EquipeProvinceMarker marker = Instantiate(markerPrefab, markerRoot);
+            marker.transform.localPosition = Vector3.zero;
+            marker.transform.localRotation = Quaternion.identity;
+            marker.transform.localScale = Vector3.one;
+
+            marker.Hide();
+            markersEquipe.Add(marker);
+        }
+    }
+
+    private void CacherTousLesMarkersEquipe()
+    {
+        foreach (UI_EquipeProvinceMarker marker in markersEquipe)
+        {
+            if (marker != null)
+                marker.Hide();
         }
 
-        List<STATE_EQUIPE> equipesDansProvince = new();
+        if (markerPrefab != null)
+            markerPrefab.Hide();
 
-        if (gameManagerCache.EquipesRuntime != null)
+        if (markerRoot == null)
+            return;
+
+        UI_EquipeProvinceMarker[] markersExistants =
+            markerRoot.GetComponentsInChildren<UI_EquipeProvinceMarker>(true);
+
+        foreach (UI_EquipeProvinceMarker marker in markersExistants)
         {
-            foreach (STATE_EQUIPE equipe in gameManagerCache.EquipesRuntime)
-            {
-                if (equipe == null)
-                    continue;
-
-                if (equipe.provinceAffectee == STATE_PROVINCE)
-                    equipesDansProvince.Add(equipe);
-            }
-        }
-
-        int nombreAAfficher = Mathf.Min(equipesDansProvince.Count, maxMarkersVisibles);
-
-        EnsureMarkerCount(nombreAAfficher);
-
-        for (int i = 0; i < activeMarkers.Count; i++)
-        {
-            bool afficher = i < nombreAAfficher;
-
-            if (!afficher)
-            {
-                activeMarkers[i].Hide();
+            if (marker == null)
                 continue;
-            }
 
-            STATE_EQUIPE equipe = equipesDansProvince[i];
-            string nomEquipe = equipe != null && equipe.data != null && !string.IsNullOrWhiteSpace(equipe.data.nomEquipe)
+            if (marker == markerPrefab)
+                continue;
+
+            if (!markersEquipe.Contains(marker))
+                marker.Hide();
+        }
+    }
+
+  private void RefreshEquipeMarkers()
+{
+    if (markerRoot == null)
+    {
+        Debug.LogWarning($"[MARKER] {name} : markerRoot est null");
+        return;
+    }
+
+    if (markerPrefab == null)
+    {
+        Debug.LogWarning($"[MARKER] {name} : markerPrefab est null");
+        return;
+    }
+
+    EnsureMarkerPool();
+    CacherTousLesMarkersEquipe();
+
+    if (STATE_PROVINCE == null)
+    {
+        Debug.LogWarning($"[MARKER] {name} : STATE_PROVINCE est null");
+        return;
+    }
+
+    SYS_GameManager gameManager = GetGameManager();
+
+    if (gameManager == null)
+    {
+        Debug.LogWarning($"[MARKER] {name} : SYS_GameManager introuvable");
+        return;
+    }
+
+    if (gameManager.EquipesRuntime == null)
+    {
+        Debug.LogWarning($"[MARKER] {name} : EquipesRuntime est null");
+        return;
+    }
+
+    List<STATE_EQUIPE> equipesSurProvince = new();
+
+    foreach (STATE_EQUIPE equipe in gameManager.EquipesRuntime)
+    {
+        if (equipe == null)
+            continue;
+
+        string provinceEquipe = equipe.provinceAffectee != null && equipe.provinceAffectee.data != null
+            ? equipe.provinceAffectee.data.nom
+            : "Aucune";
+
+        string provinceActuelleNom = STATE_PROVINCE.data != null
+            ? STATE_PROVINCE.data.nom
+            : name;
+
+        Debug.Log(
+            $"[MARKER CHECK] provinceActuelle={provinceActuelleNom} | " +
+            $"equipe={equipe.data?.nomEquipe} | " +
+            $"provinceEquipe={provinceEquipe} | " +
+            $"memeReference={(equipe.provinceAffectee == STATE_PROVINCE)}"
+        );
+
+        if (equipe.provinceAffectee != STATE_PROVINCE)
+            continue;
+
+        equipesSurProvince.Add(equipe);
+    }
+
+    Debug.Log(
+        $"[MARKER RESULT] province={NomProvince} | équipes trouvées={equipesSurProvince.Count} | " +
+        $"markersPool={markersEquipe.Count}"
+    );
+
+    int total = Mathf.Min(equipesSurProvince.Count, maxMarkersVisibles);
+
+    for (int i = 0; i < total; i++)
+    {
+        STATE_EQUIPE equipe = equipesSurProvince[i];
+
+        if (equipe == null || i >= markersEquipe.Count)
+            continue;
+
+        UI_EquipeProvinceMarker marker = markersEquipe[i];
+
+        if (marker == null)
+            continue;
+
+        marker.transform.localPosition = CalculateMarkerLocalPosition(i, total);
+        marker.transform.localRotation = Quaternion.identity;
+        marker.transform.localScale = Vector3.one;
+
+        string nomEquipe =
+            equipe.data != null && !string.IsNullOrWhiteSpace(equipe.data.nomEquipe)
                 ? equipe.data.nomEquipe
                 : "Équipe";
 
-            activeMarkers[i].Setup(equipe.compagnie, nomEquipe);
-            activeMarkers[i].transform.localPosition = CalculateMarkerLocalPosition(i, nombreAAfficher);
-        }
-    }
+        Debug.Log(
+            $"[MARKER SHOW] province={NomProvince} | equipe={nomEquipe} | compagnie={equipe.compagnie}"
+        );
 
-    private void EnsureMarkerCount(int targetCount)
-    {
-        while (activeMarkers.Count < targetCount)
-        {
-            UI_EquipeProvinceMarker marker = Instantiate(markerPrefab, markerRoot);
-            marker.gameObject.SetActive(false);
-            activeMarkers.Add(marker);
-        }
+        marker.Setup(equipe.compagnie, nomEquipe);
     }
-
-    private void HideAllEquipeMarkers()
-    {
-        for (int i = 0; i < activeMarkers.Count; i++)
-        {
-            if (activeMarkers[i] != null)
-                activeMarkers[i].Hide();
-        }
-    }
+}
 
     private Vector3 CalculateMarkerLocalPosition(int index, int total)
     {
+        if (total <= 1)
+            return new Vector3(0f, markerYOffset, 0f);
+
         float largeurTotale = (total - 1) * markerSpacing;
         float startX = -largeurTotale * 0.5f;
-        float x = startX + (index * markerSpacing);
+        float x = startX + index * markerSpacing;
 
         return new Vector3(x, markerYOffset, 0f);
     }

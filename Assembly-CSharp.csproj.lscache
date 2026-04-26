@@ -274,6 +274,7 @@ Assets/Scripts/Provinces/Data/
 Assets/Scripts/Provinces/UI/
  UI_CarteController.cs
  UI_EquipeProvinceMarker.cs
+ UI_PROVINCE_EquipeMarkerController.cs
  UI_PROVINCE_MenuController.cs
  UI_PROVINCE_View.cs
 Assets/Scripts/Recrutement/Data/

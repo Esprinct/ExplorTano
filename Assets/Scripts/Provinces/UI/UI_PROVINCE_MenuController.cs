@@ -8,6 +8,9 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
     [Header("Root")]
     [SerializeField] private GameObject panelRoot;
 
+    [Header("Navigation")]
+    [SerializeField] private Button boutonFermer;
+
     [Header("Infos générales")]
     [SerializeField] private TMP_Text nomProvinceText;
     [SerializeField] private TMP_Text proprietaireText;
@@ -61,23 +64,32 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
 
     private void Awake()
     {
+        if (boutonFermer != null)
+            boutonFermer.onClick.AddListener(CloseMenu);
+
         CloseMenu();
+    }
+
+    private void OnDestroy()
+    {
+        if (boutonFermer != null)
+            boutonFermer.onClick.RemoveListener(CloseMenu);
     }
 
     public void OpenProvinceMenu(STATE_PROVINCE province)
     {
-        provinceActuelle = province;
-
-        if (provinceActuelle == null)
+        if (province == null)
         {
-            Debug.LogWarning("OpenProvinceMenu : provinceActuelle est null");
+            Debug.LogWarning("OpenProvinceMenu : province est null.");
             return;
         }
 
+        provinceActuelle = province;
+
         if (panelRoot != null)
-        {
             panelRoot.SetActive(true);
-        }
+        else
+            gameObject.SetActive(true);
 
         RefreshCurrentProvince();
     }
@@ -93,39 +105,49 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
     public void CloseMenu()
     {
         if (panelRoot != null)
-        {
             panelRoot.SetActive(false);
-        }
+        else
+            gameObject.SetActive(false);
     }
 
     public bool IsOpen()
     {
-        return panelRoot != null && panelRoot.activeInHierarchy;
+        if (panelRoot != null)
+            return panelRoot.activeInHierarchy;
+
+        return gameObject.activeInHierarchy;
     }
 
     private void RefreshUI()
     {
         SCOBJ_PROVINCE data = provinceActuelle.data;
 
+        RefreshInfosGenerales(data);
+        RefreshInfluenceChart();
+        RefreshPopulationChart();
+        RefreshExplorationSliders();
+        RefreshStatsFixes(data);
+    }
+
+    private void RefreshInfosGenerales(SCOBJ_PROVINCE data)
+    {
         if (nomProvinceText != null)
         {
-            nomProvinceText.text = $"Province : {(data != null ? data.nom : "Province inconnue")}";
+            string nom = data != null && !string.IsNullOrWhiteSpace(data.nom)
+                ? data.nom
+                : "Province inconnue";
+
+            nomProvinceText.text = $"Province : {nom}";
         }
 
         if (proprietaireText != null)
-        {
             proprietaireText.text = $"Propriétaire : {GetProprietaireTexte()}";
-        }
 
         if (claimText != null)
-        {
             claimText.text = $"Claim : {(provinceActuelle.estClaim ? "Oui" : "Non")}";
-        }
 
         if (explorationText != null)
-        {
             explorationText.text = "Exploration par compagnie";
-        }
 
         if (toursRestantsText != null)
         {
@@ -140,12 +162,8 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
         {
             illustrationProvinceImage.sprite = data != null ? data.sprite : null;
             illustrationProvinceImage.enabled = illustrationProvinceImage.sprite != null;
+            illustrationProvinceImage.preserveAspect = true;
         }
-
-        RefreshInfluenceChart();
-        RefreshPopulationChart();
-        RefreshExplorationSliders();
-        RefreshStatsFixes();
     }
 
     private void RefreshInfluenceChart()
@@ -169,41 +187,42 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
         }
 
         if (influenceMaizinText != null)
-        {
             influenceMaizinText.text = $"Influence Maizin : {FormatPourcentage(maizin, total)}";
-        }
 
         if (influenceKiniaText != null)
-        {
             influenceKiniaText.text = $"Influence Kinia : {FormatPourcentage(kinia, total)}";
-        }
 
         if (influenceJohoText != null)
-        {
             influenceJohoText.text = $"Influence Joho : {FormatPourcentage(joho, total)}";
-        }
 
         if (influenceAutreText != null)
-        {
             influenceAutreText.text = $"Influence Autre : {FormatPourcentage(autre, total)}";
-        }
     }
 
     private void RefreshPopulationChart()
     {
-        if (provinceActuelle.data == null)
+        SCOBJ_PROVINCE data = provinceActuelle.data;
+
+        if (data == null)
         {
             if (populationPieChart != null)
-            {
                 populationPieChart.ClearChart();
-            }
+
+            if (populationShikiText != null)
+                populationShikiText.text = "Peuple Shiki : -";
+
+            if (populationFrisienText != null)
+                populationFrisienText.text = "Peuple Frisien : -";
+
+            if (populationAutreText != null)
+                populationAutreText.text = "Autre : -";
 
             return;
         }
 
-        float shiki = provinceActuelle.data.populationShiki;
-        float frisien = provinceActuelle.data.populationFrisien;
-        float autre = provinceActuelle.data.populationAutre;
+        float shiki = data.populationShiki;
+        float frisien = data.populationFrisien;
+        float autre = data.populationAutre;
 
         float total = shiki + frisien + autre;
 
@@ -218,19 +237,13 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
         }
 
         if (populationShikiText != null)
-        {
             populationShikiText.text = $"Peuple Shiki : {FormatPourcentage(shiki, total)}";
-        }
 
         if (populationFrisienText != null)
-        {
             populationFrisienText.text = $"Peuple Frisien : {FormatPourcentage(frisien, total)}";
-        }
 
         if (populationAutreText != null)
-        {
             populationAutreText.text = $"Autre : {FormatPourcentage(autre, total)}";
-        }
     }
 
     private void RefreshExplorationSliders()
@@ -239,69 +252,44 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
         float kinia = provinceActuelle.GetExploration(ENUM_Compagnie.Kinia);
         float joho = provinceActuelle.GetExploration(ENUM_Compagnie.Joho);
 
-        if (explorationMaizinSlider != null)
-        {
-            explorationMaizinSlider.minValue = 0f;
-            explorationMaizinSlider.maxValue = 100f;
-            explorationMaizinSlider.value = maizin;
-        }
-
-        if (explorationKiniaSlider != null)
-        {
-            explorationKiniaSlider.minValue = 0f;
-            explorationKiniaSlider.maxValue = 100f;
-            explorationKiniaSlider.value = kinia;
-        }
-
-        if (explorationJohoSlider != null)
-        {
-            explorationJohoSlider.minValue = 0f;
-            explorationJohoSlider.maxValue = 100f;
-            explorationJohoSlider.value = joho;
-        }
+        RefreshExplorationSlider(explorationMaizinSlider, maizin);
+        RefreshExplorationSlider(explorationKiniaSlider, kinia);
+        RefreshExplorationSlider(explorationJohoSlider, joho);
 
         if (explorationMaizinText != null)
-        {
-            explorationMaizinText.text = $" Maizin : {maizin:0.#}%";
-        }
+            explorationMaizinText.text = $"Maizin : {maizin:0.#}%";
 
         if (explorationKiniaText != null)
-        {
-            explorationKiniaText.text = $" Kinia : {kinia:0.#}%";
-        }
+            explorationKiniaText.text = $"Kinia : {kinia:0.#}%";
 
         if (explorationJohoText != null)
-        {
-            explorationJohoText.text = $" Joho : {joho:0.#}%";
-        }
+            explorationJohoText.text = $"Joho : {joho:0.#}%";
     }
 
-    private void RefreshStatsFixes()
+    private void RefreshExplorationSlider(Slider slider, float value)
     {
-        SCOBJ_PROVINCE data = provinceActuelle.data;
-
-        if (data == null)
+        if (slider == null)
             return;
 
+        slider.minValue = 0f;
+        slider.maxValue = 100f;
+        slider.value = Mathf.Clamp(value, 0f, 100f);
+        slider.interactable = false;
+    }
+
+    private void RefreshStatsFixes(SCOBJ_PROVINCE data)
+    {
         if (etriniumText != null)
-        {
-            etriniumText.text = $"Etrinium : {data.etrinium}";
-        }
+            etriniumText.text = data != null ? $"Étrinium : {data.etrinium}" : "Étrinium : -";
 
         if (prestigeText != null)
-        {
-            prestigeText.text = $"Prestige : {data.prestige}";
-        }
+            prestigeText.text = data != null ? $"Prestige : {data.prestige}" : "Prestige : -";
 
         if (poidsPolitiqueText != null)
-        {
-            poidsPolitiqueText.text = $"Poids politique : {data.poidsPolitique}";
-        }
+            poidsPolitiqueText.text = data != null ? $"Poids politique : {data.poidsPolitique}" : "Poids politique : -";
 
         if (accessibiliteText != null)
-        {
-            accessibiliteText.text = $"Accessibilité : {data.accesibilite}";
-        }
+            accessibiliteText.text = data != null ? $"Accessibilité : {data.accesibilite}" : "Accessibilité : -";
     }
 
     private string GetProprietaireTexte()

@@ -16,7 +16,12 @@ public class UI_EquipeProvinceMarker : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private float fps = 6f;
 
+    [Header("Affichage")]
+    [SerializeField] private int sortingOrder = 50;
+    [SerializeField] private bool cacherAuDemarrage = true;
+
     private Sprite[] framesActuelles;
+    private Sprite spriteFallback;
     private float timer;
     private int frameIndex;
 
@@ -24,6 +29,14 @@ public class UI_EquipeProvinceMarker : MonoBehaviour
     {
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+            spriteFallback = spriteRenderer.sprite;
+
+        AppliquerSorting();
+
+        if (cacherAuDemarrage)
+            Hide();
     }
 
     private void Update()
@@ -34,16 +47,16 @@ public class UI_EquipeProvinceMarker : MonoBehaviour
         timer += Time.deltaTime;
         float frameDuration = 1f / Mathf.Max(1f, fps);
 
-        if (timer >= frameDuration)
-        {
-            timer -= frameDuration;
-            frameIndex++;
+        if (timer < frameDuration)
+            return;
 
-            if (frameIndex >= framesActuelles.Length)
-                frameIndex = 0;
+        timer -= frameDuration;
+        frameIndex++;
 
-            spriteRenderer.sprite = framesActuelles[frameIndex];
-        }
+        if (frameIndex >= framesActuelles.Length)
+            frameIndex = 0;
+
+        spriteRenderer.sprite = framesActuelles[frameIndex];
     }
 
     public void Setup(ENUM_Compagnie compagnie, string nomEquipe)
@@ -52,14 +65,33 @@ public class UI_EquipeProvinceMarker : MonoBehaviour
         frameIndex = 0;
         timer = 0f;
 
-        bool visible = framesActuelles != null && framesActuelles.Length > 0;
-        gameObject.SetActive(visible);
+        gameObject.SetActive(true);
 
-        if (visible && spriteRenderer != null)
-            spriteRenderer.sprite = framesActuelles[0];
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = true;
+            AppliquerSorting();
+
+            if (framesActuelles != null && framesActuelles.Length > 0)
+                spriteRenderer.sprite = framesActuelles[0];
+            else
+                spriteRenderer.sprite = spriteFallback;
+        }
 
         if (nomEquipeText != null)
+        {
+            nomEquipeText.gameObject.SetActive(true);
             nomEquipeText.text = string.IsNullOrWhiteSpace(nomEquipe) ? "Équipe" : nomEquipe;
+        }
+
+        Debug.Log(
+            $"[MARKER SETUP] marker={name} | compagnie={compagnie} | " +
+            $"frames={(framesActuelles != null ? framesActuelles.Length : 0)} | " +
+            $"spriteVisible={(spriteRenderer != null && spriteRenderer.sprite != null)}"
+        );
     }
 
     public void Hide()
@@ -68,8 +100,17 @@ public class UI_EquipeProvinceMarker : MonoBehaviour
         frameIndex = 0;
         timer = 0f;
 
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+            spriteRenderer.enabled = false;
+
         if (nomEquipeText != null)
-            nomEquipeText.text = string.Empty;
+        {
+            nomEquipeText.text = "";
+            nomEquipeText.gameObject.SetActive(false);
+        }
 
         gameObject.SetActive(false);
     }
@@ -89,6 +130,25 @@ public class UI_EquipeProvinceMarker : MonoBehaviour
 
             default:
                 return null;
+        }
+    }
+
+    private void AppliquerSorting()
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.sortingLayerName = "Default";
+            spriteRenderer.sortingOrder = sortingOrder;
+        }
+
+        if (nomEquipeText != null)
+        {
+            Renderer textRenderer = nomEquipeText.GetComponent<Renderer>();
+            if (textRenderer != null)
+            {
+                textRenderer.sortingLayerName = "Default";
+                textRenderer.sortingOrder = sortingOrder + 1;
+            }
         }
     }
 }
