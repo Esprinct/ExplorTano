@@ -33020,6 +33020,8 @@ MonoBehaviour:
   targetCamera: {fileID: 942245859}
   equipeDetailController: {fileID: 1468414512}
   UI_PERSONNAGE_Detail_Controller: {fileID: 810352288}
+  bloquerSiSourisSurUI: 1
+  bloquerSiMenuOuvert: 1
   zoomStep: 10
   minZoom: 3
   maxZoom: 150
@@ -42559,8 +42561,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Tooltip
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

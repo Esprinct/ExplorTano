@@ -7,8 +7,13 @@ public class CameraZoomController : MonoBehaviour
 {
     [Header("Références")]
     [SerializeField] private Camera targetCamera;
-[SerializeField] private UI_EQUIPE_DetailController equipeDetailController;
-[SerializeField] private UI_PERSONNAGE_Detail_Controller UI_PERSONNAGE_Detail_Controller;
+    [SerializeField] private UI_EQUIPE_DetailController equipeDetailController;
+    [SerializeField] private UI_PERSONNAGE_Detail_Controller UI_PERSONNAGE_Detail_Controller;
+
+    [Header("Blocage UI")]
+    [SerializeField] private bool bloquerSiSourisSurUI = true;
+    [SerializeField] private bool bloquerSiMenuOuvert = true;
+
     [Header("Zoom")]
     [SerializeField] private float zoomStep = 0.5f;
     [SerializeField] private float minZoom = 3f;
@@ -34,13 +39,7 @@ public class CameraZoomController : MonoBehaviour
 
     private float nextAllowedScrollTime = 0f;
     private Vector3 currentVelocity = Vector3.zero;
-private bool IsAnyMenuOpen()
-{
-    bool equipeOpen = equipeDetailController != null && equipeDetailController.IsOpen();
-    bool personnageOpen = UI_PERSONNAGE_Detail_Controller != null && UI_PERSONNAGE_Detail_Controller.IsOpen();
 
-    return equipeOpen || personnageOpen;
-}
     private void Reset()
     {
         targetCamera = GetComponent<Camera>();
@@ -49,50 +48,73 @@ private bool IsAnyMenuOpen()
     private void Awake()
     {
         if (targetCamera == null)
-        {
-  
             targetCamera = GetComponent<Camera>();
+
+        if (equipeDetailController == null)
+            equipeDetailController = FindAnyObjectByType<UI_EQUIPE_DetailController>(FindObjectsInactive.Include);
+
+        if (UI_PERSONNAGE_Detail_Controller == null)
+            UI_PERSONNAGE_Detail_Controller = FindAnyObjectByType<UI_PERSONNAGE_Detail_Controller>(FindObjectsInactive.Include);
+    }
+
+    private void Update()
+    {
+        if (targetCamera == null || !targetCamera.orthographic)
+            return;
+
+        if (DoitBloquerCamera())
+        {
+            StopCameraMovement();
+            return;
         }
-          if (equipeDetailController == null)
-    {
-        equipeDetailController = FindAnyObjectByType<UI_EQUIPE_DetailController>(FindObjectsInactive.Include);
+
+        HandleZoom();
+        HandleSmoothMouseDirectionMovement();
+        ClampCameraPosition();
     }
 
-    if (UI_PERSONNAGE_Detail_Controller == null)
+    private bool DoitBloquerCamera()
     {
-        UI_PERSONNAGE_Detail_Controller = FindAnyObjectByType<UI_PERSONNAGE_Detail_Controller>(FindObjectsInactive.Include);
-    }
+        if (bloquerSiMenuOuvert && IsAnyMenuOpen())
+            return true;
+
+        if (bloquerSiSourisSurUI && IsPointerOverUI())
+            return true;
+
+        return false;
     }
 
-private void Update()
-{
-    if (targetCamera == null || !targetCamera.orthographic)
+    private bool IsAnyMenuOpen()
     {
-        return;
+        bool equipeOpen = equipeDetailController != null && equipeDetailController.IsOpen();
+        bool personnageOpen = UI_PERSONNAGE_Detail_Controller != null && UI_PERSONNAGE_Detail_Controller.IsOpen();
+
+        return equipeOpen || personnageOpen;
     }
 
-    if (IsAnyMenuOpen())
+    private bool IsPointerOverUI()
+    {
+        if (EventSystem.current == null)
+            return false;
+
+        if (Mouse.current == null)
+            return false;
+
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    private void StopCameraMovement()
     {
         currentVelocity = Vector3.zero;
-        return;
     }
-
-    HandleZoom();
-    HandleSmoothMouseDirectionMovement();
-    ClampCameraPosition();
-}
 
     private void HandleZoom()
     {
         if (Mouse.current == null)
-        {
             return;
-        }
 
         if (Time.unscaledTime < nextAllowedScrollTime)
-        {
             return;
-        }
 
         float scrollY = Mouse.current.scroll.ReadValue().y;
 
@@ -141,19 +163,6 @@ private void Update()
             return;
         }
 
-        // Bloque le déplacement caméra si la souris est au-dessus de l'UI / HUD
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-        {
-            currentVelocity = Vector3.MoveTowards(
-                currentVelocity,
-                Vector3.zero,
-                currentDeceleration * Time.deltaTime
-            );
-
-            transform.position += currentVelocity * Time.deltaTime;
-            return;
-        }
-
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
         Vector2 offset = mousePosition - screenCenter;
@@ -171,7 +180,7 @@ private void Update()
             targetVelocity = new Vector3(direction.x, direction.y, 0f) * currentMaxMoveSpeed * intensity;
         }
 
-        float speedChange = (targetVelocity == Vector3.zero) ? currentDeceleration : currentAcceleration;
+        float speedChange = targetVelocity == Vector3.zero ? currentDeceleration : currentAcceleration;
 
         currentVelocity = Vector3.MoveTowards(
             currentVelocity,
@@ -185,9 +194,7 @@ private void Update()
     private void ClampCameraPosition()
     {
         if (!useCameraBounds)
-        {
             return;
-        }
 
         float cameraHalfHeight = targetCamera.orthographicSize;
         float cameraHalfWidth = targetCamera.orthographicSize * targetCamera.aspect;
@@ -199,24 +206,15 @@ private void Update()
 
         Vector3 clampedPosition = transform.position;
 
-        // Si la caméra est plus large/haute que la carte, on la centre
         if (minX > maxX)
-        {
             clampedPosition.x = (mapMinBounds.x + mapMaxBounds.x) * 0.5f;
-        }
         else
-        {
             clampedPosition.x = Mathf.Clamp(clampedPosition.x, minX, maxX);
-        }
 
         if (minY > maxY)
-        {
             clampedPosition.y = (mapMinBounds.y + mapMaxBounds.y) * 0.5f;
-        }
         else
-        {
             clampedPosition.y = Mathf.Clamp(clampedPosition.y, minY, maxY);
-        }
 
         clampedPosition.z = transform.position.z;
         transform.position = clampedPosition;
@@ -225,9 +223,7 @@ private void Update()
     private void OnDrawGizmosSelected()
     {
         if (!useCameraBounds)
-        {
             return;
-        }
 
         Gizmos.color = Color.green;
 

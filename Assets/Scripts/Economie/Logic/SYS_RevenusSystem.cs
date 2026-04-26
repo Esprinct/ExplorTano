@@ -32,22 +32,216 @@ public class SYS_RevenusSystem
         }
     }
 
-    public void RecalculerRevenusSeulement(SYS_GameManager gameManager)
+public void RecalculerRevenusSeulement(SYS_GameManager gameManager)
+{
+    if (gameManager == null)
+        return;
+
+    RecalculerRevenusPourJoueur(gameManager, gameManager.Joueur1);
+    RecalculerRevenusPourJoueur(gameManager, gameManager.Joueur2);
+    RecalculerRevenusPourJoueur(gameManager, gameManager.Joueur3);
+
+    DATA_JOUEUR humain = gameManager.GetHumanPlayer();
+    if (humain != null)
     {
-        if (gameManager == null)
-            return;
+        gameManager.JoueurData.etriniumParTour = Mathf.RoundToInt(humain.etriniumParTour);
+        gameManager.JoueurData.etriniumBreakdown = humain.etriniumBreakdown ?? new EtriniumBreakdownData();
+    }
+}
+private void RecalculerRevenusPourJoueur(SYS_GameManager gameManager, DATA_JOUEUR joueur)
+{
+    if (gameManager == null || joueur == null)
+        return;
 
-        RecalculerRevenuParTourPourJoueur(gameManager, gameManager.Joueur1);
-        RecalculerRevenuParTourPourJoueur(gameManager, gameManager.Joueur2);
-        RecalculerRevenuParTourPourJoueur(gameManager, gameManager.Joueur3);
+    EtriniumBreakdownData breakdown = CalculerBreakdownEtriniumPourJoueur(gameManager, joueur);
 
-        DATA_JOUEUR humain = gameManager.GetHumanPlayer();
-        if (humain != null)
+    joueur.etriniumBreakdown = breakdown;
+    joueur.etriniumParTour = breakdown.totalNet;
+
+    Debug.Log(
+        $"[REVENUS BREAKDOWN] joueur={joueur.nomJoueur} | compagnie={joueur.compagnie} | " +
+        $"revenus={breakdown.totalRevenus} | depenses={breakdown.totalDepenses} | net={breakdown.totalNet}"
+    );
+}
+private EtriniumBreakdownData CalculerBreakdownEtriniumPourJoueur(
+    SYS_GameManager gameManager,
+    DATA_JOUEUR joueur)
+{
+    EtriniumBreakdownData breakdown = new();
+
+    if (gameManager == null || joueur == null)
+        return breakdown;
+
+    CalculerRevenusProvinces(gameManager, joueur, breakdown);
+    CalculerDepensesPersonnages(gameManager, joueur, breakdown);
+    CalculerDepensesEquipes(gameManager, joueur, breakdown);
+
+    breakdown.totalDepenses =
+        breakdown.depensesPersonnagesFinales +
+        breakdown.depensesEquipesFixes +
+        breakdown.depensesEquipesExploration;
+
+    breakdown.totalNet = breakdown.totalRevenus - breakdown.totalDepenses;
+
+    return breakdown;
+}
+private void CalculerRevenusProvinces(
+    SYS_GameManager gameManager,
+    DATA_JOUEUR joueur,
+    EtriniumBreakdownData breakdown)
+{
+    if (gameManager == null || joueur == null || breakdown == null)
+        return;
+
+    foreach (STATE_PROVINCE province in gameManager.ProvincesRuntime)
+    {
+        if (province == null || province.data == null)
+            continue;
+
+        float totalInfluence =
+            province.influenceMaizin +
+            province.influenceKinia +
+            province.influenceJoho +
+            province.influenceAutre;
+
+        if (totalInfluence <= 0f)
+            continue;
+
+        float influenceJoueur = 0f;
+
+        switch (joueur.compagnie)
         {
-            gameManager.JoueurData.etriniumParTour = Mathf.RoundToInt(humain.etriniumParTour);
+            case ENUM_Compagnie.Maizin:
+                influenceJoueur = province.influenceMaizin;
+                break;
+
+            case ENUM_Compagnie.Kinia:
+                influenceJoueur = province.influenceKinia;
+                break;
+
+            case ENUM_Compagnie.Joho:
+                influenceJoueur = province.influenceJoho;
+                break;
+        }
+
+        if (influenceJoueur <= 0f)
+            continue;
+
+        float part = influenceJoueur / totalInfluence;
+        int revenuProvince = Mathf.RoundToInt(province.data.etrinium * part);
+
+        if (revenuProvince <= 0)
+            continue;
+
+        breakdown.revenusProvinces.Add(new EtriniumLineData
+        {
+            label = province.data.nom,
+            valeurBase = revenuProvince,
+            valeurFinale = revenuProvince
+        });
+
+        breakdown.totalRevenus += revenuProvince;
+    }
+}
+private void CalculerDepensesPersonnages(
+    SYS_GameManager gameManager,
+    DATA_JOUEUR joueur,
+    EtriniumBreakdownData breakdown)
+{
+    if (gameManager == null || joueur == null || breakdown == null)
+        return;
+
+    int depenseBase = 0;
+    int depenseFinale = 0;
+
+    if (joueur.personnagesRecrutes != null)
+    {
+        foreach (SCOBJ_Personnage personnage in joueur.personnagesRecrutes)
+        {
+            if (personnage == null)
+                continue;
+
+            int coutBase = Mathf.Max(0, personnage.coutParTour);
+            bool enAction = EstPersonnageDansEquipeEnAction(joueur, personnage);
+
+            int coutFinal = enAction
+                ? SVC_PERSONNAGE_CostService.GetCoutExploration(personnage)
+                : SVC_PERSONNAGE_CostService.GetCoutNormal(personnage);
+
+            depenseBase += coutBase;
+            depenseFinale += Mathf.Max(0, coutFinal);
         }
     }
 
+    breakdown.depensesPersonnagesBase = depenseBase;
+    breakdown.depensesPersonnagesFinales = depenseFinale;
+}
+private void CalculerDepensesEquipes(
+    SYS_GameManager gameManager,
+    DATA_JOUEUR joueur,
+    EtriniumBreakdownData breakdown)
+{
+    if (gameManager == null || joueur == null || breakdown == null)
+        return;
+
+    if (joueur.equipes == null)
+        return;
+
+    int depensesFixes = 0;
+    int depensesExploration = 0;
+
+    foreach (STATE_EQUIPE equipe in joueur.equipes)
+    {
+        if (equipe == null)
+            continue;
+
+        bool aDesMembres =
+            equipe.membresActuels != null &&
+            equipe.membresActuels.Exists(p => p != null);
+
+        int coutFixe = aDesMembres
+            ? gameManager.CoutFixeEquipeAvecMembresParTour
+            : gameManager.CoutFixeEquipeParTour;
+
+        depensesFixes += Mathf.Max(0, coutFixe);
+
+        if (EquipeEstEnExploration(equipe))
+        {
+            depensesExploration += Mathf.Max(0, gameManager.SurcoutEquipeEnExplorationParTour);
+        }
+    }
+
+    breakdown.depensesEquipesFixes = depensesFixes;
+    breakdown.depensesEquipesExploration = depensesExploration;
+}
+private bool EstPersonnageDansEquipeEnAction(DATA_JOUEUR joueur, SCOBJ_Personnage personnage)
+{
+    if (joueur == null || personnage == null || joueur.equipes == null)
+        return false;
+
+    foreach (STATE_EQUIPE equipe in joueur.equipes)
+    {
+        if (equipe == null || equipe.membresActuels == null)
+            continue;
+
+        if (!equipe.membresActuels.Contains(personnage))
+            continue;
+
+        if (equipe.AUneActionEnCours)
+            return true;
+    }
+
+    return false;
+}
+
+private bool EquipeEstEnExploration(STATE_EQUIPE equipe)
+{
+    if (equipe == null)
+        return false;
+
+    return equipe.AUneActionEnCours &&
+           equipe.actionEnCours == ENUM_EQUIPE_ACTION.Exploration;
+}
     private Dictionary<ENUM_Compagnie, float> CalculerRevenusBruts(SYS_GameManager gameManager)
     {
         Dictionary<ENUM_Compagnie, float> revenus = new()

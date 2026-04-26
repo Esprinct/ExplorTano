@@ -529,15 +529,34 @@ public SCOBJ_DIRIGEANT GetDirigeantActuel()
         RefreshFromGameManager();
     }
 
-    public void ShowEtriniumTooltip()
-    {
-        ResolveDependencies();
+   public void ShowEtriniumTooltip()
+{
+    ResolveDependencies();
 
-        if (gameManager == null || etriniumTooltipController == null)
-            return;
+    if (gameManager == null || etriniumTooltipController == null)
+        return;
 
-        etriniumTooltipController.Show(gameManager.JoueurData.etriniumBreakdown);
-    }
+    // Important : on recalcule les revenus/breakdown juste avant l'affichage.
+    gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
+
+    // Puis on recopie les données runtime vers le HUD.
+    gameManager.SynchroniserHudAvecJoueurHumain();
+DATA_JOUEUR humain = gameManager.GetHumanPlayer();
+
+Debug.Log(
+    $"[CHECK BREAKDOWN] joueur={humain?.nomJoueur} | " +
+    $"compagnie={humain?.compagnie} | " +
+    $"revenuTour={humain?.etriniumParTour} | " +
+    $"breakdown={(humain?.etriniumBreakdown != null ? humain.etriniumBreakdown.totalRevenus.ToString() : "null")}"
+);
+    Debug.Log(
+        $"[HUD TOOLTIP] revenus={gameManager.JoueurData.etriniumBreakdown.totalRevenus} | " +
+        $"depenses={gameManager.JoueurData.etriniumBreakdown.totalDepenses} | " +
+        $"net={gameManager.JoueurData.etriniumBreakdown.totalNet}"
+    );
+
+    etriniumTooltipController.Show(gameManager.JoueurData.etriniumBreakdown);
+}
 
     public void HideEtriniumTooltip()
     {

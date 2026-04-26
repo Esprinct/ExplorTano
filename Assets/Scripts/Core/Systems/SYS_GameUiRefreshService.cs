@@ -73,68 +73,73 @@ public void RefreshBoutique()
         boutiqueControllerCache.RefreshCurrentBoutique();
     }
 }
-    public void RefreshToutLeHUD(SYS_GameManager gameManager)
+public void RefreshToutLeHUD(SYS_GameManager gameManager)
+{
+    if (gameManager == null)
+        return;
+
+    if (hudControllerCache == null || !hudControllerCache)
     {
-        if (gameManager == null)
-            return;
-
-        if (hudControllerCache == null || !hudControllerCache)
-        {
-            hudControllerCache = gameManager.HudController != null
-                ? gameManager.HudController
-                : Object.FindAnyObjectByType<HudController>();
-        }
-
-        if (hudControllerCache == null || !hudControllerCache)
-        {
-            Debug.LogWarning("HudController introuvable.");
-            return;
-        }
-
-        if (gameManager.HudController == null || !gameManager.HudController)
-            gameManager.HudController = hudControllerCache;
-
-        gameManager.SynchroniserHudAvecJoueurHumain();
-
-        List<DATA_EQUIPE_DetailData> equipesHud = new();
-        DATA_JOUEUR joueurHumain = gameManager.GetHumanPlayer();
-
-        if (joueurHumain != null && joueurHumain.equipes != null)
-        {
-            foreach (STATE_EQUIPE equipe in joueurHumain.equipes)
-            {
-                if (equipe == null)
-                    continue;
-
-                DATA_EQUIPE_DetailData equipeData = BuildDATA_EQUIPE_DetailData(equipe);
-                if (equipeData != null)
-                    equipesHud.Add(equipeData);
-            }
-        }
-
-        gameManager.RefreshDebugEquipesRuntimeView();
-
-        hudControllerCache.RefreshAll(
-            gameManager.JoueurData,
-            gameManager.PartieData,
-            equipesHud
-        );
-
-        RefreshProvinceMenu();
-
-        if (equipeDetailControllerCache == null || !equipeDetailControllerCache)
-        {
-            equipeDetailControllerCache = gameManager.EquipeDetailController != null
-                ? gameManager.EquipeDetailController
-                : Object.FindAnyObjectByType<UI_EQUIPE_DetailController>(FindObjectsInactive.Include);
-        }
-
-        if (gameManager.EquipeDetailController == null || !gameManager.EquipeDetailController)
-            gameManager.EquipeDetailController = equipeDetailControllerCache;
-
-        if (equipeDetailControllerCache != null && equipeDetailControllerCache.IsOpen())
-            equipeDetailControllerCache.RefreshCurrentEquipe();
+        hudControllerCache = gameManager.HudController != null
+            ? gameManager.HudController
+            : Object.FindAnyObjectByType<HudController>();
     }
+
+    if (hudControllerCache == null || !hudControllerCache)
+    {
+        Debug.LogWarning("HudController introuvable.");
+        return;
+    }
+
+    if (gameManager.HudController == null || !gameManager.HudController)
+        gameManager.HudController = hudControllerCache;
+
+    // IMPORTANT :
+    // On recalcule les revenus AVANT de synchroniser le HUD.
+    gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
+gameManager.RevenusSystem?.RecalculerRevenusSeulement(gameManager);
+    gameManager.SynchroniserHudAvecJoueurHumain();
+
+    List<DATA_EQUIPE_DetailData> equipesHud = new();
+    DATA_JOUEUR joueurHumain = gameManager.GetHumanPlayer();
+
+    if (joueurHumain != null && joueurHumain.equipes != null)
+    {
+        foreach (STATE_EQUIPE equipe in joueurHumain.equipes)
+        {
+            if (equipe == null)
+                continue;
+
+            DATA_EQUIPE_DetailData equipeData = BuildDATA_EQUIPE_DetailData(equipe);
+            if (equipeData != null)
+                equipesHud.Add(equipeData);
+        }
+    }
+
+    gameManager.RefreshDebugEquipesRuntimeView();
+
+    hudControllerCache.RefreshAll(
+        gameManager.JoueurData,
+        gameManager.PartieData,
+        equipesHud
+    );
+
+    RefreshProvinceMenu();
+    RefreshBoutique();
+
+    if (equipeDetailControllerCache == null || !equipeDetailControllerCache)
+    {
+        equipeDetailControllerCache = gameManager.EquipeDetailController != null
+            ? gameManager.EquipeDetailController
+            : Object.FindAnyObjectByType<UI_EQUIPE_DetailController>(FindObjectsInactive.Include);
+    }
+
+    if (gameManager.EquipeDetailController == null || !gameManager.EquipeDetailController)
+        gameManager.EquipeDetailController = equipeDetailControllerCache;
+
+    if (equipeDetailControllerCache != null && equipeDetailControllerCache.IsOpen())
+        equipeDetailControllerCache.RefreshCurrentEquipe();
+}
 
     public void RefreshUI_PROVINCE_View(STATE_PROVINCE province)
     {
