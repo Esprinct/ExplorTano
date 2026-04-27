@@ -38,7 +38,7 @@ public class UI_PROVINCE_View : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float alphaClaim = 1f;
 
     [Header("Réglages hachures 50/50")]
-    [SerializeField] private float stripeWidthPixels = 4f;
+    [SerializeField] private float stripeWidthPixels = 20f;
     [SerializeField] private float stripeSpacingPixels = 12f;
     [SerializeField] private float stripeAngle = 45f;
     [SerializeField, Range(0f, 1f)] private float alphaMultiplier = 0.9f;
@@ -58,7 +58,7 @@ public class UI_PROVINCE_View : MonoBehaviour
 
     private Material overlayMaterialInstance;
     private Material explorationContourMaterialInstance;
-
+private MaterialPropertyBlock explorationContourPropertyBlock;
     public string NomProvince => STATE_PROVINCE != null && STATE_PROVINCE.data != null
         ? STATE_PROVINCE.data.nom
         : nomProvince;
@@ -239,25 +239,46 @@ public class UI_PROVINCE_View : MonoBehaviour
             highlightRenderer.sortingOrder = spriteRenderer.sortingOrder + 3;
         }
 
-        if (explorationContourRenderer != null)
-        {
-            explorationContourRenderer.sprite = data.sprite;
-            explorationContourRenderer.color = Color.clear;
-            explorationContourRenderer.enabled = false;
-            explorationContourRenderer.gameObject.SetActive(false);
-            explorationContourRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
-            explorationContourRenderer.sortingOrder = spriteRenderer.sortingOrder + 4;
+if (explorationContourRenderer != null)
+{
+    explorationContourRenderer.sprite = data.sprite;
+    explorationContourRenderer.color = Color.white;
+    explorationContourRenderer.enabled = false;
+    explorationContourRenderer.gameObject.SetActive(false);
+    explorationContourRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
+    explorationContourRenderer.sortingOrder = spriteRenderer.sortingOrder + 4;
 
-            if (explorationContourMaterial != null)
-            {
-                explorationContourMaterialInstance = new Material(explorationContourMaterial);
-                explorationContourRenderer.material = explorationContourMaterialInstance;
-            }
-            else
-            {
-                Debug.LogWarning($"UI_PROVINCE_View '{name}' : explorationContourMaterial non assigné.");
-            }
+    Shader outlineShader = Shader.Find("Custom/SpriteExplorationOutline");
+
+    if (explorationContourMaterial != null)
+    {
+        explorationContourMaterialInstance = new Material(explorationContourMaterial);
+    }
+    else if (outlineShader != null)
+    {
+        explorationContourMaterialInstance = new Material(outlineShader);
+    }
+
+    if (explorationContourMaterialInstance != null)
+    {
+        if (outlineShader != null &&
+            explorationContourMaterialInstance.shader != outlineShader)
+        {
+            explorationContourMaterialInstance.shader = outlineShader;
         }
+
+        explorationContourRenderer.material = explorationContourMaterialInstance;
+    }
+    else
+    {
+        Debug.LogWarning(
+            $"UI_PROVINCE_View '{name}' : impossible de créer le material de contour. " +
+            $"Vérifie que le shader Custom/SpriteExplorationOutline existe."
+        );
+    }
+
+    explorationContourPropertyBlock ??= new MaterialPropertyBlock();
+}
     }
 
     private void InitialiserState()
@@ -426,28 +447,50 @@ public class UI_PROVINCE_View : MonoBehaviour
     couleurA.a = 1f;
     couleurB.a = 1f;
 
-    // Important : le shader corrigé utilise la couleur du SpriteRenderer
-    // pour les contours simples.
+    float useHachure = style.mode == ENUM_PROVINCE_ExplorationContourMode.Hachure ? 1f : 0f;
+
+    // Fallback visible si le shader ne fonctionne pas.
+    // Pour hachure, on met couleurA en fallback au lieu de blanc.
     explorationContourRenderer.color = couleurA;
 
     if (explorationContourMaterialInstance != null)
     {
-        float useHachure = style.mode == ENUM_PROVINCE_ExplorationContourMode.Hachure ? 1f : 0f;
+        explorationContourRenderer.material = explorationContourMaterialInstance;
 
         explorationContourMaterialInstance.SetFloat("_UseHachure", useHachure);
         explorationContourMaterialInstance.SetColor("_OutlineColor", couleurA);
         explorationContourMaterialInstance.SetColor("_ColorA", couleurA);
         explorationContourMaterialInstance.SetColor("_ColorB", couleurB);
-
-        explorationContourMaterialInstance.SetFloat("_StripeWidth", stripeWidthPixels);
-        explorationContourMaterialInstance.SetFloat("_StripeSpacing", stripeSpacingPixels);
+        explorationContourMaterialInstance.SetFloat("_StripeWidth", 0.08f);
+        explorationContourMaterialInstance.SetFloat("_StripeSpacing", 0.18f);
         explorationContourMaterialInstance.SetFloat("_StripeAngle", stripeAngle);
     }
 
+    explorationContourPropertyBlock ??= new MaterialPropertyBlock();
+
+    explorationContourRenderer.GetPropertyBlock(explorationContourPropertyBlock);
+
+    explorationContourPropertyBlock.SetFloat("_UseHachure", useHachure);
+    explorationContourPropertyBlock.SetColor("_OutlineColor", couleurA);
+    explorationContourPropertyBlock.SetColor("_ColorA", couleurA);
+    explorationContourPropertyBlock.SetColor("_ColorB", couleurB);
+    explorationContourPropertyBlock.SetFloat("_StripeWidth", 0.08f);
+    explorationContourPropertyBlock.SetFloat("_StripeSpacing", 0.18f);
+    explorationContourPropertyBlock.SetFloat("_StripeAngle", stripeAngle);
+
+    explorationContourRenderer.SetPropertyBlock(explorationContourPropertyBlock);
+
 #if UNITY_EDITOR
+    string shaderName =
+        explorationContourRenderer.sharedMaterial != null &&
+        explorationContourRenderer.sharedMaterial.shader != null
+            ? explorationContourRenderer.sharedMaterial.shader.name
+            : "null";
+
     Debug.Log(
         $"[CONTOUR_EXPLORATION] province={NomProvince} | " +
-        $"mode={style.mode} | " +
+        $"shader={shaderName} | " +
+        $"mode={style.mode} | useHachure={useHachure} | " +
         $"A={couleurA} | B={couleurB} | " +
         $"Maizin={STATE_PROVINCE?.GetExploration(ENUM_Compagnie.Maizin):0.#}% | " +
         $"Kinia={STATE_PROVINCE?.GetExploration(ENUM_Compagnie.Kinia):0.#}% | " +
