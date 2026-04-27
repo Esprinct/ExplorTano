@@ -421,6 +421,18 @@ if (explorationContourRenderer != null)
     if (explorationContourRenderer == null)
         return;
 
+    // Si la province est claim, on ne montre plus le contour d'exploration.
+    bool provinceClaim =
+        STATE_PROVINCE != null &&
+        STATE_PROVINCE.estClaim &&
+        STATE_PROVINCE.proprietaireActuel.HasValue;
+
+    if (provinceClaim)
+    {
+        DesactiverContourExploration();
+        return;
+    }
+
     bool afficherContour = UI_PROVINCE_ExplorationContourResolver.TryGetStyleContour(
         STATE_PROVINCE,
         couleurMaizin,
@@ -450,8 +462,11 @@ if (explorationContourRenderer != null)
     float useHachure = style.mode == ENUM_PROVINCE_ExplorationContourMode.Hachure ? 1f : 0f;
 
     // Fallback visible si le shader ne fonctionne pas.
-    // Pour hachure, on met couleurA en fallback au lieu de blanc.
     explorationContourRenderer.color = couleurA;
+
+    // Bandes plus grosses.
+const float stripeWidthExploration = 0.22f;
+const float stripeSpacingExploration = 0.44f;
 
     if (explorationContourMaterialInstance != null)
     {
@@ -461,8 +476,8 @@ if (explorationContourRenderer != null)
         explorationContourMaterialInstance.SetColor("_OutlineColor", couleurA);
         explorationContourMaterialInstance.SetColor("_ColorA", couleurA);
         explorationContourMaterialInstance.SetColor("_ColorB", couleurB);
-        explorationContourMaterialInstance.SetFloat("_StripeWidth", 0.08f);
-        explorationContourMaterialInstance.SetFloat("_StripeSpacing", 0.18f);
+        explorationContourMaterialInstance.SetFloat("_StripeWidth", stripeWidthExploration);
+        explorationContourMaterialInstance.SetFloat("_StripeSpacing", stripeSpacingExploration);
         explorationContourMaterialInstance.SetFloat("_StripeAngle", stripeAngle);
     }
 
@@ -474,8 +489,8 @@ if (explorationContourRenderer != null)
     explorationContourPropertyBlock.SetColor("_OutlineColor", couleurA);
     explorationContourPropertyBlock.SetColor("_ColorA", couleurA);
     explorationContourPropertyBlock.SetColor("_ColorB", couleurB);
-    explorationContourPropertyBlock.SetFloat("_StripeWidth", 0.08f);
-    explorationContourPropertyBlock.SetFloat("_StripeSpacing", 0.18f);
+    explorationContourPropertyBlock.SetFloat("_StripeWidth", stripeWidthExploration);
+    explorationContourPropertyBlock.SetFloat("_StripeSpacing", stripeSpacingExploration);
     explorationContourPropertyBlock.SetFloat("_StripeAngle", stripeAngle);
 
     explorationContourRenderer.SetPropertyBlock(explorationContourPropertyBlock);
@@ -491,6 +506,8 @@ if (explorationContourRenderer != null)
         $"[CONTOUR_EXPLORATION] province={NomProvince} | " +
         $"shader={shaderName} | " +
         $"mode={style.mode} | useHachure={useHachure} | " +
+        $"claim={provinceClaim} | " +
+        $"stripeWidth={stripeWidthExploration} | stripeSpacing={stripeSpacingExploration} | " +
         $"A={couleurA} | B={couleurB} | " +
         $"Maizin={STATE_PROVINCE?.GetExploration(ENUM_Compagnie.Maizin):0.#}% | " +
         $"Kinia={STATE_PROVINCE?.GetExploration(ENUM_Compagnie.Kinia):0.#}% | " +
