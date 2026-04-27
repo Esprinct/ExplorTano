@@ -12,7 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41a0a222bb8ff4c49b05b11c67e0d7eb, type: 3}
   m_Name: Aerodrome
   m_EditorClassIdentifier: Assembly-CSharp::SCOBJ_BOUTIQUE_Catalogue
-  offres:
-  - objet: {fileID: 11400000, guid: 35bf42a5e591e0e4b9783a80677c8352, type: 2}
-    prixOverride: 1000
-    quantite: 1
+  offres: []

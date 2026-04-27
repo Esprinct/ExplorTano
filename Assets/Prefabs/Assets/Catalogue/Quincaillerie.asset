@@ -13,6 +13,39 @@ MonoBehaviour:
   m_Name: Quincaillerie
   m_EditorClassIdentifier: Assembly-CSharp::SCOBJ_BOUTIQUE_Catalogue
   offres:
-  - objet: {fileID: 11400000, guid: 35bf42a5e591e0e4b9783a80677c8352, type: 2}
+  - objet: {fileID: 11400000, guid: 391fb86182673f64ca894a94dfc4368d, type: 2}
+    prixOverride: 200
+    quantite: 0
+  - objet: {fileID: 11400000, guid: 07971df7235f01d4a8d175eb647b5845, type: 2}
+    prixOverride: 500
+    quantite: 0
+  - objet: {fileID: 11400000, guid: b17b6c3b0fc5015498de733189372270, type: 2}
+    prixOverride: 200
+    quantite: 0
+  - objet: {fileID: 11400000, guid: cf2743a2687e03a4c95a4d0b638c98da, type: 2}
+    prixOverride: 500
+    quantite: 0
+  - objet: {fileID: 11400000, guid: 1c82c8805d80f374484c60721b7804ea, type: 2}
+    prixOverride: 500
+    quantite: 0
+  - objet: {fileID: 11400000, guid: 0c0893997a16e024e9b0395559581fee, type: 2}
+    prixOverride: 200
+    quantite: 0
+  - objet: {fileID: 11400000, guid: 1156dc8613267134798828326e8d989b, type: 2}
     prixOverride: 1000
-    quantite: 1
+    quantite: 0
+  - objet: {fileID: 11400000, guid: ea84544ef8805b142af8066a7743594a, type: 2}
+    prixOverride: 2000
+    quantite: 0
+  - objet: {fileID: 11400000, guid: 3e7e10f0cf0607a46b49c282d7e37324, type: 2}
+    prixOverride: 1000
+    quantite: 0
+  - objet: {fileID: 11400000, guid: 845a3724cc3ad3343b5b7ded151e055a, type: 2}
+    prixOverride: 2000
+    quantite: 0
+  - objet: {fileID: 11400000, guid: b5a4179f3e1b1044cbd947b017f73758, type: 2}
+    prixOverride: 1000
+    quantite: 0
+  - objet: {fileID: 11400000, guid: db803cab362395142b69bf87731d20e8, type: 2}
+    prixOverride: 2000
+    quantite: 0

@@ -13,9 +13,21 @@ MonoBehaviour:
   m_Name: Grossistes
   m_EditorClassIdentifier: Assembly-CSharp::SCOBJ_BOUTIQUE_Catalogue
   offres:
-  - objet: {fileID: 11400000, guid: 35bf42a5e591e0e4b9783a80677c8352, type: 2}
-    prixOverride: 1000
-    quantite: 1
   - objet: {fileID: 11400000, guid: 7fee14dc3a4466d458e6038764bb4ad2, type: 2}
+    prixOverride: 10
+    quantite: 10
+  - objet: {fileID: 11400000, guid: e8496a4ec561505458c760fe4c3a0c29, type: 2}
+    prixOverride: 10
+    quantite: 10
+  - objet: {fileID: 11400000, guid: 30cbe0291fb66364d8e0a6f9c723fe35, type: 2}
+    prixOverride: 10
+    quantite: 10
+  - objet: {fileID: 11400000, guid: f2015808d94646e43a20bb6034f73240, type: 2}
+    prixOverride: 10
+    quantite: 10
+  - objet: {fileID: 11400000, guid: c66b09628711bfd4db2eeb899a2b0a52, type: 2}
+    prixOverride: 10
+    quantite: 10
+  - objet: {fileID: 11400000, guid: 54bc47dc77d670243b06771ed7697a37, type: 2}
     prixOverride: 10
     quantite: 10

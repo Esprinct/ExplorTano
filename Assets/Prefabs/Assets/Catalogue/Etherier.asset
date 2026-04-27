@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Etherier
   m_EditorClassIdentifier: Assembly-CSharp::SCOBJ_BOUTIQUE_Catalogue
   offres:
-  - objet: {fileID: 11400000, guid: 832d89ebf8c5a9e4f893bb26e785f27f, type: 2}
-    prixOverride: 0
+  - objet: {fileID: 11400000, guid: 35bf42a5e591e0e4b9783a80677c8352, type: 2}
+    prixOverride: 25000
     quantite: 0
