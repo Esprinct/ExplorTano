@@ -395,37 +395,66 @@ public class UI_PROVINCE_View : MonoBehaviour
         claimRenderer.color = couleur;
     }
 
-    private void AppliquerContourExploration()
+ private void AppliquerContourExploration()
+{
+    if (explorationContourRenderer == null)
+        return;
+
+    bool afficherContour = UI_PROVINCE_ExplorationContourResolver.TryGetStyleContour(
+        STATE_PROVINCE,
+        couleurMaizin,
+        couleurKinia,
+        couleurJoho,
+        out DATA_PROVINCE_ExplorationContourStyle style
+    );
+
+    if (!afficherContour)
     {
-        if (explorationContourRenderer == null)
-            return;
-
-        bool afficherContour = UI_PROVINCE_ExplorationContourResolver.TryGetCouleurContour(
-            STATE_PROVINCE,
-            couleurMaizin,
-            couleurKinia,
-            couleurJoho,
-            out Color couleurContour
-        );
-
-        if (!afficherContour)
-        {
-            DesactiverContourExploration();
-            return;
-        }
-
-        explorationContourRenderer.gameObject.SetActive(true);
-        explorationContourRenderer.enabled = true;
-        explorationContourRenderer.sprite = data != null ? data.sprite : explorationContourRenderer.sprite;
-        explorationContourRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
-        explorationContourRenderer.sortingOrder = spriteRenderer.sortingOrder + 4;
-
-        couleurContour.a = 1f;
-        explorationContourRenderer.color = couleurContour;
-
-        if (explorationContourMaterialInstance != null)
-            explorationContourMaterialInstance.SetColor("_OutlineColor", couleurContour);
+        DesactiverContourExploration();
+        return;
     }
+
+    explorationContourRenderer.gameObject.SetActive(true);
+    explorationContourRenderer.enabled = true;
+    explorationContourRenderer.sprite = data != null ? data.sprite : explorationContourRenderer.sprite;
+    explorationContourRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
+    explorationContourRenderer.sortingOrder = spriteRenderer.sortingOrder + 4;
+
+    Color couleurA = style.couleurA;
+    Color couleurB = style.couleurB;
+
+    couleurA.a = 1f;
+    couleurB.a = 1f;
+
+    // Important : le shader corrigé utilise la couleur du SpriteRenderer
+    // pour les contours simples.
+    explorationContourRenderer.color = couleurA;
+
+    if (explorationContourMaterialInstance != null)
+    {
+        float useHachure = style.mode == ENUM_PROVINCE_ExplorationContourMode.Hachure ? 1f : 0f;
+
+        explorationContourMaterialInstance.SetFloat("_UseHachure", useHachure);
+        explorationContourMaterialInstance.SetColor("_OutlineColor", couleurA);
+        explorationContourMaterialInstance.SetColor("_ColorA", couleurA);
+        explorationContourMaterialInstance.SetColor("_ColorB", couleurB);
+
+        explorationContourMaterialInstance.SetFloat("_StripeWidth", stripeWidthPixels);
+        explorationContourMaterialInstance.SetFloat("_StripeSpacing", stripeSpacingPixels);
+        explorationContourMaterialInstance.SetFloat("_StripeAngle", stripeAngle);
+    }
+
+#if UNITY_EDITOR
+    Debug.Log(
+        $"[CONTOUR_EXPLORATION] province={NomProvince} | " +
+        $"mode={style.mode} | " +
+        $"A={couleurA} | B={couleurB} | " +
+        $"Maizin={STATE_PROVINCE?.GetExploration(ENUM_Compagnie.Maizin):0.#}% | " +
+        $"Kinia={STATE_PROVINCE?.GetExploration(ENUM_Compagnie.Kinia):0.#}% | " +
+        $"Joho={STATE_PROVINCE?.GetExploration(ENUM_Compagnie.Joho):0.#}%"
+    );
+#endif
+}
 
     private void DesactiverContourExploration()
     {
