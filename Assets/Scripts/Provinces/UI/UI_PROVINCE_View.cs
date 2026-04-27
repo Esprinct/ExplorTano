@@ -17,7 +17,9 @@ public class UI_PROVINCE_View : MonoBehaviour
     [SerializeField] private SpriteRenderer claimRenderer;
     [SerializeField] private SpriteRenderer overlayRenderer;
     [SerializeField] private SpriteRenderer highlightRenderer;
+    [SerializeField] private SpriteRenderer explorationContourRenderer;
     [SerializeField] private Material hachureMaterial;
+    [SerializeField] private Material explorationContourMaterial;
     [SerializeField] private MapController mapController;
 
     [Header("Couleurs des factions")]
@@ -55,6 +57,7 @@ public class UI_PROVINCE_View : MonoBehaviour
     private UI_PROVINCE_MenuController provinceMenuControllerCache;
 
     private Material overlayMaterialInstance;
+    private Material explorationContourMaterialInstance;
 
     public string NomProvince => STATE_PROVINCE != null && STATE_PROVINCE.data != null
         ? STATE_PROVINCE.data.nom
@@ -70,6 +73,9 @@ public class UI_PROVINCE_View : MonoBehaviour
 
         if (equipeMarkerController == null)
             equipeMarkerController = GetComponentInChildren<UI_PROVINCE_EquipeMarkerController>(true);
+
+        if (explorationContourRenderer == null)
+            explorationContourRenderer = transform.Find("ExplorationContour")?.GetComponent<SpriteRenderer>();
     }
 
     private void OnValidate()
@@ -82,6 +88,9 @@ public class UI_PROVINCE_View : MonoBehaviour
 
         if (equipeMarkerController == null)
             equipeMarkerController = GetComponentInChildren<UI_PROVINCE_EquipeMarkerController>(true);
+
+        if (explorationContourRenderer == null)
+            explorationContourRenderer = transform.Find("ExplorationContour")?.GetComponent<SpriteRenderer>();
 
         if (spriteRenderer != null && data != null && data.sprite != null)
         {
@@ -141,6 +150,12 @@ public class UI_PROVINCE_View : MonoBehaviour
             Destroy(overlayMaterialInstance);
             overlayMaterialInstance = null;
         }
+
+        if (explorationContourMaterialInstance != null)
+        {
+            Destroy(explorationContourMaterialInstance);
+            explorationContourMaterialInstance = null;
+        }
     }
 
     private void ResolveDependencies()
@@ -165,6 +180,9 @@ public class UI_PROVINCE_View : MonoBehaviour
 
         if (equipeMarkerController == null)
             equipeMarkerController = GetComponentInChildren<UI_PROVINCE_EquipeMarkerController>(true);
+
+        if (explorationContourRenderer == null)
+            explorationContourRenderer = transform.Find("ExplorationContour")?.GetComponent<SpriteRenderer>();
     }
 
     private SYS_GameManager GetGameManager()
@@ -219,6 +237,26 @@ public class UI_PROVINCE_View : MonoBehaviour
             highlightRenderer.gameObject.SetActive(false);
             highlightRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
             highlightRenderer.sortingOrder = spriteRenderer.sortingOrder + 3;
+        }
+
+        if (explorationContourRenderer != null)
+        {
+            explorationContourRenderer.sprite = data.sprite;
+            explorationContourRenderer.color = Color.clear;
+            explorationContourRenderer.enabled = false;
+            explorationContourRenderer.gameObject.SetActive(false);
+            explorationContourRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
+            explorationContourRenderer.sortingOrder = spriteRenderer.sortingOrder + 4;
+
+            if (explorationContourMaterial != null)
+            {
+                explorationContourMaterialInstance = new Material(explorationContourMaterial);
+                explorationContourRenderer.material = explorationContourMaterialInstance;
+            }
+            else
+            {
+                Debug.LogWarning($"UI_PROVINCE_View '{name}' : explorationContourMaterial non assigné.");
+            }
         }
     }
 
@@ -300,6 +338,7 @@ public class UI_PROVINCE_View : MonoBehaviour
     public void RefreshVisual()
     {
         AppliquerClaimOverlay();
+        AppliquerContourExploration();
 
         bool provinceContestee = AfficherProvinceContestee5050();
 
@@ -354,6 +393,47 @@ public class UI_PROVINCE_View : MonoBehaviour
         Color couleur = GetCouleurBase();
         couleur.a = alphaClaim;
         claimRenderer.color = couleur;
+    }
+
+    private void AppliquerContourExploration()
+    {
+        if (explorationContourRenderer == null)
+            return;
+
+        bool afficherContour = UI_PROVINCE_ExplorationContourResolver.TryGetCouleurContour(
+            STATE_PROVINCE,
+            couleurMaizin,
+            couleurKinia,
+            couleurJoho,
+            out Color couleurContour
+        );
+
+        if (!afficherContour)
+        {
+            DesactiverContourExploration();
+            return;
+        }
+
+        explorationContourRenderer.gameObject.SetActive(true);
+        explorationContourRenderer.enabled = true;
+        explorationContourRenderer.sprite = data != null ? data.sprite : explorationContourRenderer.sprite;
+        explorationContourRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
+        explorationContourRenderer.sortingOrder = spriteRenderer.sortingOrder + 4;
+
+        couleurContour.a = 1f;
+        explorationContourRenderer.color = couleurContour;
+
+        if (explorationContourMaterialInstance != null)
+            explorationContourMaterialInstance.SetColor("_OutlineColor", couleurContour);
+    }
+
+    private void DesactiverContourExploration()
+    {
+        if (explorationContourRenderer == null)
+            return;
+
+        explorationContourRenderer.enabled = false;
+        explorationContourRenderer.gameObject.SetActive(false);
     }
 
     private bool AfficherProvinceContestee5050()

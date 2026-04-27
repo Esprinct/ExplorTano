@@ -1,43 +1,57 @@
-using System.Collections.Generic;
+using UnityEngine;
 
 public static class UI_PROVINCE_ExplorationContourResolver
 {
-    private const float InfluenceMin = 0.001f;
+    private const float SeuilExplorationComplete = 99.999f;
 
-    public static List<ENUM_Compagnie> GetCompagniesExploratrices(STATE_PROVINCE province)
+    public static bool TryGetCouleurContour(
+        STATE_PROVINCE province,
+        Color couleurMaizin,
+        Color couleurKinia,
+        Color couleurJoho,
+        out Color couleurContour)
     {
-        List<ENUM_Compagnie> result = new();
+        couleurContour = Color.clear;
 
         if (province == null)
-            return result;
+            return false;
 
-        if (province.estClaim)
-            return result;
+        bool maizinComplete = EstComplete(province, ENUM_Compagnie.Maizin);
+        bool kiniaComplete = EstComplete(province, ENUM_Compagnie.Kinia);
+        bool johoComplete = EstComplete(province, ENUM_Compagnie.Joho);
 
-        List<KeyValuePair<ENUM_Compagnie, float>> influences = new();
-
-        AjouterSiPositive(influences, ENUM_Compagnie.Maizin, province.influenceMaizin);
-        AjouterSiPositive(influences, ENUM_Compagnie.Kinia, province.influenceKinia);
-        AjouterSiPositive(influences, ENUM_Compagnie.Joho, province.influenceJoho);
-
-        influences.Sort((a, b) => b.Value.CompareTo(a.Value));
-
-        foreach (KeyValuePair<ENUM_Compagnie, float> kvp in influences)
+        if (maizinComplete && kiniaComplete && johoComplete)
         {
-            result.Add(kvp.Key);
+            couleurContour = Color.white;
+            return true;
         }
 
-        return result;
+        if (maizinComplete)
+        {
+            couleurContour = couleurMaizin;
+            return true;
+        }
+
+        if (kiniaComplete)
+        {
+            couleurContour = couleurKinia;
+            return true;
+        }
+
+        if (johoComplete)
+        {
+            couleurContour = couleurJoho;
+            return true;
+        }
+
+        return false;
     }
 
-    private static void AjouterSiPositive(
-        List<KeyValuePair<ENUM_Compagnie, float>> influences,
-        ENUM_Compagnie compagnie,
-        float valeur)
+    private static bool EstComplete(STATE_PROVINCE province, ENUM_Compagnie compagnie)
     {
-        if (valeur > InfluenceMin)
-        {
-            influences.Add(new KeyValuePair<ENUM_Compagnie, float>(compagnie, valeur));
-        }
+        if (province == null)
+            return false;
+
+        return province.GetExploration(compagnie) >= SeuilExplorationComplete;
     }
 }
