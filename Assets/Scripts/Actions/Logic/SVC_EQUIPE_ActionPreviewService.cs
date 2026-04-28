@@ -62,7 +62,7 @@ public static class SVC_EQUIPE_ActionPreviewService
 
         if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
         {
-            enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
+            enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.enclavement);
             explorationActuelle = equipe.provinceAffectee.GetExploration(equipe.compagnie);
         }
 

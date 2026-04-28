@@ -37,7 +37,7 @@ public class SYS_ExplorationAction : SYS_EquipeActionBase
 
         int enclavement = 0;
         if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
-            enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
+            enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.enclavement);
 
         int toursModifies = SVC_EQUIPE_ExplorationEffects.GetToursBaseModifies(
             equipe,

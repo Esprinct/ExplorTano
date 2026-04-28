@@ -274,7 +274,7 @@ public static class SVC_IA_ProvinceStrategyService
         ENUM_EQUIPE_ACTION action = SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipe);
 
         float prestige = province.data.prestige;
-        float accessibilite = province.data.accesibilite;
+        float accessibilite = province.data.enclavement;
 float etrinium = province.data.etrinium;
 int provincesControlees = Mathf.Max(0, joueur.provincesControlees);
 

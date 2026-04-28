@@ -12,8 +12,8 @@ public class SCOBJ_PROVINCE : ScriptableObject
     public int populationAutre;
 
     public int poidsPolitique;
-    public int accesibilite;
 
+public float enclavement;
     public Sprite sprite;
 
     [Header("Influences initiales")]

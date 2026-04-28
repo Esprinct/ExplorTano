@@ -43,7 +43,7 @@ public static class SVC_EQUIPE_ActionCostService
 
         int enclavement = 0;
         if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
-            enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
+            enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.enclavement);
 
         DATA_JOUEUR joueur = gameManager.GetJoueurProprietaireEquipe(equipe);
 

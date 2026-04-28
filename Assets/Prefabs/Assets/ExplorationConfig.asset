@@ -15,9 +15,10 @@ MonoBehaviour:
   toursBase: 3
   coutParTourBase: 5
   prestigeBase: 1
-  chanceArtefactBase: 10
-  chanceArtefactRareBase: 2
-  gainInfluence: 10
+  chanceArtefactBase: 1
+  chanceArtefactRareBase: 0.02
+  gainExplorationBase: 10
+  gainInfluence: 2.5
   influenceIATourKinia: 2.5
   influenceIATourJoho: 2.5
   xpPersonnageParExploration: 25

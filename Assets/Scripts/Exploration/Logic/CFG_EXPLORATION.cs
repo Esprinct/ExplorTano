@@ -8,14 +8,14 @@ public class ExplorationConfig : ScriptableObject
     public int toursBase = 3;
     public int coutParTourBase = 5;
     public int prestigeBase = 1;
-    public float chanceArtefactBase = 10f;
-    public float chanceArtefactRareBase = 2f;
+    public float chanceArtefactBase = 1f;
+    public float chanceArtefactRareBase = 0.2f;
 [Header("Progression province")]
-public float gainExplorationBase = 20f;
+public float gainExplorationBase = 2f;
     [Header("Influence")]
-    public float gainInfluence = 10f;
-    public float influenceIATourKinia = 10f;
-    public float influenceIATourJoho = 10f;
+    public float gainInfluence = 5f;
+    public float influenceIATourKinia = 5f;
+    public float influenceIATourJoho = 5f;
 
     [Header("XP")]
     public int xpPersonnageParExploration = 25;

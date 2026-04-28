@@ -289,7 +289,7 @@ public class UI_PROVINCE_MenuController : MonoBehaviour
             poidsPolitiqueText.text = data != null ? $"Poids politique : {data.poidsPolitique}" : "Poids politique : -";
 
         if (accessibiliteText != null)
-            accessibiliteText.text = data != null ? $"Accessibilité : {data.accesibilite}" : "Accessibilité : -";
+            accessibiliteText.text = data != null ? $"Enclavement : {data.enclavement}" : "Accessibilité : -";
     }
 
     private string GetProprietaireTexte()

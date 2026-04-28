@@ -154,7 +154,7 @@ public static class SVC_IA_ActionExecutionService
 
         int enclavement = 0;
         if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
-            enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.accesibilite);
+            enclavement = Mathf.RoundToInt(equipe.provinceAffectee.data.enclavement);
 
         DATA_EXPLORATION_Resultat resultat = CALC_EXPLORATION_Resolver.CalculerResultat(
             stats,
