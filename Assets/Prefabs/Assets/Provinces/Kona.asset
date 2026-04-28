@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceData
   nom: Kona
   prestige: 0
-  etrinium: 5000
+  etrinium: 200000
   populationShiki: 5
   populationFrisien: 90
   populationAutre: 5

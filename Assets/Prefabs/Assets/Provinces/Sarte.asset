@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceData
   nom: Sarte
   prestige: 85
-  etrinium: 5000
+  etrinium: 50000
   populationShiki: 26
   populationFrisien: 72
   populationAutre: 2

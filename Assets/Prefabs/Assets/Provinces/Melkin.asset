@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceData
   nom: Melkin
   prestige: 58
-  etrinium: 5000
+  etrinium: 100000
   populationShiki: 45
   populationFrisien: 55
   populationAutre: 1

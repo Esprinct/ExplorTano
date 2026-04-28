@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceData
   nom: Nessham
   prestige: 45
-  etrinium: 5000
+  etrinium: 200000
   populationShiki: 12
   populationFrisien: 46
   populationAutre: 2

@@ -2,6 +2,8 @@ using UnityEngine;
 
 public static class SVC_IA_ProvinceStrategyService
 {
+    private const float ExplorationCompleteThreshold = 99.99f;
+
     public static void AffecterEquipesAuxProvinces(SYS_GameManager gameManager, DATA_JOUEUR joueur)
     {
         if (gameManager == null || joueur == null || joueur.equipes == null)
@@ -14,6 +16,8 @@ public static class SVC_IA_ProvinceStrategyService
             if (equipe == null || equipe.AUneActionEnCours)
                 continue;
 
+            ConvertirExplorationEnVadrouilleSiNecessaire(gameManager, joueur, equipe);
+
             if (equipe.membresActuels == null || equipe.membresActuels.Count < tailleMinEquipe)
                 continue;
 
@@ -25,12 +29,92 @@ public static class SVC_IA_ProvinceStrategyService
             if (cible == null)
             {
                 equipe.provinceAffectee = null;
+                equipe.actionTerminee = false;
+
+                Debug.Log(
+                    $"[IA_PROVINCE_CLEAR] joueur={joueur.nomJoueur} | " +
+                    $"équipe={equipe.data?.nomEquipe} | " +
+                    $"raison=aucune province valide trouvée"
+                );
+
                 continue;
             }
 
             equipe.provinceAffectee = cible;
             equipe.actionTerminee = false;
+
+            Debug.Log(
+                $"[IA_PROVINCE_ASSIGN] joueur={joueur.nomJoueur} | " +
+                $"équipe={equipe.data?.nomEquipe} | " +
+                $"province={cible.data?.nom} | " +
+                $"action={SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipe)} | " +
+                $"exploration={cible.GetExploration(joueur.compagnie):0.##}%"
+            );
         }
+    }
+
+    private static void ConvertirExplorationEnVadrouilleSiNecessaire(
+        SYS_GameManager gameManager,
+        DATA_JOUEUR joueur,
+        STATE_EQUIPE equipe)
+    {
+        if (gameManager == null || joueur == null || equipe == null)
+            return;
+
+        if (equipe.AUneActionEnCours)
+            return;
+
+        ENUM_EQUIPE_ACTION action = SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipe);
+
+        if (action != ENUM_EQUIPE_ACTION.Exploration)
+            return;
+
+        bool provinceActuelleTerminee = false;
+
+        if (equipe.provinceAffectee != null && equipe.provinceAffectee.data != null)
+        {
+            float explorationActuelle = equipe.provinceAffectee.GetExploration(joueur.compagnie);
+            provinceActuelleTerminee = explorationActuelle >= ExplorationCompleteThreshold;
+
+            if (provinceActuelleTerminee)
+            {
+                Debug.Log(
+                    $"[IA_EXPLORATION_COMPLETE] joueur={joueur.nomJoueur} | " +
+                    $"équipe={equipe.data?.nomEquipe} | " +
+                    $"province={equipe.provinceAffectee.data?.nom} | " +
+                    $"exploration={explorationActuelle:0.##}%"
+                );
+
+                equipe.provinceAffectee = null;
+                equipe.actionTerminee = false;
+            }
+        }
+
+        bool existeProvincePourVadrouille = ExisteProvinceInteressantePourVadrouille(gameManager, joueur);
+        bool existeProvincePourExploration = ExisteProvinceInteressantePourExploration(gameManager, joueur);
+
+        if (!existeProvincePourVadrouille)
+            return;
+
+        bool doitBasculerEnVadrouille =
+            provinceActuelleTerminee ||
+            !existeProvincePourExploration ||
+            equipe.provinceAffectee == null;
+
+        if (!doitBasculerEnVadrouille)
+            return;
+
+        equipe.specialisation = ENUM_EQUIPE_SPECIALISATION.Miliciens;
+        equipe.dataSpecialisation = null;
+        equipe.provinceAffectee = null;
+        equipe.actionTerminee = false;
+
+        Debug.Log(
+            $"[IA_SPECIALISATION_SWITCH] joueur={joueur.nomJoueur} | " +
+            $"équipe={equipe.data?.nomEquipe} | " +
+            $"nouvelle spécialisation=Miliciens | " +
+            $"raison=vadrouille prioritaire après exploration"
+        );
     }
 
     private static bool PeutGarderProvinceActuelle(
@@ -42,6 +126,7 @@ public static class SVC_IA_ProvinceStrategyService
             return false;
 
         STATE_PROVINCE province = equipe.provinceAffectee;
+
         if (province.data == null)
             return false;
 
@@ -51,14 +136,15 @@ public static class SVC_IA_ProvinceStrategyService
         {
             case ENUM_EQUIPE_ACTION.Exploration:
             {
-                float exploration = province.GetExploration(equipe.compagnie);
-                return exploration < 100f;
+                float exploration = province.GetExploration(joueur.compagnie);
+                return exploration < ExplorationCompleteThreshold;
             }
 
             case ENUM_EQUIPE_ACTION.Vadrouille:
             {
-                float exploration = province.GetExploration(equipe.compagnie);
-                if (exploration < 100f)
+                float exploration = province.GetExploration(joueur.compagnie);
+
+                if (exploration < ExplorationCompleteThreshold)
                     return false;
 
                 bool claimParIA =
@@ -72,13 +158,24 @@ public static class SVC_IA_ProvinceStrategyService
                 float influenceIA = GetInfluenceCompagnie(province, joueur.compagnie);
                 float influenceAdverse = GetInfluenceAdverseDominante(province, joueur.compagnie);
 
-                return influenceAdverse > 0.01f || (influenceIA > 0f && influenceIA < 60f) || !province.estClaim;
+                if (!province.estClaim)
+                    return true;
+
+                if (influenceAdverse > 0.01f)
+                    return true;
+
+                if (influenceIA > 0f && influenceIA < 60f)
+                    return true;
+
+                return false;
             }
 
             case ENUM_EQUIPE_ACTION.Construction:
+            {
                 return province.estClaim &&
                        province.proprietaireActuel.HasValue &&
                        province.proprietaireActuel.Value == joueur.compagnie;
+            }
 
             default:
                 return false;
@@ -113,6 +210,58 @@ public static class SVC_IA_ProvinceStrategyService
         return meilleureProvince;
     }
 
+    private static bool ExisteProvinceInteressantePourExploration(
+        SYS_GameManager gameManager,
+        DATA_JOUEUR joueur)
+    {
+        if (gameManager == null || joueur == null)
+            return false;
+
+        foreach (STATE_PROVINCE province in gameManager.ProvincesRuntime)
+        {
+            if (province == null || province.data == null)
+                continue;
+
+            float exploration = province.GetExploration(joueur.compagnie);
+
+            if (exploration < ExplorationCompleteThreshold)
+                return true;
+        }
+
+        return false;
+    }
+
+    private static bool ExisteProvinceInteressantePourVadrouille(
+        SYS_GameManager gameManager,
+        DATA_JOUEUR joueur)
+    {
+        if (gameManager == null || joueur == null)
+            return false;
+
+        foreach (STATE_PROVINCE province in gameManager.ProvincesRuntime)
+        {
+            if (province == null || province.data == null)
+                continue;
+
+            float exploration = province.GetExploration(joueur.compagnie);
+
+            if (exploration < ExplorationCompleteThreshold)
+                continue;
+
+            bool claimParIA =
+                province.estClaim &&
+                province.proprietaireActuel.HasValue &&
+                province.proprietaireActuel.Value == joueur.compagnie;
+
+            if (claimParIA)
+                continue;
+
+            return true;
+        }
+
+        return false;
+    }
+
     private static float EvaluerProvincePourCompagnie(
         SYS_GameManager gameManager,
         STATE_PROVINCE province,
@@ -125,14 +274,19 @@ public static class SVC_IA_ProvinceStrategyService
         ENUM_EQUIPE_ACTION action = SVC_EQUIPE_ActionRulesService.GetActionPrincipale(equipe);
 
         float prestige = province.data.prestige;
-        float politique = province.data.poidsPolitique;
         float accessibilite = province.data.accesibilite;
+float etrinium = province.data.etrinium;
+int provincesControlees = Mathf.Max(0, joueur.provincesControlees);
 
+// Plus l'IA a déjà de provinces, plus elle cherche à snowball.
+// Exemple : 0 province = x1, 5 provinces = x2.5, 10 provinces = x4.
+float multiplicateurExpansion = 1f + (provincesControlees * 0.30f);
         float influenceIA = GetInfluenceCompagnie(province, joueur.compagnie);
         float influenceAdverse = GetInfluenceAdverseDominante(province, joueur.compagnie);
         float exploration = province.GetExploration(joueur.compagnie);
 
         bool estClaim = province.estClaim;
+
         bool claimParEnnemi =
             estClaim &&
             province.proprietaireActuel.HasValue &&
@@ -150,43 +304,72 @@ public static class SVC_IA_ProvinceStrategyService
 
         switch (action)
         {
-            case ENUM_EQUIPE_ACTION.Exploration:
-            {
-                if (exploration >= 100f)
-                    return float.MinValue;
+case ENUM_EQUIPE_ACTION.Exploration:
+{
+    if (exploration >= ExplorationCompleteThreshold)
+        return float.MinValue;
 
-                // L’exploration ne sert plus à générer directement de l’étrinium par tour.
-                // On priorise donc la complétion + prestige + positionnement.
-                score += (100f - exploration) * 5f;
-                score += prestige * 1.5f;
-                score += politique * 1.2f;
-                score += accessibilite * 0.5f;
-                score -= nbEquipesAllieesDejaSurPlace * 120f;
-                break;
-            }
+    score += (100f - exploration) * 1.2f;
+    score += etrinium * 3.0f;
+    score += prestige * 0.6f;
+    score += accessibilite * 0.3f;
 
-            case ENUM_EQUIPE_ACTION.Vadrouille:
-            {
-                if (exploration < 100f)
-                    return float.MinValue;
+    if (!estClaim)
+    {
+        score += provincesControlees * 120f;
+    }
 
-                if (claimParIA)
-                    return float.MinValue;
+    if (nbEquipesAllieesDejaSurPlace > 0)
+    {
+        score -= 3000f * nbEquipesAllieesDejaSurPlace;
+    }
 
-                score += influenceAdverse * 4.5f;
-                score += influenceIA * 1.2f;
-                score += prestige * 1.0f;
-                score += politique * 1.6f;
+    break;
+}
+       case ENUM_EQUIPE_ACTION.Vadrouille:
+{
+    if (exploration < ExplorationCompleteThreshold)
+        return float.MinValue;
 
-                if (!estClaim)
-                    score += 120f;
+    if (claimParIA)
+        return float.MinValue;
 
-                if (claimParEnnemi)
-                    score += 80f;
+    if (nbEquipesAllieesDejaSurPlace > 0)
+    {
+        score -= 5000f * nbEquipesAllieesDejaSurPlace;
+    }
 
-                score -= nbEquipesAllieesDejaSurPlace * 150f;
-                break;
-            }
+    // Base : la vadrouille est l'action de conquête.
+    score += 600f;
+
+    // Une province neutre explorée est une opportunité directe d'expansion.
+    if (!estClaim)
+        score += 500f * multiplicateurExpansion;
+
+    // Une province ennemie peut valoir cher si l'IA est déjà dominante.
+    if (claimParEnnemi)
+        score += 250f * multiplicateurExpansion;
+
+    // Énorme bonus de snowball :
+    // plus l'IA possède de provinces, plus chaque nouvelle province devient prioritaire.
+    score += provincesControlees * 700f;
+
+    // Bonus supplémentaire si la province peut devenir un claim rapidement.
+    float influenceManquantePourClaim = Mathf.Max(0f, 50f - influenceIA);
+    score += (50f - influenceManquantePourClaim) * 12f * multiplicateurExpansion;
+
+    // Rentabilité économique.
+    score += etrinium * 4.0f;
+
+    // Combat d'influence.
+    score += influenceAdverse * 6.0f;
+    score += influenceIA * 2.0f;
+
+    score += prestige * 1.8f;
+    score += accessibilite * 0.6f;
+
+    break;
+}
 
             case ENUM_EQUIPE_ACTION.Construction:
             {
@@ -194,8 +377,10 @@ public static class SVC_IA_ProvinceStrategyService
                     return float.MinValue;
 
                 score += prestige * 1.0f;
-                score += politique * 1.0f;
-                score -= nbEquipesAllieesDejaSurPlace * 100f;
+                score += accessibilite * 0.8f;
+
+                score -= nbEquipesAllieesDejaSurPlace * 5000f;
+
                 break;
             }
 
@@ -233,7 +418,9 @@ public static class SVC_IA_ProvinceStrategyService
         return total;
     }
 
-    private static float GetInfluenceAdverseDominante(STATE_PROVINCE province, ENUM_Compagnie compagnie)
+    private static float GetInfluenceAdverseDominante(
+        STATE_PROVINCE province,
+        ENUM_Compagnie compagnie)
     {
         if (province == null)
             return 0f;
@@ -245,7 +432,9 @@ public static class SVC_IA_ProvinceStrategyService
         return Mathf.Max(maizin, Mathf.Max(kinia, joho));
     }
 
-    private static float GetInfluenceCompagnie(STATE_PROVINCE province, ENUM_Compagnie compagnie)
+    private static float GetInfluenceCompagnie(
+        STATE_PROVINCE province,
+        ENUM_Compagnie compagnie)
     {
         if (province == null)
             return 0f;
@@ -254,10 +443,13 @@ public static class SVC_IA_ProvinceStrategyService
         {
             case ENUM_Compagnie.Maizin:
                 return province.influenceMaizin;
+
             case ENUM_Compagnie.Kinia:
                 return province.influenceKinia;
+
             case ENUM_Compagnie.Joho:
                 return province.influenceJoho;
+
             default:
                 return 0f;
         }

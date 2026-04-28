@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceData
   nom: Grasen
   prestige: 25
-  etrinium: 5000
+  etrinium: 100000
   populationShiki: 12
   populationFrisien: 88
   populationAutre: 0

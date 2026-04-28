@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceData
   nom: Hoto
   prestige: 36
-  etrinium: 5000
+  etrinium: 100000
   populationShiki: 23
   populationFrisien: 75
   populationAutre: 2

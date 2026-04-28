@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProvinceData
   nom: Rama
   prestige: 53
-  etrinium: 5000
+  etrinium: 50000
   populationShiki: 26
   populationFrisien: 72
   populationAutre: 2
